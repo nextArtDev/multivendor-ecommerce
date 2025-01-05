@@ -12,6 +12,7 @@
 
 ```ts
 const t = useTranslations('Theme')
+// accessing locale 
   const locale = useLocale()
 
    <div dir={locale === 'en' ? 'ltr' : 'rtl'}>
