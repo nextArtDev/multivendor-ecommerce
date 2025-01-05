@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Languages } from 'lucide-react'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 export default function LangToggle() {
   const router = useRouter()
@@ -22,14 +22,17 @@ export default function LangToggle() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Languages />
+      <DropdownMenuTrigger
+        asChild
+        className="shadow-2xl border size-8  rounded-md"
+      >
+        <Languages className="p-1" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => router.push(`/fa`)}>
+      <DropdownMenuContent className="!min-w-[4rem]" align="end">
+        <DropdownMenuItem className="!w-fit" onClick={() => router.push(`/fa`)}>
           فارسی
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push(`/en`)}>
+        <DropdownMenuItem className="w-fit" onClick={() => router.push(`/en`)}>
           English
         </DropdownMenuItem>
       </DropdownMenuContent>

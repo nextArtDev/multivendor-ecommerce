@@ -2,5 +2,10 @@
   "HomePage": {
     "title": "خانه",
     "about": "Go to the about page"
+  },
+  "Theme":{
+    "Dark":"شب",
+    "Light":"روز",
+    "System":"دستگاه"
   }
 }
