@@ -1,9 +1,6 @@
-import { auth, signOut } from '@/auth'
-import { redirect } from 'next/navigation'
+import { auth, signOut } from '../../../../../auth'
 
-type Props = {}
-
-async function page({}: Props) {
+async function page() {
   const session = await auth()
   return (
     <div>

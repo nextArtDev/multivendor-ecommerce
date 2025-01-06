@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button'
 import { FormError } from './form-error'
 import { FormSuccess } from './form-success'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
 import { RegisterSchema } from '@/lib/schemas/auth'
 import { register } from '@/lib/actions/auth/register'
 import { Eye } from 'lucide-react'

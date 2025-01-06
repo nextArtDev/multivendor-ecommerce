@@ -1,14 +1,13 @@
 'use client'
 
-import React, { startTransition, useState, useTransition } from 'react'
-import { useForm, Controller, SubmitHandler } from 'react-hook-form'
-import OtpInput from '../../../../components/auth/otp-input'
+import { useState, useTransition } from 'react'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import OtpInput from '@/components/auth/otp-input'
 
-import { useParams, useRouter } from 'next/navigation'
 import { FormError } from '@/components/auth/form-error'
 import { FormSuccess } from '@/components/auth/form-success'
+import { useRouter } from '@/navigation'
 
-import { Loader2 } from 'lucide-react'
 import { activation } from '@/lib/actions/auth/register'
 import { toast } from 'sonner'
 

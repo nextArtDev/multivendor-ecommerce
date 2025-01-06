@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button'
 import { FormError } from './form-error'
 import { FormSuccess } from './form-success'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
 import { reset } from '@/lib/actions/auth/reset'
 import { ResetSchema } from '@/lib/schemas/auth'
 

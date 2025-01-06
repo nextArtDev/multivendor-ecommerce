@@ -1,0 +1,48 @@
+generator client {
+    provider = "prisma-client-js"
+    // previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
+}
+
+model User {
+    id         String  @id @default(cuid())
+    name       String
+    phone      String  @unique
+    password   String
+    image      Image?  @relation(fields: [imageId], references: [id])
+    role       Role    @default(USER)
+    isVerified Boolean @default(false)
+
+    verificationCode Int?
+    verificationDate DateTime?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    imageId   String?  @unique
+
+    address       Json?   @db.Json
+    paymentMethod String?
+
+    @@map("users")
+}
+
+enum Role {
+    USER
+    ADMIN
+    SELLER
+}
+
+model Image {
+    id         String   @id @default(cuid())
+    url        String   @db.Text
+    key        String   @db.Text
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    user User?
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
 
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { LoginForm } from './login-form'

@@ -1,8 +1,8 @@
-import { auth } from '../../../../auth'
 import { LoginForm } from '@/components/auth/login-form'
-import { redirect } from 'next/navigation'
+import { redirect } from '@/navigation'
 
 import React from 'react'
+import { auth } from '../../../../../auth'
 
 async function page() {
   const session = await auth()

@@ -3,7 +3,8 @@
 import * as z from 'zod'
 import { useForm } from 'react-hook-form'
 import { useState, useTransition } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 

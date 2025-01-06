@@ -1,28 +1,26 @@
 'use client'
 
-import * as z from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 
-import { Input } from '@/components/ui/input'
+import { CardWrapper } from '@/components/auth/card-wrapper'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { CardWrapper } from '@/components/auth/card-wrapper'
-import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { FormError } from './form-error'
 import { FormSuccess } from './form-success'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
 
-import { signIn } from '@/auth'
 import { resetPass } from '@/lib/actions/auth/reset'
 import { NewPasswordSchema } from '@/lib/schemas/auth'
 

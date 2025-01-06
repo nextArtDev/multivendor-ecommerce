@@ -1,21 +1,15 @@
 'use client'
 
-import React, {
-  startTransition,
-  useEffect,
-  useState,
-  useTransition,
-} from 'react'
-import { useForm, Controller, SubmitHandler } from 'react-hook-form'
+import { useState, useTransition } from 'react'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 
-import { useParams, useRouter } from 'next/navigation'
 import { FormError } from '@/components/auth/form-error'
 import { FormSuccess } from '@/components/auth/form-success'
+import { useRouter } from '@/navigation'
 
-import OtpInput from '../../../../../components/auth/otp-input'
-import { Button } from '@/components/ui/button'
-import { activation } from '@/lib/actions/auth/register'
 import { reactivate } from '@/lib/actions/auth/reactivate'
+import { activation } from '@/lib/actions/auth/register'
+import OtpInput from '@/components/auth/otp-input'
 
 type FormData = {
   otp: string
