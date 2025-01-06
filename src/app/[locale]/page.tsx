@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
-import LangToggle from '@/components/ui/shared/lang-toggle'
+import LangToggle from '@/components/shared/lang-toggle'
 import { ModeToggle } from '@/components/ui/mode-toggle'
 export default async function Home() {
   const t = await getTranslations('HomePage')
