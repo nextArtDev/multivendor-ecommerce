@@ -1,21 +1,21 @@
 import NextAuth from 'next-auth'
 import createIntlMiddleware from 'next-intl/middleware'
-import { NextMiddleware, NextRequest, NextResponse } from 'next/server'
-import authConfig from '../auth.config'
+import authConfig from './auth.config'
 import { routing } from '@/i18n/routing'
 import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
-} from '../routes'
+} from './routes'
 
+//https://github.com/renanleonel/next-auth-v5-middleware/blob/main/src/middleware.ts
 const { auth } = NextAuth(authConfig)
 
 // Create the next-intl middleware
 const intlMiddleware = createIntlMiddleware(routing)
 
-export default auth(async function middleware(request: NextRequest) {
+export default auth(async function middleware(request) {
   const { nextUrl } = request
 
   // Access auth status from the request object

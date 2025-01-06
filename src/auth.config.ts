@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs'
 import type { NextAuthConfig } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-import { LoginSchema } from './src/lib/schemas/auth'
-import { getUserByPhoneNumber } from './src/lib/queries/auth/user'
+import { LoginSchema } from './lib/schemas/auth'
+import { getUserByPhoneNumber } from './lib/queries/auth/user'
 // import Github from 'next-auth/providers/github'
 // import Google from 'next-auth/providers/google'
 

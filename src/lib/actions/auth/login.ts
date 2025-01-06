@@ -3,9 +3,9 @@
 import { AuthError } from 'next-auth'
 import * as z from 'zod'
 
-import { signIn } from '../../../../auth'
+import { signIn } from '../../../auth'
 
-import { DEFAULT_LOGIN_REDIRECT } from '../../../../routes'
+import { DEFAULT_LOGIN_REDIRECT } from '../../../routes'
 
 import { getUserByPhoneNumber } from '@/lib/queries/auth/user'
 import { LoginSchema } from '@/lib/schemas/auth'
