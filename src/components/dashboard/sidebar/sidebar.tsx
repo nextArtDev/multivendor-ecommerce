@@ -22,6 +22,14 @@ import StoreSwitcher from './store-switcher'
 import { currentUser } from '@/lib/auth'
 import Logo from '@/components/shared/logo'
 import { prisma } from '@/lib/prisma'
+import {
+  SidebarProvider,
+  Sidebar as ShadSidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarTrigger,
+  SidebarFooter,
+} from '@/components/ui/sidebar'
 
 interface SidebarProps {
   isAdmin?: boolean
@@ -36,17 +44,24 @@ const Sidebar: FC<SidebarProps> = async ({ isAdmin, stores }) => {
     include: { image: true },
   })
   return (
-    <div className="w-[300px] border-r h-screen p-4 flex flex-col fixed top-0 left-0 bottom-0">
-      <Logo width="100%" height="180px" />
-      <span className="mt-3" />
-      {user && <UserInfo user={user} />}
-      {!isAdmin && stores && <StoreSwitcher stores={stores} />}
-      {isAdmin ? (
-        <SidebarNavAdmin menuLinks={adminDashboardSidebarOptions} />
-      ) : (
-        <SidebarNavSeller menuLinks={SellerDashboardSidebarOptions} />
-      )}
-    </div>
+    <ShadSidebar>
+      {/* <div className="w-[300px] border-r h-screen p-4 flex flex-col fixed top-0 left-0 bottom-0"> */}
+      <SidebarHeader className="py-0 my-0 scale-75">
+        <Logo width="100%" height="180px" />
+      </SidebarHeader>
+      <SidebarContent>
+        {isAdmin ? (
+          <SidebarNavAdmin menuLinks={adminDashboardSidebarOptions} />
+        ) : (
+          <SidebarNavSeller menuLinks={SellerDashboardSidebarOptions} />
+        )}
+      </SidebarContent>
+      <SidebarFooter className="py-0 my-0">
+        <span className=" " />
+        {user && <UserInfo user={user} />}
+        {!isAdmin && stores && <StoreSwitcher stores={stores} />}
+      </SidebarFooter>
+    </ShadSidebar>
   )
 }
 
