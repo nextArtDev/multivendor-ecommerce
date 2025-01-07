@@ -7,5 +7,24 @@
     "Dark":"شب",
     "Light":"روز",
     "System":"دستگاه"
-  }
+  },
+  
+   "adminDashboardSidebarOptions": {
+    "Dashboard": "دشبورد",
+    "Stores": "فروشگاهها",
+    "Orders": "سفارشات",
+    "Categories": "دسته‌بندی‌ها",
+    "Sub-Categories": "زیردسته‌بندیها",
+    "Offer Tags": "اعلان تخفیت",
+    "Coupons": "بن‌ها"
+  },
+   "SellerDashboardSidebarOptions": {
+    "Dashboard": "دشبورد",
+    "Products": "محصولات",
+    "Orders": "سفارشات",
+    "Inventory": "موجودی",
+    "Coupons": "بن‌ها",
+    "Shipping": "ارسال",
+    "Settings": "تنظیمات"
+  } 
 }

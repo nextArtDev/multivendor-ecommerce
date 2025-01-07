@@ -7,5 +7,23 @@
     "Dark":"Dark",
     "Light":"Light",
     "System":"System"
+  },
+  "adminDashboardSidebarOptions": {
+    "Dashboard": "Dashboard",
+    "Stores": "Stores",
+    "Orders": "Orders",
+    "Categories": "Categories",
+    "Sub-Categories": "Sub-Categories",
+    "Offer Tags": "Offer Tags",
+    "Coupons": "Coupons"
+  },
+  "SellerDashboardSidebarOptions": {
+    "Dashboard": "Dashboard",
+    "Products": "Products",
+    "Orders": "Orders",
+    "Inventory": "Inventory",
+    "Coupons": "Coupons",
+    "Shipping": "Shipping",
+    "Settings": "Settings"
   }
 }
