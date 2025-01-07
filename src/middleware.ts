@@ -45,8 +45,9 @@ export default auth(async function middleware(request) {
       }
 
       const encodedCallbackUrl = encodeURIComponent(callbackUrl)
+      const locale = nextUrl.locale || 'fa'
       return Response.redirect(
-        new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+        new URL(`${locale}/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
       )
     }
   }

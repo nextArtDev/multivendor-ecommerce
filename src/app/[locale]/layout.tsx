@@ -7,6 +7,7 @@ import { getMessages } from 'next-intl/server'
 import { NextIntlClientProvider } from 'next-intl'
 import { ThemeProvider } from '@/providers/theme-providers'
 import { notFound } from 'next/navigation'
+import AuthProvider from '@/providers/AuthProvider'
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -38,20 +39,22 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+      <AuthProvider>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <NextIntlClientProvider messages={messages}>
-            {children}
-          </NextIntlClientProvider>
-        </ThemeProvider>
-      </body>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NextIntlClientProvider messages={messages}>
+              {children}
+            </NextIntlClientProvider>
+          </ThemeProvider>
+        </body>
+      </AuthProvider>
     </html>
   )
 }

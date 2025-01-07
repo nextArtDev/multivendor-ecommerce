@@ -2,6 +2,7 @@
 import { ReactNode } from 'react'
 import { redirect } from '@/navigation'
 import { currentUser } from '@/lib/auth'
+import Header from '@/components/dashboard/header'
 
 export default async function AdminDashboardLayout({
   children,
@@ -17,7 +18,7 @@ export default async function AdminDashboardLayout({
       {/* <Sidebar isAdmin /> */}
       <div className="ml-[300px]">
         {/* Header */}
-        {/* <Header /> */}
+        <Header />
         <div className="w-full mt-[75px] p-4">{children}</div>
       </div>
     </div>
