@@ -70,8 +70,18 @@ export const upsertCategory = async (
       where: {
         id: category.id,
       },
-      update: category,
-      create: category,
+      update: {
+        category,
+        images: {
+          connect: { images: '' },
+        },
+      },
+      create: {
+        category,
+        images: {
+          connect: { images: '' },
+        },
+      },
     })
     return categoryDetails
   } catch (error) {

@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState, useTransition } from 'react'
 
 // Prisma model
 import { Category, Image } from '@prisma/client'
@@ -41,55 +41,162 @@ import { Input } from '@/components/ui/input'
 // Utils
 import { v4 } from 'uuid'
 
-import { useRouter } from '@/navigation'
+import { usePathname, useRouter } from '@/navigation'
 import { useToast } from '@/hooks/use-toast'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { cn } from '@/lib/utils'
 import ImageSlider from '@/components/shared/ImageSlider'
 import { upsertCategory } from '@/lib/queries/dashboard'
+import { X } from 'lucide-react'
+import {
+  createCategory,
+  editCategory,
+} from '@/lib/actions/dashboard/categories'
+import { toast } from 'sonner'
 
 interface CategoryDetailsProps {
-  data?: Category & { images: Image[] }
+  initialData?: Category & { images: Image[] }
 }
 
-const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
+const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
   const [files, setFiles] = useState<File[]>([])
 
   // Initializing necessary hooks
-  const { toast } = useToast() // Hook for displaying toast messages
-  const router = useRouter() // Hook for routing
 
+  const router = useRouter() // Hook for routing
+  const path = usePathname()
+  const [isPending, startTransition] = useTransition()
   // Form hook for managing form state and validation
   const form = useForm<z.infer<typeof CategoryFormSchema>>({
     mode: 'onChange', // Form validation mode
     resolver: zodResolver(CategoryFormSchema), // Resolver for form validation
     defaultValues: {
       // Setting default form values from data (if available)
-      name: data?.name,
-      images: data?.images ? [{ url: data?.images }] : [],
-      url: data?.url,
-      featured: data?.featured,
+      name: initialData?.name,
+      images: initialData?.images ? [{ url: initialData?.images }] : [],
+      url: initialData?.url,
+      featured: initialData?.featured,
     },
   })
 
-  // Loading status based on form submission
-  const isLoading = form.formState.isSubmitting
+  //    const [deleteState, deleteAction] = useFormState(
+  //      deleteCategory.bind(
+  //        null,
+  //        path,
+  //        params.storeId as string,
+  //        categoryId as string
+  //      ),
+  //      {
+  //        errors: {},
+  //      }
+  //    )
 
   // Reset form values when data changes
   useEffect(() => {
-    if (data) {
+    if (initialData) {
       form.reset({
-        name: data?.name,
-        images: [{ url: data?.images }],
-        url: data?.url,
-        featured: data?.featured,
+        name: initialData?.name,
+        images: [{ url: initialData?.images }],
+        url: initialData?.url,
+        featured: initialData?.featured,
       })
     }
-  }, [data, form])
+  }, [initialData, form])
 
   // Submit handler for form submission
-  const handleSubmit = async (values: z.infer<typeof CategoryFormSchema>) => {
-    console.log({ values })
+  const handleSubmit = async (data: z.infer<typeof CategoryFormSchema>) => {
+    console.log({ data })
+    const formData = new FormData()
+
+    formData.append('name', data.name)
+    formData.append('url', data.url)
+
+    if (data.featured) {
+      formData.append('featured', 'true')
+    } else {
+      formData.append('featured', 'false')
+    }
+
+    if (data.images && data.images.length > 0) {
+      for (let i = 0; i < data.images.length; i++) {
+        formData.append('images', data.images[i])
+      }
+    }
+    try {
+      if (initialData) {
+        // console.log({ data, initialData })
+
+        startTransition(() => {
+          editCategory(
+            formData,
+
+            initialData.id as string,
+            path
+          )
+            .then((res) => {
+              if (res?.errors?.name) {
+                form.setError('name', {
+                  type: 'custom',
+                  message: res?.errors.name?.join(' و '),
+                })
+              } else if (res?.errors?.images) {
+                form.setError('images', {
+                  type: 'custom',
+                  message: res?.errors.images?.join(' و '),
+                })
+              } else if (res?.errors?._form) {
+                toast.error(res?.errors._form?.join(' و '))
+              }
+              // if (res?.success) {
+              //    toast.success(toastMessage)
+              // }
+            })
+            // TODO: fixing Through Error when its ok
+            // .catch(() => toast.error('مشکلی پیش آمده.'))
+            .catch(() => console.log('مشکلی پیش آمده.'))
+        })
+      } else {
+        startTransition(() => {
+          createCategory(formData, path)
+            .then((res) => {
+              if (res?.errors?.name) {
+                form.setError('name', {
+                  type: 'custom',
+                  message: res?.errors.name?.join(' و '),
+                })
+              } else if (res?.errors?.images) {
+                form.setError('images', {
+                  type: 'custom',
+                  message: res?.errors.images?.join(' و '),
+                })
+              } else if (res?.errors?.url) {
+                form.setError('url', {
+                  type: 'custom',
+                  message: res?.errors.url?.join(' و '),
+                })
+              } else if (res?.errors?.featured) {
+                form.setError('featured', {
+                  type: 'custom',
+                  message: res?.errors.featured?.join(' و '),
+                })
+              } else if (res?.errors?._form) {
+                toast.error(res?.errors._form?.join(' و '))
+                form.setError('root', {
+                  type: 'custom',
+                  message: res?.errors?._form?.join(' و '),
+                })
+              }
+              // if (res?.success) {
+              //    toast.success(toastMessage)
+              // }
+            })
+            .catch(() => toast.error('مشکلی پیش آمده.'))
+        })
+      }
+    } catch {
+      toast.error('مشکلی پیش آمده، لطفا دوباره امتحان کنید!')
+    }
+
     // try {
     //   // Upserting category data
     //   const response = await upsertCategory({
@@ -135,8 +242,8 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
         <CardHeader>
           <CardTitle>Category Information</CardTitle>
           <CardDescription>
-            {data?.id
-              ? `Update ${data?.name} category information.`
+            {initialData?.id
+              ? `Update ${initialData?.name} category information.`
               : ' Lets create a category. You can edit category later from the categories table or the category page.'}
           </CardDescription>
         </CardHeader>
@@ -148,10 +255,20 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
             >
               <div className="col-span-2 lg:col-span-4 max-w-md ">
                 {files.length > 0 ? (
-                  <div className="h-96 md:h-[450px] overflow-hidden rounded-md">
-                    <AspectRatio ratio={1 / 1} className="relative h-full">
+                  <div className="relative overflow-hidden h-60  w-60 rounded-md">
+                    <AspectRatio ratio={1 / 1} className="relative ">
                       <ImageSlider urls={validUrls} />
                     </AspectRatio>
+                    <Button
+                      size={'icon'}
+                      onClick={() => {
+                        setFiles([])
+                        form.setValue('images', [])
+                      }}
+                      className="absolute top-2 left-2 z-20"
+                    >
+                      <X className="text-red-500" />
+                    </Button>
                   </div>
                 ) : (
                   <FormField
@@ -164,7 +281,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
                           <span
                             className={cn(buttonVariants({ variant: 'ghost' }))}
                           >
-                            انتخاب عکس
+                            Upload Images
                           </span>
                         </FormLabel>
                         <FormControl>
@@ -212,7 +329,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
                 )}
               </div>
               <FormField
-                disabled={isLoading}
+                disabled={isPending}
                 control={form.control}
                 name="name"
                 render={({ field }) => (
@@ -226,7 +343,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
                 )}
               />
               <FormField
-                disabled={isLoading}
+                disabled={isPending}
                 control={form.control}
                 name="url"
                 render={({ field }) => (
@@ -247,8 +364,6 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
                     <FormControl>
                       <Checkbox
                         checked={field.value}
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
@@ -261,10 +376,10 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading}>
-                {isLoading
+              <Button type="submit" disabled={isPending}>
+                {isPending
                   ? 'loading...'
-                  : data?.id
+                  : initialData?.id
                   ? 'Save category information'
                   : 'Create category'}
               </Button>
