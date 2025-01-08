@@ -7,10 +7,13 @@ import { redirect } from '@/navigation'
 import { prisma } from '../../prisma'
 
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
-import { CategoryFormSchema } from '@/lib/schemas/dashboard'
+import {
+  CategoryFormSchema,
+  CategoryServerFormSchema,
+} from '@/lib/schemas/dashboard'
 
 interface CreateCategoryFormState {
-  // success?: string
+  //   success?: string
   errors: {
     name?: string[]
     url?: string[]
@@ -25,10 +28,10 @@ export async function createCategory(
 
   path: string
 ): Promise<CreateCategoryFormState> {
-  const result = CategoryFormSchema.safeParse({
+  const result = CategoryServerFormSchema.safeParse({
     name: formData.get('name'),
     url: formData.get('url'),
-    featured: formData.get('featured') === 'true' ? true : false,
+    featured: formData.get('featured'),
     images: formData.getAll('images'),
   })
 
@@ -38,7 +41,7 @@ export async function createCategory(
       errors: result.error.flatten().fieldErrors,
     }
   }
-  console.log(result?.data)
+  //   console.log(result?.data)
 
   const session = await auth()
   if (!session || !session.user || session.user.role !== 'ADMIN') {
@@ -49,7 +52,6 @@ export async function createCategory(
     }
   }
 
-  let category: Category
   try {
     const isExisting = await prisma.category.findFirst({
       where: {
@@ -65,9 +67,9 @@ export async function createCategory(
     }
     // console.log(isExisting)
     // console.log(billboard)
-
+    const featured = result.data.featured === 'true' ? true : false
     const imageIds: string[] = []
-    for (let img of result.data?.images || []) {
+    for (const img of result.data?.images || []) {
       const buffer = Buffer.from(await img.arrayBuffer())
       const res = await uploadFileToS3(buffer, img.name)
 
@@ -75,17 +77,20 @@ export async function createCategory(
         imageIds.push(res.imageId)
       }
     }
-    category = await prisma.category.create({
+    await prisma.category.create({
       data: {
         name: result.data.name,
         url: result.data.url,
-        featured: result.data.featured,
+        featured,
         images: {
           connect: imageIds.map((id) => ({
             id: id,
           })),
         },
       },
+    })
+    return Promise.resolve({
+      errors: {}, // No errors, operation succeeded
     })
     // console.log(res?.imageUrl)
     // console.log(category)
@@ -103,10 +108,10 @@ export async function createCategory(
         },
       }
     }
+  } finally {
+    revalidatePath(path)
+    redirect(`/dashboard/categories`)
   }
-
-  revalidatePath(path)
-  redirect(`/dashboard/categories`)
 }
 interface EditCategoryFormState {
   errors: {
@@ -249,6 +254,9 @@ export async function editCategory(
     }
     // imageId: res?.imageId,
     // console.log(billboard)
+    return Promise.resolve({
+      errors: {}, // No errors, operation succeeded
+    })
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -263,10 +271,10 @@ export async function editCategory(
         },
       }
     }
+  } finally {
+    revalidatePath(path)
+    redirect(`/dashboard/categories`)
   }
-
-  revalidatePath(path)
-  redirect(`/dashboard/categories`)
 }
 
 //////////////////////
@@ -334,6 +342,9 @@ export async function deleteCategory(
         id: categoryId,
       },
     })
+    return Promise.resolve({
+      errors: {}, // No errors, operation succeeded
+    })
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -348,8 +359,8 @@ export async function deleteCategory(
         },
       }
     }
+  } finally {
+    revalidatePath(path)
+    redirect(`/dashboard/categories`)
   }
-
-  revalidatePath(path)
-  redirect(`/dashboard/categories`)
 }

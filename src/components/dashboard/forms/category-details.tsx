@@ -105,7 +105,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
 
   // Submit handler for form submission
   const handleSubmit = async (data: z.infer<typeof CategoryFormSchema>) => {
-    console.log({ data })
+    // console.log({ data })
     const formData = new FormData()
 
     formData.append('name', data.name)

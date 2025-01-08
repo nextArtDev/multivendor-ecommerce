@@ -1,5 +1,5 @@
 'use server'
-import { revalidatePath } from 'next/cache'
+
 import {
   S3Client,
   PutObjectCommand,
@@ -43,7 +43,7 @@ export async function uploadFileToS3(file: Buffer, fileName: string) {
 
   const command = new PutObjectCommand(params)
   try {
-    const response = await s3Client.send(command)
+    await s3Client.send(command)
 
     const prismaUpload = await prisma.image.create({
       data: {
@@ -74,7 +74,7 @@ export async function deleteFileFromS3(key: string) {
 
   const command = new DeleteObjectCommand(params)
   try {
-    const response = await s3Client.send(command)
+    await s3Client.send(command)
 
     await prisma.image.deleteMany({
       where: {
