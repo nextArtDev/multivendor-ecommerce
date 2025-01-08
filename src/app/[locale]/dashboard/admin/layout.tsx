@@ -26,8 +26,10 @@ export default async function AdminDashboardLayout({
 
         <SidebarInset>
           {/* Header */}
-          <Header />
-          <div className="w-full mt-[75px] p-4">{children}</div>
+          <div className="w-full mt-[75px] p-4">
+            <Header />
+            {children}
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </div>
