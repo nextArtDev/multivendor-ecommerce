@@ -1,5 +1,4 @@
 // Queries
-import { getAllCategories } from '@/queries/category'
 
 // Data table
 
@@ -8,6 +7,7 @@ import { Plus } from 'lucide-react'
 import { columns } from './columns'
 import CategoryDetails from '@/components/dashboard/forms/category-details'
 import DataTable from '@/components/ui/data-table'
+import { getAllCategories } from '@/lib/queries/dashboard'
 
 export default async function AdminCategoriesPage() {
   // Fetching stores data from the database

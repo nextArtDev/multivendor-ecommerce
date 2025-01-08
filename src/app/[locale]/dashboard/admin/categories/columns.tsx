@@ -41,7 +41,7 @@ import {
 } from 'lucide-react'
 
 // Queries
-import { deleteCategory, getCategory } from '@/queries/category'
+// import { deleteCategory, getCategory } from '@/queries/category'
 
 // Tanstack React Table
 import { ColumnDef } from '@tanstack/react-table'
@@ -61,7 +61,7 @@ export const columns: ColumnDef<Category>[] = [
       return (
         <div className="relative h-44 min-w-64 rounded-xl overflow-hidden">
           <Image
-            src={row.original.image}
+            src={row.original.images}
             alt=""
             width={1000}
             height={1000}
@@ -153,7 +153,7 @@ const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
                 </CustomModal>,
                 async () => {
                   return {
-                    rowData: await getCategory(rowData?.id),
+                    // rowData: await getCategory(rowData?.id),
                   }
                 }
               )
@@ -187,7 +187,7 @@ const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
             className="bg-destructive hover:bg-destructive mb-2 text-white"
             onClick={async () => {
               setLoading(true)
-              await deleteCategory(rowData.id)
+              // await deleteCategory(rowData.id)
               toast({
                 title: 'Deleted category',
                 description: 'The category has been deleted.',
