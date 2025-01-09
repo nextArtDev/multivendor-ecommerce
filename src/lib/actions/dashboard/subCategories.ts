@@ -16,6 +16,7 @@ interface CreateSubCategoryFormState {
   success?: string
   errors: {
     name?: string[]
+    name_fa?: string[]
     url?: string[]
     featured?: string[]
     categoryId?: string[]
@@ -30,6 +31,7 @@ export async function createSubCategory(
 ): Promise<CreateSubCategoryFormState> {
   const result = subCategoryServerFormSchema.safeParse({
     name: formData.get('name'),
+    name_fa: formData.get('name_fa'),
     url: formData.get('url'),
     featured: formData.get('featured'),
     categoryId: formData.get('categoryId'),
@@ -72,7 +74,11 @@ export async function createSubCategory(
         // OR: [{ name: result.data.name }, { url: result.data.url }],
         AND: [
           {
-            OR: [{ name: result.data.name }, { url: result.data.url }],
+            OR: [
+              { name: result.data.name },
+              { name_fa: result.data?.name_fa },
+              { url: result.data.url },
+            ],
           },
           {
             categoryId: result.data.categoryId,
@@ -102,6 +108,7 @@ export async function createSubCategory(
     await prisma.subCategory.create({
       data: {
         name: result.data.name,
+        name_fa: result.data?.name_fa,
         url: result.data.url,
         featured,
         categoryId: result.data.categoryId,
@@ -139,6 +146,7 @@ export async function createSubCategory(
 interface EditSubCategoryFormState {
   errors: {
     name?: string[]
+    name_fa?: string[]
     description?: string[]
     categoryId?: string[]
     images?: string[]
@@ -152,6 +160,7 @@ export async function editSubCategory(
 ): Promise<EditSubCategoryFormState> {
   const result = SubCategoryFormSchema.safeParse({
     name: formData.get('name'),
+    name_fa: formData.get('name_fa'),
     url: formData.get('url'),
     images: formData.getAll('images'),
     featured: formData.get('featured'),
@@ -207,7 +216,11 @@ export async function editSubCategory(
       where: {
         AND: [
           {
-            OR: [{ name: result.data.name }, { url: result.data.url }],
+            OR: [
+              { name: result.data.name },
+              { name_fa: result.data?.name_fa },
+              { url: result.data.url },
+            ],
           },
           {
             categoryId: result.data.categoryId,
@@ -264,6 +277,7 @@ export async function editSubCategory(
         },
         data: {
           name: result.data.name,
+          name_fa: result.data?.name_fa,
           url: result.data.url,
           featured,
           categoryId: result.data.categoryId,
@@ -282,6 +296,7 @@ export async function editSubCategory(
         },
         data: {
           name: result.data.name,
+          name_fa: result.data?.name_fa,
           url: result.data.url,
           featured,
           categoryId: result.data.categoryId,

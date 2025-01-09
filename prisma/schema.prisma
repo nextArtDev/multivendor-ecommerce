@@ -57,6 +57,7 @@ model Image {
 model Category {
     id            String        @id @default(uuid())
     name          String
+    name_fa       String?
     images        Image[]
     url           String        @unique
     featured      Boolean       @default(false)
@@ -69,6 +70,7 @@ model Category {
 model SubCategory {
     id       String  @id @default(uuid())
     name     String
+    name_fa  String?
     images   Image[]
     url      String  @unique
     featured Boolean @default(false)

@@ -82,6 +82,7 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
     defaultValues: {
       // Setting default form values from data (if available)
       name: initialData?.name,
+      name_fa: initialData?.name_fa || undefined,
       images: initialData?.images ? [{ url: initialData?.images }] : [],
       url: initialData?.url,
       featured: initialData?.featured,
@@ -106,6 +107,7 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
     if (initialData) {
       form.reset({
         name: initialData?.name,
+        name_fa: initialData?.name_fa || undefined,
         images: [{ url: initialData?.images }],
         url: initialData?.url,
         featured: initialData?.featured,
@@ -120,6 +122,7 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
     const formData = new FormData()
 
     formData.append('name', data.name)
+    formData.append('name_fa', data.name_fa || '')
     formData.append('url', data.url)
     formData.append('categoryId', data.categoryId)
 
@@ -156,6 +159,11 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
                   type: 'custom',
                   message: res?.errors.images?.join(' و '),
                 })
+              } else if (res?.errors?.name_fa) {
+                form.setError('name_fa', {
+                  type: 'custom',
+                  message: res?.errors.name_fa?.join(' و '),
+                })
               } else if (res?.errors?.categoryId) {
                 form.setError('categoryId', {
                   type: 'custom',
@@ -179,6 +187,11 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
               form.setError('name', {
                 type: 'custom',
                 message: res?.errors.name?.join(' و '),
+              })
+            } else if (res?.errors?.name_fa) {
+              form.setError('name_fa', {
+                type: 'custom',
+                message: res?.errors.name_fa?.join(' و '),
               })
             } else if (res?.errors?.images) {
               form.setError('images', {
@@ -324,6 +337,20 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
                 disabled={isPending}
                 control={form.control}
                 name="name"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Sub Category name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                disabled={isPending}
+                control={form.control}
+                name="name_fa"
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel>Sub Category name</FormLabel>

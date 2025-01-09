@@ -12,6 +12,18 @@ export const CategoryFormSchema = z.object({
       message:
         'Only letters, numbers, and spaces are allowed in the category name.',
     }),
+  name_fa: z
+    .string({
+      required_error: 'Category name is required.',
+      invalid_type_error: 'Category name must be a string.',
+    })
+    .min(2, { message: 'Category name must be at least 2 characters long.' })
+    .max(50, { message: 'Category name cannot exceed 50 characters.' })
+    .regex(/^[a-zA-Z0-9\s'&-‌\u0600-\u06FF]+$/, {
+      message:
+        'Only letters, numbers, and spaces are allowed in the category name.',
+    })
+    .optional(),
   //   image: z
   //     .object({
   //       url: z.string(),
@@ -56,6 +68,18 @@ export const CategoryServerFormSchema = z.object({
       message:
         'Only letters, numbers, and spaces are allowed in the category name.',
     }),
+  name_fa: z
+    .string({
+      required_error: 'Category name is required.',
+      invalid_type_error: 'Category name must be a string.',
+    })
+    .min(2, { message: 'Category name must be at least 2 characters long.' })
+    .max(50, { message: 'Category name cannot exceed 50 characters.' })
+    .regex(/^[a-zA-Z0-9\s'&-‌\u0600-\u06FF]+$/, {
+      message:
+        'Only letters, numbers, and spaces are allowed in the category name.',
+    })
+    .optional(),
   //   image: z
   //     .object({
   //       url: z.string(),
@@ -107,12 +131,21 @@ export const SubCategoryFormSchema = z.object({
     })
     .min(2, {
       message: 'Sub Category name must be at least 2 characters long.',
+    }),
+  name_fa: z
+    .string({
+      required_error: 'Sub Category name is required.',
+      invalid_type_error: 'Sub Category name must be a string.',
+    })
+    .min(2, {
+      message: 'Sub Category name must be at least 2 characters long.',
     })
     .max(50, { message: 'Sub Category name cannot exceed 50 characters.' })
     .regex(/^[a-zA-Z0-9\s'&-‌\u0600-\u06FF]+$/, {
       message:
         'Only letters, numbers, and spaces are allowed in the sub category name.',
-    }),
+    })
+    .optional(),
   //   image: z
   //     .object({
   //       url: z.string(),
@@ -160,6 +193,20 @@ export const subCategoryServerFormSchema = z.object({
       message:
         'Only letters, numbers, and spaces are allowed in the sub category name.',
     }),
+  name_fa: z
+    .string({
+      required_error: 'Sub Category name is required.',
+      invalid_type_error: 'Sub Category name must be a string.',
+    })
+    .min(2, {
+      message: 'Sub Category name must be at least 2 characters long.',
+    })
+    .max(50, { message: 'Sub Category name cannot exceed 50 characters.' })
+    .regex(/^[a-zA-Z0-9\s'&-‌\u0600-\u06FF]+$/, {
+      message:
+        'Only letters, numbers, and spaces are allowed in the sub category name.',
+    })
+    .optional(),
   //   image: z
   //     .object({
   //       url: z.string(),
