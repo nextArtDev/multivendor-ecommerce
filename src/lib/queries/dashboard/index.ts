@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { Category, Image } from '@prisma/client'
+import { Category, Image, SubCategory } from '@prisma/client'
 import { cache } from 'react'
 
 export const getAllCategories = cache(
@@ -33,6 +33,47 @@ export const getCategoryById = cache(
     })
 
     return category
+  }
+)
+export const getAllSubCategories = cache(
+  (): Promise<
+    (SubCategory & { category: Category } & { images: Image[] })[] | null
+  > => {
+    const subCategories = prisma.subCategory.findMany({
+      include: {
+        images: true,
+        category: true,
+      },
+
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return subCategories
+  }
+)
+export const getSubCategoryById = cache(
+  (
+    id: string
+  ): Promise<
+    (SubCategory & { category: Category } & { images: Image[] }) | null
+  > => {
+    const subCategory = prisma.subCategory.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        images: true,
+        category: true,
+      },
+
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return subCategory
   }
 )
 
