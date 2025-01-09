@@ -1,6 +1,6 @@
 import { usePathname } from '@/navigation'
 import CategoryDetails from '@/components/dashboard/forms/category-details'
-import { useModal } from '@/providers/modal-provider'
+import { ModalData, useModal } from '@/providers/modal-provider'
 import CustomModal from '@/components/dashboard/custom-modal'
 import { useToast } from '@/hooks/use-toast'
 import { getCategoryById } from '@/lib/queries/dashboard'
@@ -27,8 +27,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Category, Image } from '@prisma/client'
-import { useState } from 'react'
-import { useFormState } from 'react-dom'
+
+import { useActionState } from 'react'
 import { deleteCategory } from '@/lib/actions/dashboard/categories'
 
 interface CellActionsProps {
@@ -40,11 +40,10 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
   // Hooks
   const { setOpen, setClose } = useModal()
   const path = usePathname()
-  const [loading, setLoading] = useState(false)
   const { toast } = useToast()
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, deleteAction] = useFormState(
+  const [_, deleteAction, pending] = useActionState(
     deleteCategory.bind(null, path, rowData.id as string),
     {
       errors: {},
@@ -67,21 +66,28 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
           <DropdownMenuItem
             className="flex gap-2"
             onClick={() => {
-              setOpen(
-                // Custom modal component
-                <CustomModal>
-                  {/* Store details component */}
-                  <CategoryDetails initialData={{ ...rowData }} />
-                </CustomModal>,
-
-                async () => {
-                  return {
-                    rowData: await getCategoryById(rowData.id),
+              try {
+                setOpen(
+                  <CustomModal>
+                    <CategoryDetails initialData={rowData} />
+                  </CustomModal>,
+                  async () => {
+                    const data = await getCategoryById(rowData.id)
+                    return {
+                      rowData: data,
+                    }
                   }
-                }
-              )
+                )
+              } catch (error) {
+                console.error('Error:', error)
+              }
             }}
           >
+            {/* <Link
+              className="flex items-center gap-2"
+              href={`/dashboard/admin/categories/new/${rowData.id}`}
+            >
+            </Link> */}
             <Edit size={15} />
             Edit Details
           </DropdownMenuItem>
@@ -106,23 +112,21 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
         <AlertDialogFooter className="flex items-center">
           <AlertDialogCancel className="mb-2">Cancel</AlertDialogCancel>
           <AlertDialogAction
-            disabled={loading}
+            disabled={pending}
             className="bg-destructive hover:bg-destructive mb-2 text-white"
             onClick={() => {
-              setLoading(true)
-
               toast({
                 title: 'Deleted category',
                 description: 'The category has been deleted.',
               })
-              setLoading(false)
-              //   router.refresh()
+
               setClose()
             }}
           >
             <form action={deleteAction}>
               <input className="hidden" />
               <Button
+                disabled={pending}
                 variant={'ghost'}
                 type="submit"
                 className="hover:bg-transparent active:bg-transparent w-full outline-none"

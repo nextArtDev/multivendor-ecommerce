@@ -1,31 +1,29 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 'use client'
 
-// React, Next.js
 import { createContext, useContext, useEffect, useState } from 'react'
-
-// Prisma models
-import { User } from '@prisma/client'
 
 interface ModalProviderProps {
   children: React.ReactNode
 }
 
 export type ModalData = {
-  user?: User
+  [key: string]: unknown
 }
+
 type ModalContextType = {
   data: ModalData
   isOpen: boolean
-  setOpen: (modal: React.ReactNode, fetchData?: () => Promise<unknown>) => void
+  setOpen: (
+    modal: React.ReactNode,
+    fetchData?: () => Promise<ModalData>
+  ) => void // Changed here
   setClose: () => void
 }
 
 export const ModalContext = createContext<ModalContextType>({
   data: {},
   isOpen: false,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setOpen: (modal: React.ReactNode, fetchData?: () => Promise<unknown>) => {},
+  setOpen: () => {},
   setClose: () => {},
 })
 
@@ -41,16 +39,17 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
 
   const setOpen = async (
     modal: React.ReactNode,
-    fetchData?: () => Promise<unknown>
+    fetchData?: () => Promise<ModalData> // Changed here
   ) => {
-    if (modal) {
+    try {
       if (fetchData) {
         const fetchedData = await fetchData()
-        // @ts-expect-error
-        setData({ ...data, ...fetchedData })
+        setData(fetchedData)
       }
       setShowingModal(modal)
       setIsOpen(true)
+    } catch (error) {
+      console.error('Error opening modal:', error)
     }
   }
 
