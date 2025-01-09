@@ -7,15 +7,16 @@ import { FC, useEffect, useState, useTransition } from 'react'
 import { Category, Image } from '@prisma/client'
 
 // Form handling utilities
-import * as z from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
 
 // Schema
 import { CategoryFormSchema } from '@/lib/schemas/dashboard'
 
 // UI Components
 import { AlertDialog } from '@/components/ui/alert-dialog'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -23,35 +24,31 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/components/ui/form'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 // Queries
 
 // Utils
-import { v4 } from 'uuid'
 
-import { usePathname, useRouter } from '@/navigation'
-import { useToast } from '@/hooks/use-toast'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
-import { cn } from '@/lib/utils'
 import ImageSlider from '@/components/shared/ImageSlider'
-import { upsertCategory } from '@/lib/queries/dashboard'
-import { X } from 'lucide-react'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
 import {
   createCategory,
   editCategory,
 } from '@/lib/actions/dashboard/categories'
+import { cn } from '@/lib/utils'
+import { usePathname } from '@/navigation'
+import { X } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface CategoryDetailsProps {
@@ -63,7 +60,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
 
   // Initializing necessary hooks
 
-  const router = useRouter() // Hook for routing
+  // const router = useRouter() // Hook for routing
   const path = usePathname()
   const [isPending, startTransition] = useTransition()
   // Form hook for managing form state and validation

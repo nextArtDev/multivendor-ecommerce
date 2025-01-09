@@ -29,7 +29,7 @@ import { FilePlus2, Search } from 'lucide-react'
 // Modal provider hook
 
 import Link from 'next/link'
-import CustomModal from '../shared/custom-modal'
+import CustomModal from '../dashboard/custom-modal'
 import { useModal } from '@/providers/modal-provider'
 
 // Props interface for the table component

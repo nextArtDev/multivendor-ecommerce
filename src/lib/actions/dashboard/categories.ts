@@ -11,7 +11,6 @@ import {
   CategoryFormSchema,
   CategoryServerFormSchema,
 } from '@/lib/schemas/dashboard'
-import { toast } from 'sonner'
 
 interface CreateCategoryFormState {
   success?: string
@@ -304,7 +303,7 @@ export async function deleteCategory(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   formData: FormData
 ): Promise<DeleteBillboardFormState> {
-  // console.log({ path, storeId, categoryId })
+  console.log({ path, categoryId })
   const session = await auth()
   if (!session || !session.user || session.user.role !== 'ADMIN') {
     return {

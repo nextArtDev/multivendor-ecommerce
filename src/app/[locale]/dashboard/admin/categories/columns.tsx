@@ -1,44 +1,13 @@
 'use client'
 
 // React, Next.js imports
-import { useState } from 'react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 
-// Custom components
-
-// UI components
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import NextImage from 'next/image'
 
 // Hooks and utilities
 
 // Lucide icons
-import {
-  BadgeCheck,
-  BadgeMinus,
-  Edit,
-  MoreHorizontal,
-  Trash,
-} from 'lucide-react'
+import { BadgeCheck, BadgeMinus } from 'lucide-react'
 
 // Queries
 // import { deleteCategory, getCategory } from '@/queries/category'
@@ -47,21 +16,18 @@ import {
 import { ColumnDef } from '@tanstack/react-table'
 
 // Prisma models
-import { Category } from '@prisma/client'
-import CategoryDetails from '@/components/dashboard/forms/category-details'
-import { useModal } from '@/providers/modal-provider'
-import CustomModal from '@/components/shared/custom-modal'
-import { useToast } from '@/hooks/use-toast'
+import { Category, Image } from '@prisma/client'
+import { CellActions } from './cell-actions'
 
-export const columns: ColumnDef<Category>[] = [
+export const columns: ColumnDef<Category & { images: Image[] }>[] = [
   {
     accessorKey: 'image',
     header: '',
     cell: ({ row }) => {
       return (
         <div className="relative h-44 min-w-64 rounded-xl overflow-hidden">
-          <Image
-            src={row.original.images}
+          <NextImage
+            src={row.original?.images[0]?.url}
             alt=""
             width={1000}
             height={1000}
@@ -116,91 +82,3 @@ export const columns: ColumnDef<Category>[] = [
 ]
 
 // Define props interface for CellActions component
-interface CellActionsProps {
-  rowData: Category
-}
-
-// CellActions component definition
-const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
-  // Hooks
-  const { setOpen, setClose } = useModal()
-  const [loading, setLoading] = useState(false)
-  const { toast } = useToast()
-  const router = useRouter()
-
-  // Return null if rowData or rowData.id don't exist
-  if (!rowData || !rowData.id) return null
-
-  return (
-    <AlertDialog>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            className="flex gap-2"
-            onClick={() => {
-              setOpen(
-                // Custom modal component
-                <CustomModal>
-                  {/* Store details component */}
-                  <CategoryDetails data={{ ...rowData }} />
-                </CustomModal>,
-                async () => {
-                  return {
-                    // rowData: await getCategory(rowData?.id),
-                  }
-                }
-              )
-            }}
-          >
-            <Edit size={15} />
-            Edit Details
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <AlertDialogTrigger asChild>
-            <DropdownMenuItem className="flex gap-2" onClick={() => {}}>
-              <Trash size={15} /> Delete category
-            </DropdownMenuItem>
-          </AlertDialogTrigger>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <AlertDialogContent className="max-w-lg">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="text-left">
-            Are you absolutely sure?
-          </AlertDialogTitle>
-          <AlertDialogDescription className="text-left">
-            This action cannot be undone. This will permanently delete the
-            category and related data.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter className="flex items-center">
-          <AlertDialogCancel className="mb-2">Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            disabled={loading}
-            className="bg-destructive hover:bg-destructive mb-2 text-white"
-            onClick={async () => {
-              setLoading(true)
-              // await deleteCategory(rowData.id)
-              toast({
-                title: 'Deleted category',
-                description: 'The category has been deleted.',
-              })
-              setLoading(false)
-              router.refresh()
-              setClose()
-            }}
-          >
-            Delete
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  )
-}
