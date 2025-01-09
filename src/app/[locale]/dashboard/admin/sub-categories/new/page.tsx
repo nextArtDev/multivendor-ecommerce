@@ -1,4 +1,4 @@
-import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details copy'
+import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details'
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 

@@ -70,6 +70,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
     defaultValues: {
       // Setting default form values from data (if available)
       name: initialData?.name,
+      name_fa: initialData?.name_fa || undefined,
       images: initialData?.images ? [{ url: initialData?.images }] : [],
       url: initialData?.url,
       featured: initialData?.featured,
@@ -93,6 +94,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
     if (initialData) {
       form.reset({
         name: initialData?.name,
+        name_fa: initialData?.name_fa || undefined,
         images: [{ url: initialData?.images }],
         url: initialData?.url,
         featured: initialData?.featured,
@@ -106,6 +108,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
     const formData = new FormData()
 
     formData.append('name', data.name)
+    formData.append('name_fa', data.name_fa || '')
     formData.append('url', data.url)
 
     if (data.featured) {
@@ -141,6 +144,11 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
                   type: 'custom',
                   message: res?.errors.images?.join(' و '),
                 })
+              } else if (res?.errors?.name_fa) {
+                form.setError('name_fa', {
+                  type: 'custom',
+                  message: res?.errors.name_fa?.join(' و '),
+                })
               } else if (res?.errors?._form) {
                 toast.error(res?.errors._form?.join(' و '))
               }
@@ -159,6 +167,11 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
               form.setError('name', {
                 type: 'custom',
                 message: res?.errors.name?.join(' و '),
+              })
+            } else if (res?.errors?.name_fa) {
+              form.setError('name_fa', {
+                type: 'custom',
+                message: res?.errors.name_fa?.join(' و '),
               })
             } else if (res?.errors?.images) {
               form.setError('images', {
@@ -194,45 +207,14 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
     } catch {
       toast.error('مشکلی پیش آمده، لطفا دوباره امتحان کنید!')
     }
-
-    // try {
-    //   // Upserting category data
-    //   const response = await upsertCategory({
-    //     id: data?.id ? data.id : v4(),
-    //     name: values.name,
-    //     images: values.images[0].url,
-    //     url: values.url,
-    //     featured: values.featured,
-    //     createdAt: new Date(),
-    //     updatedAt: new Date(),
-    //   })
-    //   // Displaying success message
-    //   toast({
-    //     title: data?.id
-    //       ? 'Category has been updated.'
-    //       : `Congratulations! '${response?.name}' is now created.`,
-    //   })
-    //   // Redirect or Refresh data
-    //   if (data?.id) {
-    //     router.refresh()
-    //   } else {
-    //     router.push('/dashboard/admin/categories')
-    //   }
-    // } catch (error: unknown) {
-    //   // Handling form submission errors
-    //   toast({
-    //     variant: 'destructive',
-    //     title: 'Oops!',
-    //     description: error?.toString(),
-    //   })
-    // }
   }
 
   const validUrls =
-    // initialData && initialData.images
-    //   ? (initialData.images.map((img) => img.url).filter(Boolean) as string[])
-    //   :
-    files.map((file) => URL.createObjectURL(file)).filter(Boolean) as string[]
+    initialData && initialData.images
+      ? (initialData.images.map((img) => img.url).filter(Boolean) as string[])
+      : (files
+          .map((file) => URL.createObjectURL(file))
+          .filter(Boolean) as string[])
 
   return (
     <AlertDialog>
@@ -333,6 +315,20 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel>Category name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                disabled={isPending}
+                control={form.control}
+                name="name_fa"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>نام فارسی</FormLabel>
                     <FormControl>
                       <Input placeholder="Name" {...field} />
                     </FormControl>

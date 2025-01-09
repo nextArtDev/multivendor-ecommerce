@@ -30,7 +30,7 @@ import { Image, SubCategory } from '@prisma/client'
 
 import { useActionState } from 'react'
 import { deleteSubCategory } from '@/lib/actions/dashboard/subCategories'
-import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details copy'
+import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details'
 
 interface CellActionsProps {
   rowData: SubCategory & { images: Image[] }

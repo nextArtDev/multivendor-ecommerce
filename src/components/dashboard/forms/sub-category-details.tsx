@@ -353,7 +353,7 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
                 name="name_fa"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <FormLabel>Sub Category name</FormLabel>
+                    <FormLabel>نام فارسی زیردسته</FormLabel>
                     <FormControl>
                       <Input placeholder="Name" {...field} />
                     </FormControl>

@@ -16,6 +16,7 @@ interface CreateCategoryFormState {
   success?: string
   errors: {
     name?: string[]
+    name_fa?: string[]
     url?: string[]
     featured?: string[]
     images?: string[]
@@ -30,6 +31,7 @@ export async function createCategory(
 ): Promise<CreateCategoryFormState> {
   const result = CategoryServerFormSchema.safeParse({
     name: formData.get('name'),
+    name_fa: formData.get('name_fa'),
     url: formData.get('url'),
     featured: formData.get('featured'),
     images: formData.getAll('images'),
@@ -55,7 +57,11 @@ export async function createCategory(
   try {
     const isExisting = await prisma.category.findFirst({
       where: {
-        OR: [{ name: result.data.name }, { url: result.data.url }],
+        OR: [
+          { name: result.data.name },
+          { name_fa: result.data?.name_fa },
+          { url: result.data.url },
+        ],
       },
     })
     if (isExisting) {
@@ -80,6 +86,7 @@ export async function createCategory(
     await prisma.category.create({
       data: {
         name: result.data.name,
+        name_fa: result.data?.name_fa,
         url: result.data.url,
         featured,
         images: {
@@ -116,6 +123,7 @@ export async function createCategory(
 interface EditCategoryFormState {
   errors: {
     name?: string[]
+    name_fa?: string[]
     description?: string[]
 
     images?: string[]
@@ -130,6 +138,7 @@ export async function editCategory(
 ): Promise<EditCategoryFormState> {
   const result = CategoryFormSchema.safeParse({
     name: formData.get('name'),
+    name_fa: formData.get('name_fa'),
     url: formData.get('url'),
     images: formData.getAll('images'),
     featured: formData.get('featured'),
@@ -184,7 +193,11 @@ export async function editCategory(
       where: {
         AND: [
           {
-            OR: [{ name: result.data.name }, { url: result.data.url }],
+            OR: [
+              { name: result.data.name },
+              { name_fa: result.data?.name_fa },
+              { url: result.data.url },
+            ],
           },
           {
             NOT: {
@@ -240,6 +253,7 @@ export async function editCategory(
         },
         data: {
           name: result.data.name,
+          name_fa: result.data?.name_fa,
           url: result.data.url,
           featured,
           images: {
@@ -256,6 +270,7 @@ export async function editCategory(
         },
         data: {
           name: result.data.name,
+          name_fa: result.data.name_fa,
           url: result.data.url,
           featured,
         },

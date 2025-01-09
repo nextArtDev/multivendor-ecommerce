@@ -8,7 +8,7 @@ import { columns } from './columns'
 
 import DataTable from '@/components/ui/data-table'
 import { getAllSubCategories } from '@/lib/queries/dashboard'
-import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details copy'
+import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details'
 import { prisma } from '@/lib/prisma'
 
 export default async function AdminCategoriesPage() {
