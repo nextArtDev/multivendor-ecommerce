@@ -11,9 +11,10 @@ import {
   CategoryFormSchema,
   CategoryServerFormSchema,
 } from '@/lib/schemas/dashboard'
+import { toast } from 'sonner'
 
 interface CreateCategoryFormState {
-  //   success?: string
+  success?: string
   errors: {
     name?: string[]
     url?: string[]
@@ -55,7 +56,7 @@ export async function createCategory(
   try {
     const isExisting = await prisma.category.findFirst({
       where: {
-        name: result.data.name,
+        OR: [{ name: result.data.name }, { url: result.data.url }],
       },
     })
     if (isExisting) {
@@ -90,7 +91,7 @@ export async function createCategory(
       },
     })
     return Promise.resolve({
-      errors: {}, // No errors, operation succeeded
+      errors: {},
     })
     // console.log(res?.imageUrl)
     // console.log(category)
@@ -110,7 +111,7 @@ export async function createCategory(
     }
   } finally {
     revalidatePath(path)
-    redirect(`/dashboard/categories`)
+    redirect(`/dashboard/admin/categories`)
   }
 }
 interface EditCategoryFormState {
@@ -162,7 +163,6 @@ export async function editCategory(
   // console.log(result)
 
   try {
-    let category: Category
     const isExisting:
       | (Category & {
           images: { id: string; key: string }[] | null
@@ -182,9 +182,16 @@ export async function editCategory(
     }
     const isNameExisting = await prisma.category.findFirst({
       where: {
-        name: result.data.name,
-
-        NOT: { id: categoryId },
+        AND: [
+          {
+            OR: [{ name: result.data.name }, { url: result.data.url }],
+          },
+          {
+            NOT: {
+              id: categoryId,
+            },
+          },
+        ],
       },
     })
 
@@ -273,7 +280,7 @@ export async function editCategory(
     }
   } finally {
     revalidatePath(path)
-    redirect(`/dashboard/categories`)
+    redirect(`/dashboard/admin/categories`)
   }
 }
 
@@ -292,7 +299,9 @@ interface DeleteBillboardFormState {
 export async function deleteCategory(
   path: string,
   categoryId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   formState: DeleteBillboardFormState,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   formData: FormData
 ): Promise<DeleteBillboardFormState> {
   // console.log({ path, storeId, categoryId })
@@ -361,6 +370,6 @@ export async function deleteCategory(
     }
   } finally {
     revalidatePath(path)
-    redirect(`/dashboard/categories`)
+    redirect(`/dashboard/admin/categories`)
   }
 }

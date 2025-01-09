@@ -157,40 +157,41 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
         })
       } else {
         startTransition(() => {
-          createCategory(formData, path)
-            .then((res) => {
-              if (res?.errors?.name) {
-                form.setError('name', {
-                  type: 'custom',
-                  message: res?.errors.name?.join(' و '),
-                })
-              } else if (res?.errors?.images) {
-                form.setError('images', {
-                  type: 'custom',
-                  message: res?.errors.images?.join(' و '),
-                })
-              } else if (res?.errors?.url) {
-                form.setError('url', {
-                  type: 'custom',
-                  message: res?.errors.url?.join(' و '),
-                })
-              } else if (res?.errors?.featured) {
-                form.setError('featured', {
-                  type: 'custom',
-                  message: res?.errors.featured?.join(' و '),
-                })
-              } else if (res?.errors?._form) {
-                toast.error(res?.errors._form?.join(' و '))
-                form.setError('root', {
-                  type: 'custom',
-                  message: res?.errors?._form?.join(' و '),
-                })
-              }
-              // if (res?.success) {
-              //    toast.success(toastMessage)
-              // }
-            })
-            .catch(() => toast.error('مشکلی پیش آمده.'))
+          createCategory(formData, path).then((res) => {
+            if (res?.errors?.name) {
+              form.setError('name', {
+                type: 'custom',
+                message: res?.errors.name?.join(' و '),
+              })
+            } else if (res?.errors?.images) {
+              form.setError('images', {
+                type: 'custom',
+                message: res?.errors.images?.join(' و '),
+              })
+            } else if (res?.errors?.url) {
+              form.setError('url', {
+                type: 'custom',
+                message: res?.errors.url?.join(' و '),
+              })
+            } else if (res?.errors?.featured) {
+              form.setError('featured', {
+                type: 'custom',
+                message: res?.errors.featured?.join(' و '),
+              })
+            } else if (res?.errors?._form) {
+              toast.error(res?.errors._form?.join(' و '))
+              form.setError('root', {
+                type: 'custom',
+                message: res?.errors?._form?.join(' و '),
+              })
+            }
+            // if (res?.success) {
+            //    toast.success(toastMessage)
+            // }
+          })
+
+          // .catch(() => toast.error('مشکلی پیش آمده.'))
+          //   toast.success('دسته‌بندی ایجاد شد.')
         })
       }
     } catch {

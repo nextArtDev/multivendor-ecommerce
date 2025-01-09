@@ -1,5 +1,5 @@
 import * as z from 'zod'
-
+import { zfd } from 'zod-form-data'
 export const CategoryFormSchema = z.object({
   name: z
     .string({
@@ -62,7 +62,19 @@ export const CategoryServerFormSchema = z.object({
   //     })
   //     .array()
   //     .length(1, 'Choose a category image.'),
-  images: z.any(),
+  // images: zfd
+  //   .file()
+  //   .array()
+  //   .refine((file) => !!file, {
+  //     message: "File can't be bigger than 5MB.",
+  //   })
+  //   .refine(
+  //     (file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type),
+  //     {
+  //       message: 'File format must be either jpg, jpeg lub png.',
+  //     }
+  //   ),
+  images: z.any().array(),
   // .refine((files) => !!files, {
   //   message: 'قسمت عکس نمی‌تواند خالی باشد.',
   // }),
