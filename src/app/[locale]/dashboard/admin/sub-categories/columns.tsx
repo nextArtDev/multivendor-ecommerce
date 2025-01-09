@@ -16,10 +16,12 @@ import { BadgeCheck, BadgeMinus } from 'lucide-react'
 import { ColumnDef } from '@tanstack/react-table'
 
 // Prisma models
-import { Image, SubCategory } from '@prisma/client'
+import { Category, Image, SubCategory } from '@prisma/client'
 import { CellActions } from './cell-actions'
 
-export const columns: ColumnDef<SubCategory & { images: Image[] }>[] = [
+export const columns: ColumnDef<
+  SubCategory & { category: Category } & { images: Image[] }
+>[] = [
   {
     accessorKey: 'image',
     header: '',
@@ -49,6 +51,13 @@ export const columns: ColumnDef<SubCategory & { images: Image[] }>[] = [
     },
   },
 
+  {
+    accessorKey: 'category',
+    header: 'Category',
+    cell: ({ row }) => {
+      return <span> {row.original.category.name}</span>
+    },
+  },
   {
     accessorKey: 'url',
     header: 'URL',
