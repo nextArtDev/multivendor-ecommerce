@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-// import { PhoneInput } from '@/components/ui/phone-input'
+import { PhoneInput } from '@/components/ui/phone-input'
 import InputFileUpload from '@/components/shared/InputFileUpload'
 import {
   Select,
@@ -114,7 +114,7 @@ export default function StoreDetails() {
           )}
         />
 
-        {/* <FormField
+        <FormField
           control={form.control}
           name="phone"
           render={({ field }) => (
@@ -124,14 +124,14 @@ export default function StoreDetails() {
                 <PhoneInput
                   placeholder="09121111111"
                   {...field}
-                  defaultCountry="TR"
+                  defaultCountry="IR"
                 />
               </FormControl>
 
               <FormMessage />
             </FormItem>
           )}
-        /> */}
+        />
         <div className="flex flex-col md:flex-row items-center justify-evenly gap-4">
           <InputFileUpload name="logo" />
           <InputFileUpload name="cover" />

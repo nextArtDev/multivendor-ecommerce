@@ -83,7 +83,7 @@ const InputFileUpload = ({ name }: { name: string }) => {
                     </Button>
                   </div>
                 ) : (
-                  <FileInput className="outline-dashed outline-1 outline-white">
+                  <FileInput className="outline-dashed outline-1 outline-foreground p-5 ">
                     <div className="flex items-center justify-center flex-col pt-3 pb-4 w-full ">
                       <FileSvgDraw />
                     </div>
