@@ -305,18 +305,21 @@ export const StoreFormSchema = z.object({
       invalid_type_error: 'Store phone number must be a string',
     })
     .regex(/^\+?\d+$/, { message: 'Invalid phone number format.' }),
-  // logo: z.object({ url: z.string() }).array().length(1, 'Choose a logo image.'),
   logo: zfd
     .file()
     .refine((file) => file.size < 5000000, {
       message: "File can't be bigger than 5MB.",
     })
     .refine(
-      (file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type),
+      (file) =>
+        ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'].includes(
+          file.type
+        ),
       {
         message: 'File format must be either jpg, jpeg lub png.',
       }
-    ),
+    )
+    .array(),
   // cover: z
   //   .object({ url: z.string() })
   //   .array()
@@ -327,12 +330,35 @@ export const StoreFormSchema = z.object({
       message: "File can't be bigger than 5MB.",
     })
     .refine(
-      (file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type),
+      (file) =>
+        ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'].includes(
+          file.type
+        ),
       {
         message: 'File format must be either jpg, jpeg lub png.',
       }
     )
     .array(),
+  // .custom<File[]>()
+  // .nullable()
+  // .refine((files) => files === null || files.length > 0, {
+  //   message: 'At least one image is required',
+  // })
+  // .refine((files) => files === null || files.length <= 5, {
+  //   message: 'Maximum 5 images allowed',
+  // }),
+  // cover: zfd
+  //   .file()
+  //   .refine((file) => file.size < 5000000, {
+  //     message: "File can't be bigger than 5MB.",
+  //   })
+  //   .refine(
+  //     (file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type),
+  //     {
+  //       message: 'File format must be either jpg, jpeg lub png.',
+  //     }
+  //   )
+  //   .array(),
   url: z
     .string({
       required_error: 'Store url is required',
