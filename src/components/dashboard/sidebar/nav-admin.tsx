@@ -1,7 +1,7 @@
 'use client'
 
 // React, Next.js
-import Link from 'next/link'
+import { Link } from '@/navigation'
 import { usePathname } from 'next/navigation'
 
 // UI Components
@@ -22,7 +22,7 @@ import { icons } from '@/constants/icons'
 
 // Utils
 import { cn } from '@/lib/utils'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 export default function SidebarNavAdmin({
   menuLinks,
@@ -31,6 +31,8 @@ export default function SidebarNavAdmin({
   menuLinks: any[]
 }) {
   const pathname = usePathname()
+  const locale = useLocale()
+
   const t = useTranslations('adminDashboardSidebarOptions')
   return (
     <nav className="relative grow">
@@ -43,11 +45,13 @@ export default function SidebarNavAdmin({
               let icon
               const iconSearch = icons.find((icon) => icon.value === link.icon)
               if (iconSearch) icon = <iconSearch.path />
+
               return (
                 <CommandItem
                   key={index}
                   className={cn('w-full h-12 cursor-pointer mt-1', {
-                    'bg-accent text-accent-foreground': link.link === pathname,
+                    'bg-primary text-secondary  ':
+                      `/${locale}${link.link}` == pathname,
                   })}
                 >
                   <Link

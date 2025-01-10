@@ -1,7 +1,7 @@
 'use client'
 
 // React, Next.js
-import Link from 'next/link'
+
 import { usePathname } from 'next/navigation'
 
 // UI Components
@@ -22,7 +22,8 @@ import { icons } from '@/constants/icons'
 
 // Utils
 import { cn } from '@/lib/utils'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
+import { Link } from '@/navigation'
 
 export default function SidebarNavSeller({
   menuLinks,
@@ -31,6 +32,7 @@ export default function SidebarNavSeller({
   menuLinks: any[]
 }) {
   const pathname = usePathname()
+  const locale = useLocale()
   const storeUrlStart = pathname.split('/stores/')[1]
   const activeStore = storeUrlStart ? storeUrlStart.split('/')[0] : ''
   const t = useTranslations('SellerDashboardSidebarOptions')
@@ -45,14 +47,17 @@ export default function SidebarNavSeller({
               let icon
               const iconSearch = icons.find((icon) => icon.value === link.icon)
               if (iconSearch) icon = <iconSearch.path />
+              // console.log({ pathname })
+              // console.log(`/${locale}/${link.link}`)
+              // console.log(`/seller/stores/${activeStore}/${link.link}`)
               return (
                 <CommandItem
                   key={index}
                   className={cn('w-full h-12 cursor-pointer mt-1', {
                     'bg-accent text-accent-foreground':
-                      link.link === ''
+                      `${locale}/${link.link}` === ''
                         ? pathname === `/dashboard/seller/stores/${activeStore}`
-                        : `/dashboard/seller/stores/${activeStore}/${link.link}` ===
+                        : `/seller/stores/${activeStore}/${link.link}` ===
                           pathname,
                   })}
                 >

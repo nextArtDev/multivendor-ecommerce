@@ -23,18 +23,16 @@ import { currentUser } from '@/lib/auth'
 import Logo from '@/components/shared/logo'
 import { prisma } from '@/lib/prisma'
 import {
-  SidebarProvider,
   Sidebar as ShadSidebar,
   SidebarHeader,
   SidebarContent,
-  SidebarTrigger,
   SidebarFooter,
 } from '@/components/ui/sidebar'
+import { Store } from '@prisma/client'
 
 interface SidebarProps {
   isAdmin?: boolean
-  // stores?: Store[];
-  stores?: any[]
+  stores?: Store[]
 }
 
 const Sidebar: FC<SidebarProps> = async ({ isAdmin, stores }) => {
@@ -50,6 +48,9 @@ const Sidebar: FC<SidebarProps> = async ({ isAdmin, stores }) => {
         <Logo width="100%" height="180px" />
       </SidebarHeader>
       <SidebarContent>
+        <div className="w-full px-2 flex items-center justify-center">
+          {!isAdmin && stores && <StoreSwitcher stores={stores} />}
+        </div>
         {isAdmin ? (
           <SidebarNavAdmin menuLinks={adminDashboardSidebarOptions} />
         ) : (
@@ -59,7 +60,7 @@ const Sidebar: FC<SidebarProps> = async ({ isAdmin, stores }) => {
       <SidebarFooter className="py-0 my-0">
         <span className=" " />
         {user && <UserInfo user={user} />}
-        {!isAdmin && stores && <StoreSwitcher stores={stores} />}
+        {/* {!isAdmin && stores && <StoreSwitcher stores={stores} />} */}
       </SidebarFooter>
     </ShadSidebar>
   )
