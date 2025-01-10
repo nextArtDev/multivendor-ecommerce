@@ -106,7 +106,9 @@ enum StoreStatus {
 model Store {
   id                                  String      @id @default(uuid())
   name                                String
+  name_fa                             String?
   description                         String      @db.Text
+  description_fa                      String?     @db.Text
   email                               String      @unique
   phone                               String
   url                                 String      @unique
