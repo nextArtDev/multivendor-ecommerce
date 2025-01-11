@@ -52,7 +52,7 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
       featured: initialData?.featured,
       email: initialData?.email,
       phone: initialData?.phone,
-      status: initialData?.status,
+      status: initialData?.status.toString(),
       cover: initialData?.cover
         ? initialData.cover.map((cover) => ({ url: cover.url }))
         : [],
@@ -98,27 +98,12 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
       formData.append('featured', 'false')
     }
 
-    // if (data.cover && data.cover.length > 0) {
-    //   for (let i = 0; i < data.cover.length; i++) {
-    //     formData.append('cover', data.cover[i])
-    //   }
-    // }
-    // if (data.logo && data.logo.length > 0) {
-    //   for (let i = 0; i < data.logo.length; i++) {
-    //     formData.append('logo', data.logo[i])
-    //   }
-    // }
     data.logo?.forEach((item) => {
       if (item instanceof File) {
         formData.append('logo', item)
       }
     })
 
-    // data.cover?.forEach((item, index) => {
-    //   if (item instanceof File) {
-    //     formData.append(`cover[${index}]`, item)
-    //   }
-    // })
     if (data.cover && data.cover.length > 0) {
       for (let i = 0; i < data.cover.length; i++) {
         formData.append('cover', data.cover[i] as string | Blob)
@@ -375,12 +360,19 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
               />
               <div className="flex flex-col md:flex-row items-center justify-evenly gap-4">
                 <InputFileUpload
+                  initialDataImages={
+                    initialData?.logo ? [initialData.logo] : null
+                  }
                   name="logo"
                   label="Logo"
                   multiple={false}
                   className=""
                 />
-                <InputFileUpload name="cover" label="Cover" />
+                <InputFileUpload
+                  initialDataImages={initialData?.cover || []}
+                  name="cover"
+                  label="Cover"
+                />
               </div>
               <div className="flex flex-col md:flex-row items-center justify-evenly gap-4">
                 <FormField
@@ -436,39 +428,6 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
                     </FormItem>
                   )}
                 />
-
-                {/* <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Status</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="m@example.com">
-                            m@example.com
-                          </SelectItem>
-                          <SelectItem value="m@google.com">
-                            m@google.com
-                          </SelectItem>
-                          <SelectItem value="m@support.com">
-                            m@support.com
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
               </div>
               <Button type="submit" disabled={isPending}>
                 {isPending

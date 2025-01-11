@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { FC, useEffect, useState, useTransition } from 'react'
+import { FC, useEffect, useTransition } from 'react'
 
 // Prisma model
 import { Category, Image } from '@prisma/client'
@@ -16,7 +16,7 @@ import { CategoryFormSchema } from '@/lib/schemas/dashboard'
 
 // UI Components
 import { AlertDialog } from '@/components/ui/alert-dialog'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -36,28 +36,20 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-// Queries
-
-// Utils
-
-import ImageSlider from '@/components/shared/ImageSlider'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
 import {
   createCategory,
   editCategory,
 } from '@/lib/actions/dashboard/categories'
-import { cn } from '@/lib/utils'
+
 import { usePathname } from '@/navigation'
-import { X } from 'lucide-react'
 import { toast } from 'sonner'
+import InputFileUpload from '@/components/shared/InputFileUpload'
 
 interface CategoryDetailsProps {
   initialData?: Category & { images: Image[] }
 }
 
 const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
-  const [files, setFiles] = useState<File[]>([])
-
   // Initializing necessary hooks
 
   // const router = useRouter() // Hook for routing
@@ -71,7 +63,9 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
       // Setting default form values from data (if available)
       name: initialData?.name,
       name_fa: initialData?.name_fa || undefined,
-      images: initialData?.images ? [{ url: initialData?.images }] : [],
+      images: initialData?.images
+        ? initialData.images.map((image) => ({ url: image.url }))
+        : [],
       url: initialData?.url,
       featured: initialData?.featured,
     },
@@ -95,7 +89,9 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
       form.reset({
         name: initialData?.name,
         name_fa: initialData?.name_fa || undefined,
-        images: [{ url: initialData?.images }],
+        images: initialData?.images
+          ? initialData.images.map((image) => ({ url: image.url }))
+          : [],
         url: initialData?.url,
         featured: initialData?.featured,
       })
@@ -117,9 +113,14 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
       formData.append('featured', 'false')
     }
 
+    // if (data.images && data.images.length > 0) {
+    //   for (let i = 0; i < data.images.length; i++) {
+    //     formData.append('images', data.images[i])
+    //   }
+    // }
     if (data.images && data.images.length > 0) {
       for (let i = 0; i < data.images.length; i++) {
-        formData.append('images', data.images[i])
+        formData.append('cover', data.images[i] as string | Blob)
       }
     }
     try {
@@ -209,13 +210,6 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
     }
   }
 
-  const validUrls =
-    initialData && initialData.images
-      ? (initialData.images.map((img) => img.url).filter(Boolean) as string[])
-      : (files
-          .map((file) => URL.createObjectURL(file))
-          .filter(Boolean) as string[])
-
   return (
     <AlertDialog>
       <Card className="w-full">
@@ -233,81 +227,11 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-4"
             >
-              <div className="col-span-2 lg:col-span-4 max-w-md ">
-                {files.length > 0 ? (
-                  <div className="relative overflow-hidden h-60  w-60 rounded-md">
-                    <AspectRatio ratio={1 / 1} className="relative ">
-                      <ImageSlider urls={validUrls} />
-                    </AspectRatio>
-                    <Button
-                      size={'icon'}
-                      onClick={() => {
-                        setFiles([])
-                        form.setValue('images', [])
-                      }}
-                      className="absolute top-2 left-2 z-20"
-                    >
-                      <X className="text-red-500" />
-                    </Button>
-                  </div>
-                ) : (
-                  <FormField
-                    control={form.control}
-                    name="images"
-                    render={({ field: { onChange }, ...field }) => (
-                      <FormItem>
-                        <FormLabel className="mx-auto cursor-pointer bg-transparent rounded-xl flex flex-col justify-center gap-4 items-center border-2 border-black/20 dark:border-white/20 border-dashed w-full h-24 shadow  ">
-                          {/* <FileUp size={42} className=" " /> */}
-                          <span
-                            className={cn(buttonVariants({ variant: 'ghost' }))}
-                          >
-                            Upload Images
-                          </span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            multiple={true}
-                            disabled={form.formState.isSubmitting}
-                            {...field}
-                            onChange={async (event) => {
-                              // Triggered when user uploaded a new file
-                              // FileList is immutable, so we need to create a new one
-                              const dataTransfer = new DataTransfer()
-
-                              // Add old images
-                              if (files) {
-                                Array.from(files).forEach((image) =>
-                                  dataTransfer.items.add(image)
-                                )
-                              }
-
-                              // Add newly uploaded images
-                              Array.from(event.target.files!).forEach((image) =>
-                                dataTransfer.items.add(image)
-                              )
-
-                              // Validate and update uploaded file
-                              const newFiles = dataTransfer.files
-
-                              setFiles(Array.from(newFiles))
-
-                              onChange(newFiles)
-                            }}
-                          />
-                        </FormControl>
-
-                        {/* <FormMessage className="dark:text-rose-400" /> */}
-                        <FormMessage>
-                          {form.getFieldState('images')?.error?.message}
-                        </FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                )}
-              </div>
+              <InputFileUpload
+                initialDataImages={initialData?.images || []}
+                name="images"
+                label="Images"
+              />
               <FormField
                 disabled={isPending}
                 control={form.control}

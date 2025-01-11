@@ -53,24 +53,7 @@ export const CategoryFormSchema = z.object({
         'Only letters, numbers, and spaces are allowed in the category name.',
     })
     .optional(),
-  //   image: z
-  //     .object({
-  //       url: z.string(),
-  //     })
-  //     .array()
-  //     .length(1, 'Choose a category image.'),
-  images: z.any(),
-  // .refine((files) => !!files, {
-  //   message: 'قسمت عکس نمی‌تواند خالی باشد.',
-  // }),
-  // .refine((files) => {
-  //   return files?.size <= MAX_FILE_SIZE
-  // }, `حجم عکس از 5 مگابایت بیشتر است!`)
-  // .refine(
-  //   (files) => ACCEPTED_IMAGE_TYPES.includes(files?.type),
-  //   // 'Only .jpg, .jpeg, .png and .webp formats are supported.'
-  //   'تنها فرمتهای قابل پشتیبانی .jpg .jpeg .png و webp هستند.'
-  // ),
+  images: z.array(imageSchema).optional(),
   url: z
     .string({
       required_error: 'Category url is required',
@@ -109,36 +92,9 @@ export const CategoryServerFormSchema = z.object({
         'Only letters, numbers, and spaces are allowed in the category name.',
     })
     .optional(),
-  //   image: z
-  //     .object({
-  //       url: z.string(),
-  //     })
-  //     .array()
-  //     .length(1, 'Choose a category image.'),
-  // images: zfd
-  //   .file()
-  //   .array()
-  //   .refine((file) => !!file, {
-  //     message: "File can't be bigger than 5MB.",
-  //   })
-  //   .refine(
-  //     (file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type),
-  //     {
-  //       message: 'File format must be either jpg, jpeg lub png.',
-  //     }
-  //   ),
-  images: z.any().array(),
-  // .refine((files) => !!files, {
-  //   message: 'قسمت عکس نمی‌تواند خالی باشد.',
-  // }),
-  // .refine((files) => {
-  //   return files?.size <= MAX_FILE_SIZE
-  // }, `حجم عکس از 5 مگابایت بیشتر است!`)
-  // .refine(
-  //   (files) => ACCEPTED_IMAGE_TYPES.includes(files?.type),
-  //   // 'Only .jpg, .jpeg, .png and .webp formats are supported.'
-  //   'تنها فرمتهای قابل پشتیبانی .jpg .jpeg .png و webp هستند.'
-  // ),
+
+  images: z.array(imageSchema).optional(),
+
   url: z
     .string({
       required_error: 'Category url is required',
@@ -175,24 +131,9 @@ export const SubCategoryFormSchema = z.object({
         'Only letters, numbers, and spaces are allowed in the sub category name.',
     })
     .optional(),
-  //   image: z
-  //     .object({
-  //       url: z.string(),
-  //     })
-  //     .array()
-  //     .length(1, 'Choose a sub category image.'),
-  images: z.any(),
-  // .refine((files) => !!files, {
-  //   message: 'قسمت عکس نمی‌تواند خالی باشد.',
-  // }),
-  // .refine((files) => {
-  //   return files?.size <= MAX_FILE_SIZE
-  // }, `حجم عکس از 5 مگابایت بیشتر است!`)
-  // .refine(
-  //   (files) => ACCEPTED_IMAGE_TYPES.includes(files?.type),
-  //   // 'Only .jpg, .jpeg, .png and .webp formats are supported.'
-  //   'تنها فرمتهای قابل پشتیبانی .jpg .jpeg .png و webp هستند.'
-  // ),
+
+  images: z.array(imageSchema).optional(),
+
   url: z
     .string({
       required_error: 'Sub Category url is required',
@@ -236,36 +177,9 @@ export const subCategoryServerFormSchema = z.object({
         'Only letters, numbers, and spaces are allowed in the sub category name.',
     })
     .optional(),
-  //   image: z
-  //     .object({
-  //       url: z.string(),
-  //     })
-  //     .array()
-  //     .length(1, 'Choose a sub category image.'),
-  // images: zfd
-  //   .file()
-  //   .array()
-  //   .refine((file) => !!file, {
-  //     message: "File can't be bigger than 5MB.",
-  //   })
-  //   .refine(
-  //     (file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type),
-  //     {
-  //       message: 'File format must be either jpg, jpeg lub png.',
-  //     }
-  //   ),
-  images: z.any().array(),
-  // .refine((files) => !!files, {
-  //   message: 'قسمت عکس نمی‌تواند خالی باشد.',
-  // }),
-  // .refine((files) => {
-  //   return files?.size <= MAX_FILE_SIZE
-  // }, `حجم عکس از 5 مگابایت بیشتر است!`)
-  // .refine(
-  //   (files) => ACCEPTED_IMAGE_TYPES.includes(files?.type),
-  //   // 'Only .jpg, .jpeg, .png and .webp formats are supported.'
-  //   'تنها فرمتهای قابل پشتیبانی .jpg .jpeg .png و webp هستند.'
-  // ),
+
+  images: z.array(imageSchema).optional(),
+
   url: z
     .string({
       required_error: 'Sub Category url is required',
@@ -335,31 +249,9 @@ export const StoreFormSchema = z.object({
     })
     .regex(/^\+?\d+$/, { message: 'Invalid phone number format.' }),
   logo: z.array(imageSchema).optional(),
-  // cover: z
-  //   .object({ url: z.string() })
-  //   .array()
-  //   .length(1, 'Choose a cover image.'),
+
   cover: z.array(imageSchema).optional(),
-  // .custom<File[]>()
-  // .nullable()
-  // .refine((files) => files === null || files.length > 0, {
-  //   message: 'At least one image is required',
-  // })
-  // .refine((files) => files === null || files.length <= 5, {
-  //   message: 'Maximum 5 images allowed',
-  // }),
-  // cover: zfd
-  //   .file()
-  //   .refine((file) => file.size < 5000000, {
-  //     message: "File can't be bigger than 5MB.",
-  //   })
-  //   .refine(
-  //     (file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type),
-  //     {
-  //       message: 'File format must be either jpg, jpeg lub png.',
-  //     }
-  //   )
-  //   .array(),
+
   url: z
     .string({
       required_error: 'Store url is required',

@@ -14,17 +14,20 @@ import { useFormContext } from 'react-hook-form'
 import { FileInput, FileUploader } from '../ui/file-upload'
 import ImageSlider from './ImageSlider'
 import { cn } from '@/lib/utils'
+import { Image } from '@prisma/client'
 
 const InputFileUpload = ({
   name,
   label = name,
   className,
   multiple = true,
+  initialDataImages,
 }: {
   name: string
   label?: string
   className?: string
   multiple?: boolean
+  initialDataImages?: Partial<Image>[] | null
 }) => {
   const form = useFormContext()
   const [files, setFiles] = useState<File[] | null>(null)
@@ -35,12 +38,12 @@ const InputFileUpload = ({
     multiple: multiple,
   }
 
-  const urls = files
-    ?.map((file: Blob | MediaSource) => URL.createObjectURL(file))
-    .filter(Boolean) as string[]
-  //   console.log(form.getValues(name))
-  // console.log(urls)
-  //   console.log({ files })
+  const urls = initialDataImages
+    ? (initialDataImages.map((img) => img.url).filter(Boolean) as string[])
+    : (files
+        ?.map((file: Blob | MediaSource) => URL.createObjectURL(file))
+        .filter(Boolean) as string[])
+
   return (
     <FormField
       control={form.control}
