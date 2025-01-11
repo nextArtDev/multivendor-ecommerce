@@ -17,13 +17,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { PhoneInput } from '@/components/ui/phone-input'
 import InputFileUpload from '@/components/shared/InputFileUpload'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+
 import { Switch } from '@/components/ui/switch'
 import { StoreFormSchema } from '@/lib/schemas/dashboard'
 import { usePathname } from '@/navigation'
@@ -37,6 +31,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { createStore, editStore } from '@/lib/actions/dashboard/store'
 
 interface StoreDetailProps {
   initialData?: Store & { logo: Image | null } & { cover: Image[] | null }
@@ -59,25 +54,12 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
       phone: initialData?.phone,
       status: initialData?.status,
       cover: initialData?.cover
-        ? [{ url: initialData?.cover.map((cover) => cover) }]
+        ? initialData.cover.map((cover) => ({ url: cover.url }))
         : [],
-      logo: initialData?.logo ? { url: initialData?.logo } : [],
+      logo: initialData?.logo ? [{ url: initialData.logo.url }] : [],
     },
   })
 
-  function onSubmit(values: z.infer<typeof StoreFormSchema>) {
-    try {
-      console.log(values)
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      )
-    } catch (error) {
-      console.error('Form submission error', error)
-      toast.error('Failed to submit the form. Please try again.')
-    }
-  }
   useEffect(() => {
     if (initialData) {
       form.reset({
@@ -89,9 +71,9 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
         phone: initialData?.phone,
         status: initialData?.status,
         cover: initialData?.cover
-          ? [{ url: initialData?.cover.map((cover) => cover) }]
+          ? initialData.cover.map((cover) => ({ url: cover.url }))
           : [],
-        logo: initialData?.logo ? { url: initialData?.logo } : [],
+        logo: initialData?.logo ? [{ url: initialData.logo.url }] : [],
         url: initialData?.url,
         featured: initialData?.featured,
       })
@@ -116,14 +98,30 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
       formData.append('featured', 'false')
     }
 
+    // if (data.cover && data.cover.length > 0) {
+    //   for (let i = 0; i < data.cover.length; i++) {
+    //     formData.append('cover', data.cover[i])
+    //   }
+    // }
+    // if (data.logo && data.logo.length > 0) {
+    //   for (let i = 0; i < data.logo.length; i++) {
+    //     formData.append('logo', data.logo[i])
+    //   }
+    // }
+    data.logo?.forEach((item) => {
+      if (item instanceof File) {
+        formData.append('logo', item)
+      }
+    })
+
+    // data.cover?.forEach((item, index) => {
+    //   if (item instanceof File) {
+    //     formData.append(`cover[${index}]`, item)
+    //   }
+    // })
     if (data.cover && data.cover.length > 0) {
       for (let i = 0; i < data.cover.length; i++) {
-        formData.append('cover', data.cover[i])
-      }
-    }
-    if (data.logo && data.logo.length > 0) {
-      for (let i = 0; i < data.logo.length; i++) {
-        formData.append('logo', data.logo[i])
+        formData.append('cover', data.cover[i] as string | Blob)
       }
     }
     try {
@@ -131,7 +129,7 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
         // console.log({ data, initialData })
 
         startTransition(() => {
-          editCategory(
+          editStore(
             formData,
 
             initialData.id as string,
@@ -167,16 +165,6 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
                 form.setError('phone', {
                   type: 'custom',
                   message: res?.errors.phone?.join(' و '),
-                })
-              } else if (res?.errors?.name) {
-                form.setError('name', {
-                  type: 'custom',
-                  message: res?.errors.name?.join(' و '),
-                })
-              } else if (res?.errors?.name) {
-                form.setError('name', {
-                  type: 'custom',
-                  message: res?.errors.name?.join(' و '),
                 })
               } else if (res?.errors?.url) {
                 form.setError('url', {
@@ -216,7 +204,7 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
         })
       } else {
         startTransition(() => {
-          createCategory(formData, path).then((res) => {
+          createStore(formData, path).then((res) => {
             if (res?.errors?.name) {
               form.setError('name', {
                 type: 'custom',
@@ -246,16 +234,6 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
               form.setError('phone', {
                 type: 'custom',
                 message: res?.errors.phone?.join(' و '),
-              })
-            } else if (res?.errors?.name) {
-              form.setError('name', {
-                type: 'custom',
-                message: res?.errors.name?.join(' و '),
-              })
-            } else if (res?.errors?.name) {
-              form.setError('name', {
-                type: 'custom',
-                message: res?.errors.name?.join(' و '),
               })
             } else if (res?.errors?.url) {
               form.setError('url', {
@@ -305,8 +283,8 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
           <CardTitle>Store Information</CardTitle>
           <CardDescription>
             {initialData?.id
-              ? `Update ${initialData?.name} category information.`
-              : ' Lets create a category. You can edit category later from the categories table or the category page.'}
+              ? `Update ${initialData?.name} store information.`
+              : ' Lets create a store. You can edit store later from the Stores table or the store page.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -396,8 +374,13 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
                 )}
               />
               <div className="flex flex-col md:flex-row items-center justify-evenly gap-4">
-                <InputFileUpload name="logo" />
-                <InputFileUpload name="cover" />
+                <InputFileUpload
+                  name="logo"
+                  label="Logo"
+                  multiple={false}
+                  className=""
+                />
+                <InputFileUpload name="cover" label="Cover" />
               </div>
               <div className="flex flex-col md:flex-row items-center justify-evenly gap-4">
                 <FormField

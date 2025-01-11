@@ -104,16 +104,16 @@ enum StoreStatus {
 }
 
 model Store {
-  id                                  String      @id @default(uuid())
-  name                                String
-  name_fa                             String?
-  description                         String      @db.Text
-  description_fa                      String?     @db.Text
-  email                               String      @unique
-  phone                               String
-  url                                 String      @unique
-  logo                                Image?      @relation("storeLogo")
-  imageId                             String
+  id             String  @id @default(uuid())
+  name           String
+  name_fa        String?
+  description    String  @db.Text
+  description_fa String? @db.Text
+  email          String  @unique
+  phone          String
+  url            String  @unique
+  logo           Image?  @relation("storeLogo")
+
   cover                               Image[]
   status                              StoreStatus @default(PENDING)
   averageRating                       Float       @default(0)
@@ -141,5 +141,4 @@ model Store {
   //   orderGroups   OrderGroup[]   @relation("OrderGroupToStore")
   //   coupons Coupon[] @relation("CouponToStore")
   @@index([userId])
-  @@index([imageId])
 }
