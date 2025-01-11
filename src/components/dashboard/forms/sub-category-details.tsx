@@ -139,48 +139,55 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
       if (initialData) {
         // console.log({ data, initialData })
 
-        startTransition(() => {
-          editSubCategory(
-            formData,
+        startTransition(async () => {
+          try {
+            const res = await editSubCategory(
+              formData,
 
-            initialData.id as string,
-            path
-          )
-            .then((res) => {
-              if (res?.errors?.name) {
-                form.setError('name', {
-                  type: 'custom',
-                  message: res?.errors.name?.join(' و '),
-                })
-              } else if (res?.errors?.images) {
-                form.setError('images', {
-                  type: 'custom',
-                  message: res?.errors.images?.join(' و '),
-                })
-              } else if (res?.errors?.name_fa) {
-                form.setError('name_fa', {
-                  type: 'custom',
-                  message: res?.errors.name_fa?.join(' و '),
-                })
-              } else if (res?.errors?.categoryId) {
-                form.setError('categoryId', {
-                  type: 'custom',
-                  message: res?.errors.categoryId?.join(' و '),
-                })
-              } else if (res?.errors?._form) {
-                toast.error(res?.errors._form?.join(' و '))
-              }
-              // if (res?.success) {
-              //    toast.success(toastMessage)
-              // }
-            })
-            // TODO: fixing Through Error when its ok
-            // .catch(() => toast.error('مشکلی پیش آمده.'))
-            .catch(() => console.log('مشکلی پیش آمده.'))
+              initialData.id as string,
+              path
+            )
+
+            if (res?.errors?.name) {
+              form.setError('name', {
+                type: 'custom',
+                message: res?.errors.name?.join(' و '),
+              })
+            } else if (res?.errors?.images) {
+              form.setError('images', {
+                type: 'custom',
+                message: res?.errors.images?.join(' و '),
+              })
+            } else if (res?.errors?.name_fa) {
+              form.setError('name_fa', {
+                type: 'custom',
+                message: res?.errors.name_fa?.join(' و '),
+              })
+            } else if (res?.errors?.categoryId) {
+              form.setError('categoryId', {
+                type: 'custom',
+                message: res?.errors.categoryId?.join(' و '),
+              })
+            } else if (res?.errors?._form) {
+              toast.error(res?.errors._form?.join(' و '))
+            }
+          } catch (error) {
+            // This will catch the NEXT_REDIRECT error, which is expected
+            // when the redirect happens
+            if (
+              !(
+                error instanceof Error &&
+                error.message.includes('NEXT_REDIRECT')
+              )
+            ) {
+              toast.error('مشکلی پیش آمده.')
+            }
+          }
         })
       } else {
-        startTransition(() => {
-          createSubCategory(formData, path).then((res) => {
+        startTransition(async () => {
+          try {
+            const res = await createSubCategory(formData, path)
             if (res?.errors?.name) {
               form.setError('name', {
                 type: 'custom',
@@ -213,18 +220,18 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
               })
             } else if (res?.errors?._form) {
               toast.error(res?.errors._form?.join(' و '))
-              form.setError('root', {
-                type: 'custom',
-                message: res?.errors?._form?.join(' و '),
-              })
             }
-            // if (res?.success) {
-            //    toast.success(toastMessage)
-            // }
-          })
-
-          // .catch(() => toast.error('مشکلی پیش آمده.'))
-          //   toast.success('دسته‌بندی ایجاد شد.')
+          } catch (error) {
+            // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
+            if (
+              !(
+                error instanceof Error &&
+                error.message.includes('NEXT_REDIRECT')
+              )
+            ) {
+              toast.error('مشکلی پیش آمده.')
+            }
+          }
         })
       }
     } catch {
