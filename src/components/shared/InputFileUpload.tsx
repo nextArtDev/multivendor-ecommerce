@@ -31,6 +31,7 @@ const InputFileUpload = ({
 }) => {
   const form = useFormContext()
   const [files, setFiles] = useState<File[] | null>(null)
+  const [initials, setClearInitials] = useState(true)
 
   const dropZoneConfig = {
     maxFiles: 5,
@@ -38,11 +39,13 @@ const InputFileUpload = ({
     multiple: multiple,
   }
 
-  const urls = initialDataImages
-    ? (initialDataImages.map((img) => img.url).filter(Boolean) as string[])
-    : (files
-        ?.map((file: Blob | MediaSource) => URL.createObjectURL(file))
-        .filter(Boolean) as string[])
+  const initialUrls =
+    initialDataImages &&
+    (initialDataImages.map((img) => img.url).filter(Boolean) as string[])
+
+  const urls = files
+    ?.map((file: Blob | MediaSource) => URL.createObjectURL(file))
+    .filter(Boolean) as string[]
 
   return (
     <FormField
@@ -83,7 +86,24 @@ const InputFileUpload = ({
                 dropzoneOptions={dropZoneConfig}
                 className="relative bg-background rounded-lg p-2"
               >
-                {files && files.length > 0 ? (
+                {/* {files && files.length > 0 ? ( */}
+                {initialUrls && !!initials ? (
+                  <div className={cn('relative w-60 h-60 ', className)}>
+                    <ImageSlider urls={initialUrls} />
+                    <Button
+                      size="icon"
+                      onClick={() => {
+                        setFiles(null)
+                        form.setValue(name, null)
+                        setClearInitials(false)
+                      }}
+                      className="absolute top-2 left-2 z-20"
+                      type="button"
+                    >
+                      <X className="text-red-500" />
+                    </Button>
+                  </div>
+                ) : files && files.length > 0 ? (
                   <div className={cn('relative w-60 h-60 ', className)}>
                     <ImageSlider urls={urls} />
                     <Button
@@ -91,6 +111,7 @@ const InputFileUpload = ({
                       onClick={() => {
                         setFiles(null)
                         form.setValue(name, null)
+                        setClearInitials(false)
                       }}
                       className="absolute top-2 left-2 z-20"
                       type="button"

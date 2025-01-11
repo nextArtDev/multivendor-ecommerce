@@ -39,6 +39,8 @@ interface StoreDetailProps {
 }
 
 const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
+  // console.log(initialData.cover.flatMap((cover) => cover.url))
+  // console.log(initialData.logo.url)
   const path = usePathname()
   const [isPending, startTransition] = useTransition()
 
@@ -295,7 +297,7 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
                     label="Cover"
                   />
                 </div>
-                <div className="col-span-1 mt-[80%] -ml-24 ">
+                <div className="col-span-1 mt-[80%] -ml-24 z-10">
                   <InputFileUpload
                     initialDataImages={
                       initialData?.logo ? [initialData.logo] : null
@@ -303,7 +305,7 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
                     name="logo"
                     label="Logo"
                     multiple={false}
-                    className="w-24 h-24 "
+                    className="w-24 h-24"
                   />
                 </div>
               </div>
