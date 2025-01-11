@@ -3,7 +3,7 @@
 import { auth } from '@/auth'
 import { Category } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { redirect } from '@/navigation'
+import { redirect } from 'next/navigation'
 import { prisma } from '../../prisma'
 
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
@@ -11,6 +11,7 @@ import {
   CategoryFormSchema,
   CategoryServerFormSchema,
 } from '@/lib/schemas/dashboard'
+import { headers } from 'next/headers'
 
 interface CreateCategoryFormState {
   success?: string
@@ -28,6 +29,9 @@ export async function createCategory(
   formData: FormData,
   path: string
 ): Promise<CreateCategoryFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
+
   const result = CategoryServerFormSchema.safeParse({
     name: formData.get('name'),
     name_fa: formData.get('name_fa'),
@@ -75,11 +79,13 @@ export async function createCategory(
     const featured = result.data.featured === 'true' ? true : false
     const imageIds: string[] = []
     for (const img of result.data?.images || []) {
-      const buffer = Buffer.from(await img.arrayBuffer())
-      const res = await uploadFileToS3(buffer, img.name)
+      if (img instanceof File) {
+        const buffer = Buffer.from(await img.arrayBuffer())
+        const res = await uploadFileToS3(buffer, img.name)
 
-      if (res?.imageId && typeof res.imageId === 'string') {
-        imageIds.push(res.imageId)
+        if (res?.imageId && typeof res.imageId === 'string') {
+          imageIds.push(res.imageId)
+        }
       }
     }
     await prisma.category.create({
@@ -95,9 +101,6 @@ export async function createCategory(
         },
       },
     })
-    return Promise.resolve({
-      errors: {},
-    })
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -112,10 +115,9 @@ export async function createCategory(
         },
       }
     }
-  } finally {
-    revalidatePath(path)
-    redirect(`/dashboard/admin/categories`)
   }
+  revalidatePath(path)
+  redirect(`/${locale}/dashboard/admin/categories`)
 }
 interface EditCategoryFormState {
   errors: {
@@ -133,6 +135,8 @@ export async function editCategory(
   categoryId: string,
   path: string
 ): Promise<EditCategoryFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
   const result = CategoryFormSchema.safeParse({
     name: formData.get('name'),
     name_fa: formData.get('name_fa'),
@@ -216,16 +220,18 @@ export async function editCategory(
     // console.log(isExisting)
     // console.log(billboard)
     if (
-      typeof result.data.images[0] === 'object' &&
+      typeof result.data?.images?.[0] === 'object' &&
       result.data.images[0] instanceof File
     ) {
       const imageIds: string[] = []
       for (const img of result.data.images) {
-        const buffer = Buffer.from(await img.arrayBuffer())
-        const res = await uploadFileToS3(buffer, img.name)
+        if (img instanceof File) {
+          const buffer = Buffer.from(await img.arrayBuffer())
+          const res = await uploadFileToS3(buffer, img.name)
 
-        if (res?.imageId && typeof res.imageId === 'string') {
-          imageIds.push(res.imageId)
+          if (res?.imageId && typeof res.imageId === 'string') {
+            imageIds.push(res.imageId)
+          }
         }
       }
       // console.log(res)
@@ -273,11 +279,6 @@ export async function editCategory(
         },
       })
     }
-    // imageId: res?.imageId,
-    // console.log(billboard)
-    return Promise.resolve({
-      errors: {}, // No errors, operation succeeded
-    })
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -292,10 +293,9 @@ export async function editCategory(
         },
       }
     }
-  } finally {
-    revalidatePath(path)
-    redirect(`/dashboard/admin/categories`)
   }
+  revalidatePath(path)
+  redirect(`/${locale}/dashboard/admin/categories`)
 }
 
 //////////////////////
@@ -319,6 +319,8 @@ export async function deleteCategory(
   formData: FormData
 ): Promise<DeleteBillboardFormState> {
   // console.log({ path, categoryId })
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
   const session = await auth()
   if (!session || !session.user || session.user.role !== 'ADMIN') {
     return {
@@ -365,9 +367,6 @@ export async function deleteCategory(
         id: categoryId,
       },
     })
-    return Promise.resolve({
-      errors: {}, // No errors, operation succeeded
-    })
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -382,8 +381,7 @@ export async function deleteCategory(
         },
       }
     }
-  } finally {
-    revalidatePath(path)
-    redirect(`/dashboard/admin/categories`)
   }
+  revalidatePath(path)
+  redirect(`/${locale}/dashboard/admin/categories`)
 }

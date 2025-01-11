@@ -3,7 +3,7 @@
 import { auth } from '@/auth'
 import { SubCategory } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { redirect } from '@/navigation'
+import { redirect } from 'next/navigation'
 import { prisma } from '../../prisma'
 
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
@@ -11,6 +11,7 @@ import {
   SubCategoryFormSchema,
   subCategoryServerFormSchema,
 } from '@/lib/schemas/dashboard'
+import { headers } from 'next/headers'
 
 interface CreateSubCategoryFormState {
   success?: string
@@ -29,6 +30,8 @@ export async function createSubCategory(
   formData: FormData,
   path: string
 ): Promise<CreateSubCategoryFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
   const result = subCategoryServerFormSchema.safeParse({
     name: formData.get('name'),
     name_fa: formData.get('name_fa'),
@@ -98,11 +101,13 @@ export async function createSubCategory(
     const featured = result.data.featured === 'true' ? true : false
     const imageIds: string[] = []
     for (const img of result.data?.images || []) {
-      const buffer = Buffer.from(await img.arrayBuffer())
-      const res = await uploadFileToS3(buffer, img.name)
+      if (img instanceof File) {
+        const buffer = Buffer.from(await img.arrayBuffer())
+        const res = await uploadFileToS3(buffer, img.name)
 
-      if (res?.imageId && typeof res.imageId === 'string') {
-        imageIds.push(res.imageId)
+        if (res?.imageId && typeof res.imageId === 'string') {
+          imageIds.push(res.imageId)
+        }
       }
     }
     await prisma.subCategory.create({
@@ -119,11 +124,6 @@ export async function createSubCategory(
         },
       },
     })
-    return Promise.resolve({
-      errors: {},
-    })
-    // console.log(res?.imageUrl)
-    // console.log(category)
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -138,10 +138,9 @@ export async function createSubCategory(
         },
       }
     }
-  } finally {
-    revalidatePath(path)
-    redirect(`/dashboard/admin/sub-categories`)
   }
+  revalidatePath(path)
+  redirect(`${locale}/dashboard/admin/sub-categories`)
 }
 interface EditSubCategoryFormState {
   errors: {
@@ -158,6 +157,8 @@ export async function editSubCategory(
   subCategoryId: string,
   path: string
 ): Promise<EditSubCategoryFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
   const result = SubCategoryFormSchema.safeParse({
     name: formData.get('name'),
     name_fa: formData.get('name_fa'),
@@ -243,16 +244,18 @@ export async function editSubCategory(
     // console.log(isExisting)
     // console.log(billboard)
     if (
-      typeof result.data.images[0] === 'object' &&
+      typeof result.data.images?.[0] === 'object' &&
       result.data.images[0] instanceof File
     ) {
       const imageIds: string[] = []
       for (const img of result.data.images) {
-        const buffer = Buffer.from(await img.arrayBuffer())
-        const res = await uploadFileToS3(buffer, img.name)
+        if (img instanceof File) {
+          const buffer = Buffer.from(await img.arrayBuffer())
+          const res = await uploadFileToS3(buffer, img.name)
 
-        if (res?.imageId && typeof res.imageId === 'string') {
-          imageIds.push(res.imageId)
+          if (res?.imageId && typeof res.imageId === 'string') {
+            imageIds.push(res.imageId)
+          }
         }
       }
       // console.log(res)
@@ -303,11 +306,6 @@ export async function editSubCategory(
         },
       })
     }
-    // imageId: res?.imageId,
-    // console.log(billboard)
-    return Promise.resolve({
-      errors: {}, // No errors, operation succeeded
-    })
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -322,10 +320,9 @@ export async function editSubCategory(
         },
       }
     }
-  } finally {
-    revalidatePath(path)
-    redirect(`/dashboard/admin/categories`)
   }
+  revalidatePath(path)
+  redirect(`${locale}/dashboard/admin/sub-categories`)
 }
 
 //////////////////////
@@ -349,6 +346,8 @@ export async function deleteSubCategory(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   formData: FormData
 ): Promise<DeleteSubCategoryFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
   // console.log({ path, subCategoryId })
   const session = await auth()
   if (!session || !session.user || session.user.role !== 'ADMIN') {
@@ -396,9 +395,6 @@ export async function deleteSubCategory(
         id: subCategoryId,
       },
     })
-    return Promise.resolve({
-      errors: {}, // No errors, operation succeeded
-    })
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -413,8 +409,7 @@ export async function deleteSubCategory(
         },
       }
     }
-  } finally {
-    revalidatePath(path)
-    redirect(`/dashboard/admin/sub-categories`)
   }
+  revalidatePath(path)
+  redirect(`${locale}/dashboard/admin/sub-categories`)
 }

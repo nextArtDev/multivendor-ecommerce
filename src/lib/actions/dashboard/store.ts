@@ -89,12 +89,29 @@ export async function createStore(
     })
     // console.log({ isExisting })
     if (isExisting) {
+      let errorMessage = ''
+      if (isExisting.name === result.data.name) {
+        errorMessage = 'A store with the same name already exists'
+      } else if (isExisting.email === result.data.email) {
+        errorMessage = 'A store with the same email already exists'
+      } else if (isExisting.phone === result.data.phone) {
+        errorMessage = 'A store with the same phone number already exists'
+      } else if (isExisting.url === result.data.url) {
+        errorMessage = 'A store with the same URL already exists'
+      }
       return {
         errors: {
-          _form: ['فروشگاه شما موجود است!'],
+          _form: [errorMessage],
         },
       }
     }
+    // if (isExisting) {
+    //   return {
+    //     errors: {
+    //       _form: ['فروشگاه شما موجود است!'],
+    //     },
+    //   }
+    // }
     // console.log(isExisting)
     // console.log(billboard)
     const featured = result.data.featured == true ? true : false
@@ -160,10 +177,9 @@ export async function createStore(
         },
       }
     }
-  } finally {
-    revalidatePath(path)
-    redirect(`/${locale}/dashboard/seller/stores`)
   }
+  revalidatePath(path)
+  redirect(`/${locale}/dashboard/seller/stores`)
 }
 interface EditStoreFormState {
   errors: {
