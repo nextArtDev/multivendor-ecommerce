@@ -45,7 +45,6 @@ export async function createStore(
     cover: formData.getAll('cover'),
   })
 
-  console.log(result?.data)
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
     return {
@@ -54,23 +53,15 @@ export async function createStore(
   }
 
   const session = await auth()
-  if (!session || !session.user || session.user.role !== 'SELLER') {
+  if (
+    !session ||
+    !session.user ||
+    !session.user.id ||
+    session.user.role !== 'SELLER'
+  ) {
     return {
       errors: {
         _form: ['شما اجازه دسترسی ندارید!'],
-      },
-    }
-  }
-
-  const isCategoryExisted = await prisma.category.findFirst({
-    where: {
-      id: result.data.categoryId,
-    },
-  })
-  if (!isCategoryExisted) {
-    return {
-      errors: {
-        _form: ['دسته‌بندی حذف شده است!'],
       },
     }
   }
@@ -84,11 +75,10 @@ export async function createStore(
             OR: [
               { name: result.data.name },
               { name_fa: result.data?.name_fa },
+              { email: result.data.email },
+              { phone: result.data.phone },
               { url: result.data.url },
             ],
-          },
-          {
-            categoryId: result.data.categoryId,
           },
         ],
       },
@@ -96,31 +86,53 @@ export async function createStore(
     if (isExisting) {
       return {
         errors: {
-          _form: ['زیردسته‌بندی با این نام موجود است!'],
+          _form: ['فروشگاه با این نام موجود است!'],
         },
       }
     }
     // console.log(isExisting)
     // console.log(billboard)
-    const featured = result.data.featured === 'true' ? true : false
-    const imageIds: string[] = []
-    for (const img of result.data?.images || []) {
-      const buffer = Buffer.from(await img.arrayBuffer())
-      const res = await uploadFileToS3(buffer, img.name)
+    const featured = result.data.featured == true ? true : false
+    const coverIds: string[] = []
+    for (const img of result.data?.cover || []) {
+      if (img instanceof File) {
+        const buffer = Buffer.from(await img.arrayBuffer())
+        const res = await uploadFileToS3(buffer, img.name)
 
-      if (res?.imageId && typeof res.imageId === 'string') {
-        imageIds.push(res.imageId)
+        if (res?.imageId && typeof res.imageId === 'string') {
+          coverIds.push(res.imageId)
+        }
+      }
+    }
+    const logoIds: string[] = []
+    for (const img of result.data?.logo || []) {
+      if (img instanceof File) {
+        const buffer = Buffer.from(await img.arrayBuffer())
+        const res = await uploadFileToS3(buffer, img.name)
+
+        if (res?.imageId && typeof res.imageId === 'string') {
+          logoIds.push(res.imageId)
+        }
       }
     }
     await prisma.store.create({
       data: {
         name: result.data.name,
+        userId: session.user.id,
         name_fa: result.data?.name_fa,
+        description: result.data.description,
+        description_fa: result.data?.description_fa,
         url: result.data.url,
         featured,
-        categoryId: result.data.categoryId,
-        images: {
-          connect: imageIds.map((id) => ({
+        phone: result.data.phone,
+        email: result.data.email,
+        logo: {
+          connect: logoIds.map((id) => ({
+            id: id,
+          }))[0],
+        },
+        cover: {
+          connect: coverIds.map((id) => ({
             id: id,
           })),
         },
@@ -130,7 +142,7 @@ export async function createStore(
       errors: {},
     })
     // console.log(res?.imageUrl)
-    // console.log(category)
+    // console.log(store)
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -147,7 +159,7 @@ export async function createStore(
     }
   } finally {
     revalidatePath(path)
-    redirect(`/dashboard/seller/sub-categories`)
+    redirect(`/dashboard/seller/store`)
   }
 }
 interface EditStoreFormState {
@@ -177,7 +189,7 @@ export async function editStore(
     url: formData.get('url'),
     images: formData.getAll('images'),
     featured: formData.get('featured'),
-    categoryId: formData.get('categoryId'),
+    storeId: formData.get('storeId'),
   })
 
   // console.log(result)
@@ -200,7 +212,7 @@ export async function editStore(
   if (!storeId) {
     return {
       errors: {
-        _form: ['زیردسته‌بندی در دسترس نیست!'],
+        _form: ['فروشگاه در دسترس نیست!'],
       },
     }
   }
@@ -236,7 +248,7 @@ export async function editStore(
             ],
           },
           {
-            categoryId: result.data.categoryId,
+            storeId: result.data.storeId,
             NOT: {
               id: storeId,
             },
@@ -248,7 +260,7 @@ export async function editStore(
     if (isNameExisting) {
       return {
         errors: {
-          _form: ['زیردسته‌بندی با این نام موجود است!'],
+          _form: ['فروشگاه با این نام موجود است!'],
         },
       }
     }
@@ -293,7 +305,7 @@ export async function editStore(
           name_fa: result.data?.name_fa,
           url: result.data.url,
           featured,
-          categoryId: result.data.categoryId,
+          storeId: result.data.storeId,
 
           images: {
             connect: imageIds.map((id) => ({
@@ -312,7 +324,7 @@ export async function editStore(
           name_fa: result.data?.name_fa,
           url: result.data.url,
           featured,
-          categoryId: result.data.categoryId,
+          storeId: result.data.storeId,
         },
       })
     }

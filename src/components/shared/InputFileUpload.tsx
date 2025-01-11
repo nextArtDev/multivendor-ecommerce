@@ -49,7 +49,7 @@ const InputFileUpload = ({
       control={form.control}
       name={name}
       render={({ field }) => (
-        <FormItem className={cn(className)}>
+        <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <div className="relative">
@@ -84,7 +84,7 @@ const InputFileUpload = ({
                 className="relative bg-background rounded-lg p-2"
               >
                 {files && files.length > 0 ? (
-                  <div className="relative w-60 h-60 ">
+                  <div className={cn('relative w-60 h-60 ', className)}>
                     <ImageSlider urls={urls} />
                     <Button
                       size="icon"

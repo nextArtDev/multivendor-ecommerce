@@ -32,6 +32,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { createStore, editStore } from '@/lib/actions/dashboard/store'
+import { Textarea } from '@/components/ui/textarea'
 
 interface StoreDetailProps {
   initialData?: Store & { logo: Image | null } & { cover: Image[] | null }
@@ -278,6 +279,28 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-8 max-w-3xl mx-auto py-10"
             >
+              <div className="grid grid-cols-12 ">
+                <div className="col-span-11">
+                  <InputFileUpload
+                    className="w-full"
+                    initialDataImages={initialData?.cover || []}
+                    name="cover"
+                    label="Cover"
+                  />
+                </div>
+                <div className="col-span-1 mt-[80%] -ml-24 ">
+                  <InputFileUpload
+                    initialDataImages={
+                      initialData?.logo ? [initialData.logo] : null
+                    }
+                    name="logo"
+                    label="Logo"
+                    multiple={false}
+                    className="w-24 h-24 "
+                  />
+                </div>
+              </div>
+
               <div className="flex  flex-col md:flex-row justify-evenly gap-4">
                 <FormField
                   control={form.control}
@@ -317,7 +340,7 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="" type="" {...field} />
+                      <Textarea placeholder="" {...field} />
                     </FormControl>
 
                     <FormMessage />
@@ -332,7 +355,7 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
                   <FormItem>
                     <FormLabel>Farsi Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="" type="" {...field} />
+                      <Textarea placeholder="" {...field} />
                     </FormControl>
 
                     <FormMessage />
@@ -358,22 +381,7 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
                   </FormItem>
                 )}
               />
-              <div className="flex flex-col md:flex-row items-center justify-evenly gap-4">
-                <InputFileUpload
-                  initialDataImages={
-                    initialData?.logo ? [initialData.logo] : null
-                  }
-                  name="logo"
-                  label="Logo"
-                  multiple={false}
-                  className=""
-                />
-                <InputFileUpload
-                  initialDataImages={initialData?.cover || []}
-                  name="cover"
-                  label="Cover"
-                />
-              </div>
+
               <div className="flex flex-col md:flex-row items-center justify-evenly gap-4">
                 <FormField
                   control={form.control}

@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { Category, Image, SubCategory } from '@prisma/client'
+import { Category, Image, Store, SubCategory } from '@prisma/client'
 import { cache } from 'react'
 
 export const getAllCategories = cache(
@@ -76,74 +76,44 @@ export const getSubCategoryById = cache(
     return subCategory
   }
 )
+export const getAllStores = cache(
+  (): Promise<
+    (Store & { cover: Image[] | null } & { logo: Image | null })[] | null
+  > => {
+    const stores = prisma.store.findMany({
+      include: {
+        cover: true,
+        logo: true,
+      },
 
-// export const upsertCategory = async (
-//   category: Category & { images: Image[] | null }
-// ) => {
-//   try {
-//     // Get current user
-//     const user = await currentUser()
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
 
-//     // Ensure user is authenticated
-//     if (!user) throw new Error('Unauthenticated.')
+    return stores
+  }
+)
+export const getStoreById = cache(
+  (
+    id: string
+  ): Promise<
+    (Store & { cover: Image[] | null } & { logo: Image | null }) | null
+  > => {
+    const store = prisma.store.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        cover: true,
+        logo: true,
+      },
 
-//     // Verify admin permission
-//     if (user.role !== 'ADMIN')
-//       throw new Error(
-//         'Unauthorized Access: Admin Privileges Required for Entry.'
-//       )
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
 
-//     // Ensure category data is provided
-//     if (!category) throw new Error('Please provide category data.')
-
-//     // Throw error if category with same name or URL already exists
-//     const existingCategory = await prisma.category.findFirst({
-//       where: {
-//         AND: [
-//           {
-//             OR: [{ name: category.name }, { url: category.url }],
-//           },
-//           {
-//             NOT: {
-//               id: category.id,
-//             },
-//           },
-//         ],
-//       },
-//     })
-
-//     // Throw error if category with same name or URL already exists
-//     if (existingCategory) {
-//       let errorMessage = ''
-//       if (existingCategory.name === category.name) {
-//         errorMessage = 'A category with the same name already exists'
-//       } else if (existingCategory.url === category.url) {
-//         errorMessage = 'A category with the same URL already exists'
-//       }
-//       throw new Error(errorMessage)
-//     }
-
-//     // Upsert category into the database
-//     const categoryDetails = await prisma.category.upsert({
-//       where: {
-//         id: category.id,
-//       },
-//       update: {
-//         category,
-//         images: {
-//           connect: { images: '' },
-//         },
-//       },
-//       create: {
-//         category,
-//         images: {
-//           connect: { images: '' },
-//         },
-//       },
-//     })
-//     return categoryDetails
-//   } catch (error) {
-//     // Log and re-throw any errors
-//     throw error
-//   }
-// }
+    return store
+  }
+)
