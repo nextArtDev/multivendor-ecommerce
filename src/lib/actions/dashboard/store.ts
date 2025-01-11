@@ -3,11 +3,12 @@
 import { auth } from '@/auth'
 import { Store } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
-import { redirect } from '@/navigation'
+import { redirect } from 'next/navigation'
 import { prisma } from '../../prisma'
 
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
 import { StoreFormSchema } from '@/lib/schemas/dashboard'
+import { headers } from 'next/headers'
 
 interface CreateStoreFormState {
   success?: string
@@ -31,6 +32,9 @@ export async function createStore(
   formData: FormData,
   path: string
 ): Promise<CreateStoreFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
+
   const result = StoreFormSchema.safeParse({
     name: formData.get('name'),
     name_fa: formData.get('name_fa'),
@@ -83,10 +87,11 @@ export async function createStore(
         ],
       },
     })
+    // console.log({ isExisting })
     if (isExisting) {
       return {
         errors: {
-          _form: ['فروشگاه با این نام موجود است!'],
+          _form: ['فروشگاه شما موجود است!'],
         },
       }
     }
@@ -138,9 +143,7 @@ export async function createStore(
         },
       },
     })
-    return Promise.resolve({
-      errors: {},
-    })
+
     // console.log(res?.imageUrl)
     // console.log(store)
   } catch (err: unknown) {
@@ -159,7 +162,7 @@ export async function createStore(
     }
   } finally {
     revalidatePath(path)
-    redirect(`/dashboard/seller/store`)
+    redirect(`/${locale}/dashboard/seller/stores`)
   }
 }
 interface EditStoreFormState {

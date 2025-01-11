@@ -112,85 +112,13 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
     }
     try {
       if (initialData) {
-        // console.log({ data, initialData })
-
-        startTransition(() => {
-          editStore(
-            formData,
-
-            initialData.id as string,
-            path
-          )
-            .then((res) => {
-              if (res?.errors?.name) {
-                form.setError('name', {
-                  type: 'custom',
-                  message: res?.errors.name?.join(' و '),
-                })
-              } else if (res?.errors?.name_fa) {
-                form.setError('name_fa', {
-                  type: 'custom',
-                  message: res?.errors.name_fa?.join(' و '),
-                })
-              } else if (res?.errors?.description) {
-                form.setError('description', {
-                  type: 'custom',
-                  message: res?.errors.description?.join(' و '),
-                })
-              } else if (res?.errors?.description_fa) {
-                form.setError('description_fa', {
-                  type: 'custom',
-                  message: res?.errors.description_fa?.join(' و '),
-                })
-              } else if (res?.errors?.email) {
-                form.setError('email', {
-                  type: 'custom',
-                  message: res?.errors.email?.join(' و '),
-                })
-              } else if (res?.errors?.phone) {
-                form.setError('phone', {
-                  type: 'custom',
-                  message: res?.errors.phone?.join(' و '),
-                })
-              } else if (res?.errors?.url) {
-                form.setError('url', {
-                  type: 'custom',
-                  message: res?.errors.url?.join(' و '),
-                })
-              } else if (res?.errors?.status) {
-                form.setError('status', {
-                  type: 'custom',
-                  message: res?.errors.status?.join(' و '),
-                })
-              } else if (res?.errors?.featured) {
-                form.setError('featured', {
-                  type: 'custom',
-                  message: res?.errors.featured?.join(' و '),
-                })
-              } else if (res?.errors?.cover) {
-                form.setError('cover', {
-                  type: 'custom',
-                  message: res?.errors.cover?.join(' و '),
-                })
-              } else if (res?.errors?.logo) {
-                form.setError('logo', {
-                  type: 'custom',
-                  message: res?.errors.logo?.join(' و '),
-                })
-              } else if (res?.errors?._form) {
-                toast.error(res?.errors._form?.join(' و '))
-              }
-              // if (res?.success) {
-              //    toast.success(toastMessage)
-              // }
-            })
-            // TODO: fixing Through Error when its ok
-            // .catch(() => toast.error('مشکلی پیش آمده.'))
-            .catch(() => console.log('مشکلی پیش آمده.'))
-        })
-      } else {
-        startTransition(() => {
-          createStore(formData, path).then((res) => {
+        startTransition(async () => {
+          try {
+            const res = await editStore(
+              formData,
+              initialData.id as string,
+              path
+            )
             if (res?.errors?.name) {
               form.setError('name', {
                 type: 'custom',
@@ -249,13 +177,92 @@ const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
             } else if (res?.errors?._form) {
               toast.error(res?.errors._form?.join(' و '))
             }
-            // if (res?.success) {
-            //    toast.success(toastMessage)
-            // }
-          })
-
-          // .catch(() => toast.error('مشکلی پیش آمده.'))
-          //   toast.success('دسته‌بندی ایجاد شد.')
+          } catch (error) {
+            // This will catch the NEXT_REDIRECT error, which is expected
+            // when the redirect happens
+            if (
+              !(
+                error instanceof Error &&
+                error.message.includes('NEXT_REDIRECT')
+              )
+            ) {
+              toast.error('مشکلی پیش آمده.')
+            }
+          }
+        })
+      } else {
+        startTransition(async () => {
+          try {
+            const res = await createStore(formData, path)
+            if (res?.errors?.name) {
+              form.setError('name', {
+                type: 'custom',
+                message: res?.errors.name?.join(' و '),
+              })
+            } else if (res?.errors?.name_fa) {
+              form.setError('name_fa', {
+                type: 'custom',
+                message: res?.errors.name_fa?.join(' و '),
+              })
+            } else if (res?.errors?.description) {
+              form.setError('description', {
+                type: 'custom',
+                message: res?.errors.description?.join(' و '),
+              })
+            } else if (res?.errors?.description_fa) {
+              form.setError('description_fa', {
+                type: 'custom',
+                message: res?.errors.description_fa?.join(' و '),
+              })
+            } else if (res?.errors?.email) {
+              form.setError('email', {
+                type: 'custom',
+                message: res?.errors.email?.join(' و '),
+              })
+            } else if (res?.errors?.phone) {
+              form.setError('phone', {
+                type: 'custom',
+                message: res?.errors.phone?.join(' و '),
+              })
+            } else if (res?.errors?.url) {
+              form.setError('url', {
+                type: 'custom',
+                message: res?.errors.url?.join(' و '),
+              })
+            } else if (res?.errors?.status) {
+              form.setError('status', {
+                type: 'custom',
+                message: res?.errors.status?.join(' و '),
+              })
+            } else if (res?.errors?.featured) {
+              form.setError('featured', {
+                type: 'custom',
+                message: res?.errors.featured?.join(' و '),
+              })
+            } else if (res?.errors?.cover) {
+              form.setError('cover', {
+                type: 'custom',
+                message: res?.errors.cover?.join(' و '),
+              })
+            } else if (res?.errors?.logo) {
+              form.setError('logo', {
+                type: 'custom',
+                message: res?.errors.logo?.join(' و '),
+              })
+            } else if (res?.errors?._form) {
+              toast.error(res?.errors._form?.join(' و '))
+            }
+          } catch (error) {
+            // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
+            if (
+              !(
+                error instanceof Error &&
+                error.message.includes('NEXT_REDIRECT')
+              )
+            ) {
+              toast.error('مشکلی پیش آمده.')
+            }
+          }
         })
       }
     } catch {

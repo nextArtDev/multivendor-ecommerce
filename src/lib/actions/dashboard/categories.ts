@@ -26,7 +26,6 @@ interface CreateCategoryFormState {
 
 export async function createCategory(
   formData: FormData,
-
   path: string
 ): Promise<CreateCategoryFormState> {
   const result = CategoryServerFormSchema.safeParse({
@@ -99,8 +98,6 @@ export async function createCategory(
     return Promise.resolve({
       errors: {},
     })
-    // console.log(res?.imageUrl)
-    // console.log(category)
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
