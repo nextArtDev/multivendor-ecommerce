@@ -1,33 +1,33 @@
 import * as z from 'zod'
 import { zfd } from 'zod-form-data'
 
-const imageSchema = z.union([
-  zfd
-    .file()
-    .refine((file) => file.size < 5000000, {
-      message: "File can't be bigger than 5MB.",
-    })
-    .refine(
-      (file) =>
-        ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'].includes(
-          file.type
-        ),
-      {
-        message: 'File format must be either jpg, jpeg lub png.',
-      }
+const imageObjectSchema = z.object({
+  url: z.string(),
+})
+
+// Create the combined schema that accepts both Files and image objects
+const imageSchema = z
+  .union([
+    z.array(
+      zfd
+        .file()
+        .refine((file) => file.size < 5000000, {
+          message: "File can't be bigger than 5MB.",
+        })
+        .refine(
+          (file) =>
+            ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'].includes(
+              file.type
+            ),
+          {
+            message: 'File format must be either jpg, jpeg, png or webp.',
+          }
+        )
     ),
-  z.object({
-    url: z.string(),
-  }),
-])
-// How to call it: z.array(imageSchema).optional()
-// const fileOrUrlSchema = <T extends z.ZodType>(fileSchema: T) =>
-//   z.union([
-//     fileSchema,
-//     z.object({
-//       url: z.string(),
-//     }),
-//   ])
+    z.array(imageObjectSchema),
+    z.array(z.string()),
+  ])
+  .optional()
 
 export const CategoryFormSchema = z.object({
   name: z
@@ -53,7 +53,7 @@ export const CategoryFormSchema = z.object({
         'Only letters, numbers, and spaces are allowed in the category name.',
     })
     .optional(),
-  images: z.array(imageSchema).optional(),
+  images: imageSchema,
   url: z
     .string({
       required_error: 'Category url is required',
@@ -93,7 +93,7 @@ export const CategoryServerFormSchema = z.object({
     })
     .optional(),
 
-  images: z.array(imageSchema).optional(),
+  images: imageSchema,
 
   url: z
     .string({
@@ -132,7 +132,7 @@ export const SubCategoryFormSchema = z.object({
     })
     .optional(),
 
-  images: z.array(imageSchema).optional(),
+  images: imageSchema,
 
   url: z
     .string({
@@ -178,7 +178,7 @@ export const subCategoryServerFormSchema = z.object({
     })
     .optional(),
 
-  images: z.array(imageSchema).optional(),
+  images: imageSchema,
 
   url: z
     .string({
@@ -248,9 +248,9 @@ export const StoreFormSchema = z.object({
       invalid_type_error: 'Store phone number must be a string',
     })
     .regex(/^\+?\d+$/, { message: 'Invalid phone number format.' }),
-  logo: z.array(imageSchema).optional(),
+  logo: imageSchema,
 
-  cover: z.array(imageSchema).optional(),
+  cover: imageSchema,
 
   url: z
     .string({

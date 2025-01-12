@@ -41,6 +41,7 @@ interface StoreDetailProps {
 const StoreDetails: FC<StoreDetailProps> = ({ initialData }) => {
   // console.log(initialData.cover.flatMap((cover) => cover.url))
   // console.log(initialData.logo.url)
+
   const path = usePathname()
   const [isPending, startTransition] = useTransition()
 

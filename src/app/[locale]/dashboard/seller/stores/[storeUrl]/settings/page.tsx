@@ -20,6 +20,7 @@ export default async function SellerStoreSettingsPage({
       logo: true,
     },
   })
+
   if (!storeDetails) redirect('/dashboard/seller/stores')
   return (
     <div>
