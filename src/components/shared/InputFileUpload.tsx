@@ -87,7 +87,7 @@ const InputFileUpload = ({
                 className="relative bg-background rounded-lg p-2"
               >
                 {/* {files && files.length > 0 ? ( */}
-                {initialUrls && !!initials ? (
+                {!!initialUrls?.length && !!initials ? (
                   <div className={cn('relative w-60 h-60 ', className)}>
                     <ImageSlider urls={initialUrls} />
                     <Button

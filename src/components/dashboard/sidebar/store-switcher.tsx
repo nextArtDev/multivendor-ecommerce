@@ -24,6 +24,7 @@ import { FC, useState } from 'react'
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
 interface StoreSwitcherProps extends PopoverTriggerProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stores: Record<string, any>[]
 }
 
