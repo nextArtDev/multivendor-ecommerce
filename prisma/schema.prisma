@@ -222,6 +222,7 @@ model ProductVariant {
   saleEndDate           String?
   sku                   String
   keywords              String
+  keywords_fa           String?
   sales                 Int     @default(0)
   weight                Float
   images                Image[]
