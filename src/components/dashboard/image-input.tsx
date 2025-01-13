@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { Upload } from 'lucide-react'
@@ -68,12 +69,14 @@ export function ImageInput({
       </div>
 
       {currentFiles.length > 0 && (
-        <ImagesPreviewGrid
-          images={currentFiles}
-          onRemove={handleRemove}
-          colors={colors}
-          setColors={setColors}
-        />
+        <div className="flex flex-col gap-y-2 xl:flex-row">
+          <ImagesPreviewGrid
+            images={currentFiles}
+            onRemove={handleRemove}
+            colors={colors}
+            setColors={setColors}
+          />
+        </div>
       )}
 
       {colors.length > 0 && (

@@ -50,6 +50,7 @@ import { createProduct, editProduct } from '@/lib/actions/dashboard/products'
 import { cn } from '@/lib/utils'
 import ImagesPreviewGrid from '../images-preview-grid'
 import { useTheme } from 'next-themes'
+import { ImageInput } from '../image-input'
 interface ProductDetailProps {
   // data?: Product & {
   //   variants: (ProductVariant & { images: Image[] } & { sizes: Size[] } & {
@@ -621,69 +622,9 @@ const ProductDetails: FC<ProductDetailProps> = ({
                   name="images"
                   render={({ field: { onChange }, ...field }) => (
                     <FormItem>
-                      <FormLabel className="mx-auto cursor-pointer bg-transparent rounded-xl flex flex-col justify-center gap-4 items-center border-2 border-black/20 dark:border-white/20 border-dashed w-full h-24 shadow  ">
-                        {/* <FileUp size={42} className=" " /> */}
-                        <span
-                          className={cn(buttonVariants({ variant: 'ghost' }))}
-                        >
-                          انتخاب عکس
-                          <ImagesPreviewGrid
-                            // images={form.getValues().images}
-                            images={urls}
-                            onRemove={(url) => {
-                              const updatedImages = images.filter(
-                                (img) => img.url !== url
-                              )
-                              setImages(updatedImages)
-                              field.onChange(updatedImages)
-                            }}
-                            colors={colors}
-                            setColors={setColors}
-                          />
-                        </span>
-                      </FormLabel>
                       <FormControl>
-                        <>
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            multiple={true}
-                            disabled={form.formState.isSubmitting}
-                            {...field}
-                            onChange={async (event) => {
-                              // Triggered when user uploaded a new file
-                              // FileList is immutable, so we need to create a new one
-                              const dataTransfer = new DataTransfer()
-
-                              // Add old images
-                              if (files) {
-                                Array.from(files).forEach((image) =>
-                                  dataTransfer.items.add(image)
-                                )
-                              }
-
-                              // Add newly uploaded images
-                              Array.from(event.target.files!).forEach((image) =>
-                                dataTransfer.items.add(image)
-                              )
-
-                              // Validate and update uploaded file
-                              const newFiles = dataTransfer.files
-
-                              setFiles(Array.from(newFiles))
-
-                              onChange(newFiles)
-                            }}
-                          />
-                        </>
+                        <ImageInput name="images" label="images" />
                       </FormControl>
-
-                      {/* <FormMessage className="dark:text-rose-400" /> */}
-                      <FormMessage>
-                        {/* @ts-ignore */}
-                        {form.getFieldState('images')?.error?.message}
-                      </FormMessage>
                     </FormItem>
                   )}
                 />

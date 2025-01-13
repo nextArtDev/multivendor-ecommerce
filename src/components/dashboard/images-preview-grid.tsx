@@ -27,7 +27,8 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
   setColors,
 }) => {
   // Calculate the number of images
-  let imagesLength = images.length
+  const imagesLength = images.length
+  console.log({ imagesLength })
 
   // Get the grid class name based on the number of images
   const GridClassName = getGridClassName(imagesLength)
@@ -41,7 +42,7 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
           try {
             const colors = await getDominantColors(img.url)
             return colors
-          } catch (error) {
+          } catch {
             return []
           }
         })
@@ -71,10 +72,10 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
   } else {
     // If there are images, display the images in a grid
     return (
-      <div className="max-w-4xl">
+      <div className="max-w-7xl">
         <div
           className={cn(
-            'grid h-[800px] overflow-hidden bg-white rounded-md',
+            'grid h-auto overflow-hidden bg-white rounded-md',
             GridClassName
           )}
         >
@@ -92,7 +93,7 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
               {/* Image */}
               <Image
                 src={img.url}
-                alt=""
+                alt="color"
                 width={800}
                 height={800}
                 className="w-full h-full object-cover object-top"
