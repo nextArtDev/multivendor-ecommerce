@@ -3,7 +3,7 @@ import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import Image from 'next/image'
 
 // Import of the image shown when there are no images available
-import NoImageImg from '../../../../public/assets/images/no_image_2.png'
+// import NoImageImg from '../../../../public/assets/images/no_image_2.png'
 
 // Utils
 import { getDominantColors, getGridClassName } from '@/lib/dashborad-utils'
@@ -58,13 +58,14 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
   if (imagesLength === 0) {
     return (
       <div>
-        <Image
+        {/* <Image
           src={NoImageImg}
           alt="No images available"
           width={500}
           height={600}
           className="rounded-md"
-        />
+        /> */}
+        No image
       </div>
     )
   } else {

@@ -1,7 +1,9 @@
 import ProductDetails from '@/components/dashboard/forms/product-details'
-import { db } from '@/lib/db'
-import { getAllCategories } from '@/queries/category'
-import { getAllOfferTags } from '@/queries/offer-tag'
+import { prisma } from '@/lib/prisma'
+import { getAllCategories } from '@/lib/queries/dashboard'
+// import { db } from '@/lib/db'
+// import { getAllCategories } from '@/queries/category'
+// import { getAllOfferTags } from '@/queries/offer-tag'
 
 export default async function SellerNewProductPage({
   params,
@@ -9,8 +11,8 @@ export default async function SellerNewProductPage({
   params: { storeUrl: string }
 }) {
   const categories = await getAllCategories()
-  const offerTags = await getAllOfferTags()
-  const countries = await db.country.findMany({
+  // const offerTags = await getAllOfferTags()
+  const countries = await prisma.country.findMany({
     orderBy: {
       name: 'asc',
     },
@@ -21,7 +23,7 @@ export default async function SellerNewProductPage({
       <ProductDetails
         categories={categories}
         storeUrl={params.storeUrl}
-        offerTags={offerTags}
+        // offerTags={offerTags}
         countries={countries}
       />
     </div>

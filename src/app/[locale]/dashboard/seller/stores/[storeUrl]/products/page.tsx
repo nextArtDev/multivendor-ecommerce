@@ -1,11 +1,12 @@
 // Queries
-import { getAllStoreProducts } from '@/queries/product'
+
 import DataTable from '@/components/ui/data-table'
 import { columns } from './components/columns'
 import { Plus } from 'lucide-react'
 
 import { getAllCategories } from '@/lib/queries/dashboard'
 import { prisma } from '@/lib/prisma'
+import ProductDetails from '@/components/dashboard/forms/product-details'
 
 export default async function SellerProductsPage({
   params,
@@ -14,7 +15,7 @@ export default async function SellerProductsPage({
 }) {
   const storeUrl = (await params).storeUrl
   // Fetching products data from the database for the active store
-  const products = await getAllStoreProducts(storeUrl)
+  // const products = await getAllStoreProducts(storeUrl)
 
   const categories = await getAllCategories()
   //   const offerTags = await getAllOfferTags()
@@ -42,7 +43,7 @@ export default async function SellerProductsPage({
       }
       newTabLink={`/dashboard/seller/stores/${storeUrl}/products/new`}
       filterValue="name"
-      data={products}
+      // data={products}
       columns={columns}
       searchPlaceholder="Search product name..."
     />

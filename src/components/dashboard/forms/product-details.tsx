@@ -21,7 +21,7 @@ import InputFileUpload from '@/components/shared/InputFileUpload'
 import { Switch } from '@/components/ui/switch'
 import { ProductFormSchema } from '@/lib/schemas/dashboard'
 import { usePathname } from '@/navigation'
-import { FC, useEffect, useState, useTransition } from 'react'
+import { FC, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import {
   Category,
   Color,
@@ -48,6 +48,8 @@ import { getAllCategoriesForCategory } from '@/lib/queries/dashboard'
 import { format } from 'date-fns'
 import { createProduct, editProduct } from '@/lib/actions/dashboard/products'
 import { cn } from '@/lib/utils'
+import ImagesPreviewGrid from '../images-preview-grid'
+import { useTheme } from 'next-themes'
 interface ProductDetailProps {
   // data?: Product & {
   //   variants: (ProductVariant & { images: Image[] } & { sizes: Size[] } & {
@@ -586,6 +588,12 @@ const ProductDetails: FC<ProductDetailProps> = ({
           .map((file) => URL.createObjectURL(file))
           .filter(Boolean) as string[])
 
+  const [images, setImages] = useState([])
+  const urls = {
+    url: images
+      .map((file) => URL.createObjectURL(file))
+      .filter(Boolean) as string[],
+  }
   return (
     <AlertDialog>
       <Card className="w-full">
@@ -607,28 +615,35 @@ const ProductDetails: FC<ProductDetailProps> = ({
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-8 max-w-3xl mx-auto py-10"
             >
-              <div className="col-span-2 lg:col-span-4 max-w-md ">
-                {files.length > 0 ? (
-                  <div className="h-96 md:h-[450px] overflow-hidden rounded-md">
-                    <AspectRatio ratio={1 / 1} className="relative h-full">
-                      <ImageSlider urls={validUrls} />
-                    </AspectRatio>
-                  </div>
-                ) : (
-                  <FormField
-                    control={form.control}
-                    name="images"
-                    render={({ field: { onChange }, ...field }) => (
-                      <FormItem>
-                        <FormLabel className="mx-auto cursor-pointer bg-transparent rounded-xl flex flex-col justify-center gap-4 items-center border-2 border-black/20 dark:border-white/20 border-dashed w-full h-24 shadow  ">
-                          {/* <FileUp size={42} className=" " /> */}
-                          <span
-                            className={cn(buttonVariants({ variant: 'ghost' }))}
-                          >
-                            انتخاب عکس
-                          </span>
-                        </FormLabel>
-                        <FormControl>
+              <div className="  ">
+                <FormField
+                  control={form.control}
+                  name="images"
+                  render={({ field: { onChange }, ...field }) => (
+                    <FormItem>
+                      <FormLabel className="mx-auto cursor-pointer bg-transparent rounded-xl flex flex-col justify-center gap-4 items-center border-2 border-black/20 dark:border-white/20 border-dashed w-full h-24 shadow  ">
+                        {/* <FileUp size={42} className=" " /> */}
+                        <span
+                          className={cn(buttonVariants({ variant: 'ghost' }))}
+                        >
+                          انتخاب عکس
+                          <ImagesPreviewGrid
+                            // images={form.getValues().images}
+                            images={urls}
+                            onRemove={(url) => {
+                              const updatedImages = images.filter(
+                                (img) => img.url !== url
+                              )
+                              setImages(updatedImages)
+                              field.onChange(updatedImages)
+                            }}
+                            colors={colors}
+                            setColors={setColors}
+                          />
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <>
                           <Input
                             type="file"
                             accept="image/*"
@@ -661,17 +676,17 @@ const ProductDetails: FC<ProductDetailProps> = ({
                               onChange(newFiles)
                             }}
                           />
-                        </FormControl>
+                        </>
+                      </FormControl>
 
-                        {/* <FormMessage className="dark:text-rose-400" /> */}
-                        <FormMessage>
-                          {/* @ts-ignore */}
-                          {form.getFieldState('images')?.error?.message}
-                        </FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                )}
+                      {/* <FormMessage className="dark:text-rose-400" /> */}
+                      <FormMessage>
+                        {/* @ts-ignore */}
+                        {form.getFieldState('images')?.error?.message}
+                      </FormMessage>
+                    </FormItem>
+                  )}
+                />
               </div>
               <Button type="submit" disabled={isLoading}>
                 {isLoading

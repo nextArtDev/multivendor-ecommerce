@@ -34,16 +34,18 @@ import { useModal } from '@/providers/modal-provider'
 import { CopyPlus, FilePenLine, MoreHorizontal, Trash } from 'lucide-react'
 
 // Queries
-import { deleteProduct } from '@/queries/product'
 
 // Tanstack React Table
 import { ColumnDef } from '@tanstack/react-table'
 
 // Types
-import { StoreProductType } from '@/lib/types'
-import Link from 'next/link'
 
-export const columns: ColumnDef<StoreProductType>[] = [
+import Link from 'next/link'
+import { toast } from 'sonner'
+import { deleteProduct } from '@/lib/actions/dashboard/products'
+
+// export const columns: ColumnDef<StoreProductType>[] = [
+export const columns: ColumnDef<any>[] = [
   {
     accessorKey: 'image',
     header: '',
@@ -174,7 +176,7 @@ const CellActions: React.FC<CellActionsProps> = ({ productId }) => {
   // Hooks
   const { setClose } = useModal()
   const [loading, setLoading] = useState(false)
-  const { toast } = useToast()
+
   const router = useRouter()
 
   // Return null if rowData or rowData.id don't exist
@@ -215,11 +217,11 @@ const CellActions: React.FC<CellActionsProps> = ({ productId }) => {
             className="bg-destructive hover:bg-destructive mb-2 text-white"
             onClick={async () => {
               setLoading(true)
-              await deleteProduct(productId)
-              toast({
-                title: 'Deleted product',
-                description: 'The product has been deleted.',
-              })
+              // await deleteProduct(productId)
+              // toast({
+              //   title: 'Deleted product',
+              //   description: 'The product has been deleted.',
+              // })
               setLoading(false)
               router.refresh()
               setClose()
