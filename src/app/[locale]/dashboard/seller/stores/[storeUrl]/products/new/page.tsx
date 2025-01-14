@@ -1,7 +1,7 @@
 import ProductDetails from '@/components/dashboard/forms/product-details'
 import { prisma } from '@/lib/prisma'
 import { getAllCategories } from '@/lib/queries/dashboard'
-// import { db } from '@/lib/db'
+
 // import { getAllCategories } from '@/queries/category'
 // import { getAllOfferTags } from '@/queries/offer-tag'
 

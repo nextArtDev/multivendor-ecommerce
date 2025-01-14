@@ -10,6 +10,7 @@ import { PaintBucket } from 'lucide-react'
 // Color picker
 import { SketchPicker } from 'react-color'
 import { cn } from '@/lib/utils'
+import { ColorPicker } from '../shared/color-picker'
 
 // Define the interface for each detail object
 export interface Detail<T = { [key: string]: string | number | undefined }> {
@@ -155,18 +156,22 @@ const ClickToAddInputs = <T extends Detail>({
                   >
                     <PaintBucket />
                   </button>
-                  <span
+                  {/* <span
                     className="w-8 h-8 rounded-full"
                     style={{ backgroundColor: detail[property] as string }}
-                  />
+                  /> */}
                 </div>
               )}
 
               {/* Color picker */}
               {colorPickerIndex === index && property === 'color' && (
-                <SketchPicker
-                  color={detail[property] as string}
-                  onChange={(e) => handleDetailsChange(index, property, e.hex)}
+                // <SketchPicker
+                //   color={detail[property] as string}
+                //   onChange={(e) => handleDetailsChange(index, property, e.hex)}
+                // />
+                <ColorPicker
+                  onChange={(e) => handleDetailsChange(index, property, e)}
+                  value={detail[property] as string}
                 />
               )}
 

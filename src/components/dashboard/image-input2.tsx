@@ -69,20 +69,21 @@ export function ImageInput({
     setWatchedFiles(imageUrls)
   }
 
-  const handleRemove = (urlToRemove: string) => {
-    const updatedFiles = watchedFiles.filter(
-      (file: { url: string }) => file.url !== urlToRemove
-    )
-    setValue(name, updatedFiles, { shouldValidate: true })
+  // const handleRemove = (urlToRemove: string) => {
+  //   const updatedFiles = watchedFiles.filter(
+  //     (file: { url: string }) => file.url !== urlToRemove
+  //   )
+  //   setValue(name, updatedFiles, { shouldValidate: true })
 
-    // Update files state to match
-    const newFiles = files.filter((file) => {
-      const fileUrl = URL.createObjectURL(file)
-      URL.revokeObjectURL(fileUrl) // Clean up the URL
-      return fileUrl !== urlToRemove
-    })
-    setFiles(newFiles)
-  }
+  //   // Update files state to match
+  //   const newFiles = files.filter((file) => {
+  //     const fileUrl = URL.createObjectURL(file)
+  //     URL.revokeObjectURL(fileUrl) // Clean up the URL
+  //     return fileUrl !== urlToRemove
+  //   })
+  //   console.log({ newFiles })
+  //   setFiles(newFiles)
+  // }
 
   // Clean up URLs when component unmounts
   useEffect(() => {
@@ -115,7 +116,13 @@ export function ImageInput({
                     <div className="flex flex-col gap-y-2 xl:flex-row">
                       <ImagesPreviewGrid
                         images={watchedFiles}
-                        onRemove={handleRemove}
+                        onRemove={(url) => {
+                          const updatedImages = watchedFiles.filter(
+                            (img: { url: string }) => img.url !== url
+                          )
+                          setWatchedFiles(updatedImages)
+                          field.onChange(updatedImages)
+                        }}
                         colors={colors}
                         setColors={setColors}
                       />

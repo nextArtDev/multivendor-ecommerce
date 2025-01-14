@@ -1,10 +1,28 @@
 import { PrismaClient } from '@prisma/client'
- 
+
 import ColorThief from 'colorthief'
 // import { CartProductType, Country } from './types'
 // import countries from '@/data/countries.json'
 import { differenceInDays, differenceInHours } from 'date-fns'
 import { prisma } from './prisma'
+
+import type React from 'react'
+import { useEffect, useRef } from 'react'
+
+export function useForwardedRef<T>(ref: React.ForwardedRef<T>) {
+  const innerRef = useRef<T>(null)
+
+  useEffect(() => {
+    if (!ref) return
+    if (typeof ref === 'function') {
+      ref(innerRef.current)
+    } else {
+      ref.current = innerRef.current
+    }
+  })
+
+  return innerRef
+}
 
 export const generateUniqueSlug = async (
   baseSlug: string,
