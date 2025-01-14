@@ -1,3 +1,107 @@
+## Combine file uploads 
+
+It seems like you want to combine the uploaded files from the `FileUploader` component and the existing files stored in the `currentFiles` state, which is in the format of `{ url: string }[]`. You also want to convert the combined files to both `{ url: string }[]` and `File[]` formats.
+
+Here's an updated version of your code that should achieve this:
+
+```jsx
+import { useState, useEffect } from 'react';
+
+interface ImageInputProps {
+  colors?: { color: string }[]
+  setColors: Dispatch<SetStateAction<{ color: string }[]>>
+  name: string
+  label: string
+  accept?: string
+}
+
+export function ImageInput({
+  colors,
+  setColors,
+  name,
+  label,
+}: ImageInputProps) {
+  const { setValue, watch } = useFormContext()
+  const form = useFormContext()
+  const [files, setFiles] = useState<File[] | null>(null)
+  const [combinedFiles, setCombinedFiles] = useState<{ url: string }[]>([])
+  const currentFiles = watch(name) || []
+
+  useEffect(() => {
+    if (currentFiles.length > 0) {
+      setCombinedFiles(currentFiles)
+    }
+  }, [currentFiles])
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || [])
+    if (selectedFiles.length > 0) {
+      const newFiles = selectedFiles.map((file) => ({
+        url: URL.createObjectURL(file),
+      }))
+      setCombinedFiles([...combinedFiles, ...newFiles])
+      setValue(name, [...currentFiles, ...newFiles], { shouldValidate: true })
+      setFiles([...(files || []), ...selectedFiles])
+    }
+  }
+
+  const handleRemove = (urlToRemove: string) => {
+    const newFiles = combinedFiles.filter((file) => file.url !== urlToRemove)
+    setCombinedFiles(newFiles)
+    setValue(name, newFiles, { shouldValidate: true })
+    const newFileList = files?.filter((file) => URL.createObjectURL(file) !== urlToRemove)
+    setFiles(newFileList || null)
+  }
+
+  return (
+    <div className="">
+      <FormField
+        control={form.control}
+        name={name}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{label}</FormLabel>
+            <FormControl>
+              <div className="relative">
+                <FileUploader
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  onChange={handleFileChange}
+                  dropzoneOptions={dropZoneConfig}
+                  className="relative bg-background rounded-lg p-2"
+                >
+                  {combinedFiles && combinedFiles.length > 0 ? (
+                    <div className="flex flex-col gap-y-2 xl:flex-row">
+                      <ImagesPreviewGrid
+                        images={combinedFiles}
+                        onRemove={handleRemove}
+                        colors={colors}
+                        setColors={setColors}
+                      />
+                    </div>
+                  ) : (
+                    <FileInput className="outline-dashed outline-1 outline-foreground p-5 ">
+                      <div className="flex items-center justify-center flex-col pt-3 pb-4 w-full ">
+                        <FileSvgDraw />
+                      </div>
+                    </FileInput>
+                  )}
+                </FileUploader>
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  )
+}
+```
+
+In this updated code, I've added a new state `combinedFiles` to store the combined files in the format of `{ url: string }[]`. I've also updated the `handleFileChange` function to combine the new files with the existing files and update the `combinedFiles` state. The `handleRemove` function has also been updated to remove the file from the `combinedFiles` state and the `files` state.
+
+Now, you can use the `combinedFiles` state to display the combined files in the `ImagesPreviewGrid` component, and the `files` state to get the combined files in the format of `File[]`.
+
 ## v1
 
 ```ts

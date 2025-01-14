@@ -1,22 +1,27 @@
 'use client'
-import React, { useState } from 'react'
-import { useFormContext } from 'react-hook-form'
+import React, { Dispatch, SetStateAction, useState } from 'react'
+import { FieldValues, useFormContext, UseFormSetValue } from 'react-hook-form'
 import { Upload } from 'lucide-react'
 import ImagesPreviewGrid from './images-preview-grid'
 
 interface ImageInputProps {
+  colors?: { color: string }[] // List of colors from form
+  setColors: Dispatch<SetStateAction<{ color: string }[]>>
   name: string
   label: string
   accept?: string
 }
 
 export function ImageInput({
+  colors,
+  setColors,
   name,
   label,
   accept = 'image/*',
 }: ImageInputProps) {
   const { setValue, watch } = useFormContext()
-  const [colors, setColors] = useState<{ color: string }[]>([])
+  const [files, setFiles] = useState<UseFormSetValue<FieldValues>>()
+  // const [colors, setColors] = useState<{ color: string }[]>([])
   const fileInputRef = React.useRef<HTMLInputElement>(null)
   const currentFiles = watch(name) || []
 
@@ -79,13 +84,13 @@ export function ImageInput({
         </div>
       )}
 
-      {colors.length > 0 && (
+      {/* {!!colors?.length && (
         <div className="mt-4 p-4 bg-gray-50 rounded-lg">
           <h3 className="text-sm font-medium text-gray-700 mb-2">
             Selected Colors:
           </h3>
           <div className="flex flex-wrap gap-2">
-            {colors.map((color, index) => (
+            {colors?.map((color, index) => (
               <div
                 key={index}
                 className="w-8 h-8 rounded-full border border-gray-200"
@@ -95,7 +100,7 @@ export function ImageInput({
             ))}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   )
 }

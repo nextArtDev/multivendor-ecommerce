@@ -50,7 +50,8 @@ import { createProduct, editProduct } from '@/lib/actions/dashboard/products'
 import { cn } from '@/lib/utils'
 import ImagesPreviewGrid from '../images-preview-grid'
 import { useTheme } from 'next-themes'
-import { ImageInput } from '../image-input'
+import { ImageInput } from '../image-input2'
+import ClickToAddInputs from '../click-to-add'
 interface ProductDetailProps {
   // data?: Product & {
   //   variants: (ProductVariant & { images: Image[] } & { sizes: Size[] } & {
@@ -226,7 +227,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
   }, [data, form])
 
   const handleSubmit = async (data: z.infer<typeof ProductFormSchema>) => {
-    // console.log({ data })
+    console.log({ data })
     const formData = new FormData()
 
     formData.append('name', data.name)
@@ -616,18 +617,37 @@ const ProductDetails: FC<ProductDetailProps> = ({
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-8 max-w-3xl mx-auto py-10"
             >
-              <div className="  ">
-                <FormField
+              <div className="flex flex-col gap-y-6 xl:flex-row">
+                {/* <FormField
                   control={form.control}
                   name="images"
                   render={({ field: { onChange }, ...field }) => (
                     <FormItem>
                       <FormControl>
-                        <ImageInput name="images" label="images" />
                       </FormControl>
                     </FormItem>
                   )}
+                /> */}
+                <ImageInput
+                  name="images"
+                  label="images"
+                  colors={colors}
+                  setColors={setColors}
                 />
+                <div className="w-full flex flex-col gap-y-3 xl:pl-5">
+                  <ClickToAddInputs
+                    details={data?.colors || colors}
+                    setDetails={setColors}
+                    initialDetail={{ color: '' }}
+                    header="Colors"
+                    colorPicker
+                  />
+                  {errors.colors && (
+                    <span className="text-sm font-medium text-destructive">
+                      {errors.colors.message}
+                    </span>
+                  )}
+                </div>
               </div>
               <Button type="submit" disabled={isLoading}>
                 {isLoading

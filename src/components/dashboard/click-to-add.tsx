@@ -1,30 +1,30 @@
 // React, Next.js
-import React, { FC, useState } from "react";
+import React, { useState } from 'react'
 
 // UI Components
-import { Input } from "@/components/ui/input";
+import { Input } from '@/components/ui/input'
 
 // Icons
-import { PaintBucket } from "lucide-react";
+import { PaintBucket } from 'lucide-react'
 
 // Color picker
-import { SketchPicker } from "react-color";
-import { cn } from "@/lib/utils";
+import { SketchPicker } from 'react-color'
+import { cn } from '@/lib/utils'
 
 // Define the interface for each detail object
 export interface Detail<T = { [key: string]: string | number | undefined }> {
-  [key: string]: T[keyof T];
+  [key: string]: T[keyof T]
 }
 
 // Define props for the ClickToAddInputs component
 interface ClickToAddInputsProps<T extends Detail> {
-  details: T[]; // Array of detail objects
-  setDetails: React.Dispatch<React.SetStateAction<T[]>>; // Setter function for details
-  initialDetail?: T; // Optional initial detail object
-  header?: string; // Header text for the component
-  colorPicker?: boolean; // Is color picker needed
-  containerClassName?: string;
-  inputClassName?: string;
+  details: T[] // Array of detail objects
+  setDetails: React.Dispatch<React.SetStateAction<T[]>> // Setter function for details
+  initialDetail?: T // Optional initial detail object
+  header?: string // Header text for the component
+  colorPicker?: boolean // Is color picker needed
+  containerClassName?: string
+  inputClassName?: string
 }
 
 // ClickToAddInputs component definition
@@ -38,7 +38,7 @@ const ClickToAddInputs = <T extends Detail>({
   inputClassName,
 }: ClickToAddInputsProps<T>) => {
   // State to manage toggling color picker
-  const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(null);
+  const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(null)
 
   // Function to handle changes in detail properties
   const handleDetailsChange = (
@@ -49,9 +49,9 @@ const ClickToAddInputs = <T extends Detail>({
     // Update the details array with the new property value
     const updatedDetails = details.map((detail, i) =>
       i === index ? { ...detail, [property]: value } : detail
-    );
-    setDetails(updatedDetails); // Update the state with the modified details
-  };
+    )
+    setDetails(updatedDetails) // Update the state with the modified details
+  }
 
   // Function to add a new detail
   const handleAddDetail = () => {
@@ -61,17 +61,17 @@ const ClickToAddInputs = <T extends Detail>({
       {
         ...initialDetail, // Spread the initialDetail object to set initial values
       },
-    ]);
-  };
+    ])
+  }
 
   // Function to handle removal of a detail
   const handleRemove = (index: number) => {
     // We must atleast keep one detail we can't delete if it's the only detail available
-    if (details.length === 1) return;
+    if (details.length === 1) return
     // Filter out the detail at the specified index
-    const updatedDetails = details.filter((_, i) => i !== index);
-    setDetails(updatedDetails); // Update the state with the filtered details
-  };
+    const updatedDetails = details.filter((_, i) => i !== index)
+    setDetails(updatedDetails) // Update the state with the filtered details
+  }
 
   // PlusButton component for adding new details
   const PlusButton = ({ onClick }: { onClick: () => void }) => {
@@ -98,8 +98,8 @@ const ClickToAddInputs = <T extends Detail>({
           <path d="M12 16V8" strokeWidth="1.5" />
         </svg>
       </button>
-    );
-  };
+    )
+  }
 
   // MinusButton component for removing details
   const MinusButton = ({ onClick }: { onClick: () => void }) => {
@@ -125,8 +125,8 @@ const ClickToAddInputs = <T extends Detail>({
           <path d="M8 12H16" strokeWidth="1.5" />
         </svg>
       </button>
-    );
-  };
+    )
+  }
   return (
     <div className="flex flex-col gap-y-4">
       {/* Header */}
@@ -139,10 +139,10 @@ const ClickToAddInputs = <T extends Detail>({
           {Object.keys(detail).map((property, propIndex) => (
             <div
               key={propIndex}
-              className={cn("flex items-center gap-x-4", containerClassName)}
+              className={cn('flex items-center gap-x-4', containerClassName)}
             >
               {/* Color picker toggle */}
-              {property === "color" && colorPicker && (
+              {property === 'color' && colorPicker && (
                 <div className="flex gap-x-4">
                   <button
                     type="button"
@@ -163,7 +163,7 @@ const ClickToAddInputs = <T extends Detail>({
               )}
 
               {/* Color picker */}
-              {colorPickerIndex === index && property === "color" && (
+              {colorPickerIndex === index && property === 'color' && (
                 <SketchPicker
                   color={detail[property] as string}
                   onChange={(e) => handleDetailsChange(index, property, e.hex)}
@@ -172,18 +172,18 @@ const ClickToAddInputs = <T extends Detail>({
 
               {/* Input field for each property */}
               <Input
-                className={cn("w-28 placeholder:capitalize", inputClassName)}
-                type={typeof detail[property] === "number" ? "number" : "text"}
+                className={cn('w-28 placeholder:capitalize', inputClassName)}
+                type={typeof detail[property] === 'number' ? 'number' : 'text'}
                 name={property}
                 placeholder={property}
                 value={detail[property] as string}
-                min={typeof detail[property] === "number" ? 0 : undefined}
+                min={typeof detail[property] === 'number' ? 0 : undefined}
                 step="0.01"
                 onChange={(e) =>
                   handleDetailsChange(
                     index,
                     property,
-                    e.target.type === "number"
+                    e.target.type === 'number'
                       ? parseFloat(e.target.value)
                       : e.target.value
                   )
@@ -197,7 +197,7 @@ const ClickToAddInputs = <T extends Detail>({
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default ClickToAddInputs;
+export default ClickToAddInputs
