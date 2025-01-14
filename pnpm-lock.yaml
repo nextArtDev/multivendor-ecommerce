@@ -137,6 +137,9 @@ importers:
       input-otp:
         specifier: ^1.4.1
         version: 1.4.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      jodit-react:
+        specifier: ^4.1.2
+        version: 4.1.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       lucide-react:
         specifier: ^0.469.0
         version: 0.469.0(react@19.0.0)
@@ -1989,6 +1992,10 @@ packages:
     resolution: {integrity: sha512-0bDNnY/u6pPwHDMoF0FieU354oBi0a8rD9FcsLwzcGWbc8KS8KPIi7y+s13OlVY+gMWc/9xEMUgNE6Qm8ZllYQ==}
     engines: {node: '>=4'}
 
+  autobind-decorator@2.4.0:
+    resolution: {integrity: sha512-OGYhWUO72V6DafbF8PM8rm3EPbfuyMZcJhtm5/n26IDwO18pohE4eNazLoCGhPiXOCD0gEGmrbU3849QvM8bbw==}
+    engines: {node: '>=8.10', npm: '>=6.4.1'}
+
   available-typed-arrays@1.0.7:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
@@ -2758,6 +2765,15 @@ packages:
   jiti@1.21.7:
     resolution: {integrity: sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==}
     hasBin: true
+
+  jodit-react@4.1.2:
+    resolution: {integrity: sha512-Hs1evpM1IK5zvy/5m5Gk819L8aC+9EmEdQvCoLHVUr/R3vtH4nYFD6wsMRj3ur3J4ZHhaSBjt0N3R7ggwP405Q==}
+    peerDependencies:
+      react: ~0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ~0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+
+  jodit@4.2.47:
+    resolution: {integrity: sha512-3dSdV+dUjwbuNKhn2M6hs8F7qkiufBPJFMB6YVJWbja7RqkQHGtrCGkpZJ1PH16chUgET2Yi+LVOonWyf/nV8g==}
 
   jose@5.9.6:
     resolution: {integrity: sha512-AMlnetc9+CV9asI19zHmrgS/WYsWUwCn2R7RzlbJWD7F9eWYUTGyBmU9o6PxngtLGOiDGPRu+Uc4fhKzbpteZQ==}
@@ -5897,6 +5913,8 @@ snapshots:
 
   attr-accept@2.2.5: {}
 
+  autobind-decorator@2.4.0: {}
+
   available-typed-arrays@1.0.7:
     dependencies:
       possible-typed-array-names: 1.0.0
@@ -6817,6 +6835,16 @@ snapshots:
       '@pkgjs/parseargs': 0.11.0
 
   jiti@1.21.7: {}
+
+  jodit-react@4.1.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      jodit: 4.2.47
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
+  jodit@4.2.47:
+    dependencies:
+      autobind-decorator: 2.4.0
 
   jose@5.9.6: {}
 
