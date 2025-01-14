@@ -28,7 +28,7 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
 }) => {
   // Calculate the number of images
   const imagesLength = images.length
-  console.log({ images })
+  //   console.log({ images })
 
   // Get the grid class name based on the number of images
   const GridClassName = getGridClassName(imagesLength)
@@ -36,7 +36,7 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
   // Extract images colors
   const [colorPalettes, setColorPalettes] = useState<string[][]>([])
   useEffect(() => {
-    const fecthColors = async () => {
+    const fetchColors = async () => {
       const palettes = await Promise.all(
         images.map(async (img) => {
           try {
@@ -51,9 +51,9 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
     }
 
     if (imagesLength > 0) {
-      fecthColors()
+      fetchColors()
     }
-  }, [images])
+  }, [images, imagesLength])
 
   // If there are no images, display a placeholder image
   if (imagesLength === 0) {

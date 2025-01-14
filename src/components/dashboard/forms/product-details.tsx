@@ -48,10 +48,11 @@ import { getAllCategoriesForCategory } from '@/lib/queries/dashboard'
 import { format } from 'date-fns'
 import { createProduct, editProduct } from '@/lib/actions/dashboard/products'
 import { cn } from '@/lib/utils'
-import ImagesPreviewGrid from '../images-preview-grid'
+import ImagesPreviewGrid from '../images-preview-grid_'
 import { useTheme } from 'next-themes'
-import { ImageInput } from '../image-input2'
+import { ImageInput } from '../image-input'
 import ClickToAddInputs from '../click-to-add'
+import InputFieldset from '../input-fieldset'
 interface ProductDetailProps {
   // data?: Product & {
   //   variants: (ProductVariant & { images: Image[] } & { sizes: Size[] } & {
@@ -589,13 +590,13 @@ const ProductDetails: FC<ProductDetailProps> = ({
       : (files
           .map((file) => URL.createObjectURL(file))
           .filter(Boolean) as string[])
-
-  const [images, setImages] = useState([])
-  const urls = {
-    url: images
-      .map((file) => URL.createObjectURL(file))
-      .filter(Boolean) as string[],
-  }
+  useEffect(() => {
+    form.setValue('colors', colors)
+    form.setValue('sizes', sizes)
+  }, [colors, form, sizes])
+  // console.log('form sizes', form.watch().sizes)
+  // console.log('form colors', form.watch().colors)
+  // console.log('form images', form.watch().images)
   return (
     <AlertDialog>
       <Card className="w-full">
@@ -618,16 +619,6 @@ const ProductDetails: FC<ProductDetailProps> = ({
               className="space-y-4"
             >
               <div className="flex flex-col gap-y-6 xl:flex-row">
-                {/* <FormField
-                  control={form.control}
-                  name="images"
-                  render={({ field: { onChange }, ...field }) => (
-                    <FormItem>
-                      <FormControl>
-                      </FormControl>
-                    </FormItem>
-                  )} 
-                /> */}
                 <ImageInput
                   name="images"
                   label="images"
@@ -648,6 +639,27 @@ const ProductDetails: FC<ProductDetailProps> = ({
                     </span>
                   )}
                 </div>
+                <InputFieldset label="Sizes, Quantities, Prices, Disocunts">
+                  <div className="w-full flex flex-col gap-y-3">
+                    <ClickToAddInputs
+                      details={sizes}
+                      setDetails={setSizes}
+                      initialDetail={{
+                        size: '',
+                        quantity: 1,
+                        price: 1000,
+                        discount: 0,
+                      }}
+                      containerClassName="flex-1"
+                      inputClassName="w-full"
+                    />
+                    {errors.sizes && (
+                      <span className="text-sm font-medium text-destructive">
+                        {errors.sizes.message}
+                      </span>
+                    )}
+                  </div>
+                </InputFieldset>
               </div>
               <Button type="submit" disabled={isLoading}>
                 {isLoading

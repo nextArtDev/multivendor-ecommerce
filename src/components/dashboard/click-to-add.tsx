@@ -156,10 +156,10 @@ const ClickToAddInputs = <T extends Detail>({
                   >
                     <PaintBucket />
                   </button>
-                  {/* <span
+                  <span
                     className="w-8 h-8 rounded-full"
                     style={{ backgroundColor: detail[property] as string }}
-                  /> */}
+                  />
                 </div>
               )}
 
