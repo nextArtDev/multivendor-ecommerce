@@ -8,8 +8,9 @@ import { getAllCategories } from '@/lib/queries/dashboard'
 export default async function SellerNewProductPage({
   params,
 }: {
-  params: { storeUrl: string }
+  params: Promise<{ storeUrl: string }>
 }) {
+  const storeUrl = (await params).storeUrl
   const categories = await getAllCategories()
   // const offerTags = await getAllOfferTags()
   const countries = await prisma.country.findMany({
@@ -22,7 +23,7 @@ export default async function SellerNewProductPage({
     <div className="w-full">
       <ProductDetails
         categories={categories}
-        storeUrl={params.storeUrl}
+        storeUrl={storeUrl}
         // offerTags={offerTags}
         countries={countries}
       />

@@ -615,7 +615,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-8 max-w-3xl mx-auto py-10"
+              className="space-y-4"
             >
               <div className="flex flex-col gap-y-6 xl:flex-row">
                 {/* <FormField
@@ -626,7 +626,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                       <FormControl>
                       </FormControl>
                     </FormItem>
-                  )}
+                  )} 
                 /> */}
                 <ImageInput
                   name="images"

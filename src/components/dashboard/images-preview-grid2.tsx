@@ -36,7 +36,7 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
   // Extract images colors
   const [colorPalettes, setColorPalettes] = useState<string[][]>([])
   useEffect(() => {
-    const fecthColors = async () => {
+    const fetchColors = async () => {
       const palettes = await Promise.all(
         images.map(async (img) => {
           try {
@@ -51,9 +51,9 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
     }
 
     if (imagesLength > 0) {
-      fecthColors()
+      fetchColors()
     }
-  }, [images])
+  }, [images, imagesLength])
 
   // If there are no images, display a placeholder image
   if (imagesLength === 0) {
