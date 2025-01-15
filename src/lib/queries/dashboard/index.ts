@@ -118,9 +118,9 @@ export const getStoreById = cache(
   }
 )
 
-export const getAllCategoriesForCategory = async (categoryId: string) => {
+export const getAllCategoriesForCategory = cache((categoryId: string) => {
   // Retrieve all subcategories of category from the database
-  const subCategories = await prisma.subCategory.findMany({
+  const subCategories = prisma.subCategory.findMany({
     where: {
       categoryId,
     },
@@ -128,5 +128,6 @@ export const getAllCategoriesForCategory = async (categoryId: string) => {
       updatedAt: 'desc',
     },
   })
+
   return subCategories
-}
+})

@@ -202,6 +202,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
   useEffect(() => {
     const getSubCategories = async () => {
       const res = await getAllCategoriesForCategory(form.watch().categoryId)
+      // console.log({ res })
       setSubCategories(res)
     }
     getSubCategories()
@@ -268,9 +269,9 @@ const ProductDetails: FC<ProductDetailProps> = ({
     formData.append('saleEndDate', data.saleEndDate)
     formData.append('brand', data.brand)
     formData.append('sku', data.sku)
-    formData.append('weight', data.weight)
-    formData.append('colors', data.colors)
-    formData.append('sizes', data.sizes)
+    formData.append('weight', data.weight || 0)
+    formData.append('colors', data.colors || [])
+    formData.append('sizes', data.sizes || [])
     formData.append('product_specs', data.product_specs)
     formData.append('variant_specs', data.variant_specs)
     formData.append('keywords', data.keywords)
@@ -881,7 +882,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {subCategories.map((sub) => (
+                                {subCategories?.map((sub) => (
                                   <SelectItem key={sub.id} value={sub.id}>
                                     {sub.name}
                                   </SelectItem>
@@ -989,32 +990,15 @@ const ProductDetails: FC<ProductDetailProps> = ({
                 {/* Variant image - Keywords*/}
                 <div className="flex items-center gap-10 py-14">
                   {/* Variant image */}
-                  <div className="border-r pr-10">
-                    <FormField
-                      control={form.control}
+                  <div className="w-60 h-60">
+                    <InputFileUpload
+                      className="w-full"
+                      // initialDataImages={
+                      //   data?.variantImage ? data?.variantImage : []
+                      // }
+                      initialDataImages={[]}
                       name="variantImage"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="ml-14">Variant Image</FormLabel>
-                          <FormControl>
-                            <ImageUpload
-                              dontShowPreview
-                              type="profile"
-                              value={field.value.map((image) => image.url)}
-                              disabled={isLoading}
-                              onChange={(url) => field.onChange([{ url }])}
-                              onRemove={(url) =>
-                                field.onChange([
-                                  ...field.value.filter(
-                                    (current) => current.url !== url
-                                  ),
-                                ])
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage className="!mt-4" />
-                        </FormItem>
-                      )}
+                      label="VariantImage"
                     />
                   </div>
                   {/* Keywords */}
@@ -1036,7 +1020,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                               }}
                             /> */}
                             <TagsInput
-                              value={field.value}
+                              value={field?.value || []}
                               onValueChange={field.onChange}
                               placeholder="Enter your tags"
                             />

@@ -12,6 +12,7 @@ export default async function SellerNewProductPage({
 }) {
   const storeUrl = (await params).storeUrl
   const categories = await getAllCategories()
+
   // const offerTags = await getAllOfferTags()
   const countries = await prisma.country.findMany({
     orderBy: {
