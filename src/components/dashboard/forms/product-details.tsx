@@ -76,6 +76,7 @@ import { TagsInput } from '@/components/shared/tag-input'
 import { getSubCategoryByCategoryId } from '@/lib/actions/dashboard/categories'
 import { useQuery } from '@tanstack/react-query'
 import MultipleSelector, { Option } from '@/components/shared/multiple-selector'
+import { DateTimePicker } from '@/components/shared/date-time-picker'
 interface ProductDetailProps {
   // data?: Product & {
   //   variants: (ProductVariant & { images: Image[] } & { sizes: Size[] } & {
@@ -621,7 +622,8 @@ const ProductDetails: FC<ProductDetailProps> = ({
   // console.log('form sizes', form.watch().sizes)
   // console.log('form colors', form.watch().colors)
   // console.log('form images', form.watch().images)
-  console.log('form images', form.watch().freeShippingCountriesIds)
+  console.log('form isSale', form.watch().saleEndDate)
+  // console.log('form images', form.watch().freeShippingCountriesIds)
   return (
     <AlertDialog>
       <Card className="w-full">
@@ -1111,41 +1113,47 @@ const ProductDetails: FC<ProductDetailProps> = ({
                   </InputFieldset>
                 )}
                 {/* Is On Sale */}
+
                 <InputFieldset
                   label="Sale"
                   description="Is your product on sale ?"
                 >
                   <div>
-                    <label
-                      htmlFor="yes"
-                      className="ml-5 flex items-center gap-x-2 cursor-pointer"
-                    >
-                      <FormField
-                        control={form.control}
-                        name="isSale"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <>
-                                <input
-                                  type="checkbox"
-                                  id="yes"
-                                  checked={field.value}
-                                  onChange={field.onChange}
-                                  hidden
-                                />
-                                <Checkbox
-                                  checked={field.value}
-                                  // @ts-ignore
-                                  onCheckedChange={field.onChange}
-                                />
-                              </>
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      <span>Yes</span>
-                    </label>
+                    <FormField
+                      control={form.control}
+                      name="isSale"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            {/* <>
+                                  <input
+                                    type="checkbox"
+                                    id="yes"
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                    hidden
+                                  />
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </> */}
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              aria-readonly
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <>
+                      {form.getValues('isSale') ? (
+                        <DateTimePicker name="saleEndDate" />
+                      ) : null}
+                    </>
+                    {/* <span>Yes</span> */}
+
                     {/* {form.getValues()?.isSale && (
                       <div className="mt-5">
                         <p className="text-sm text-main-secondary dark:text-gray-400 pb-3 flex">

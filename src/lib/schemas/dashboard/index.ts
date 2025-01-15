@@ -491,7 +491,8 @@ export const ProductFormSchema = z.object({
       }
     ),
   isSale: z.boolean().default(false),
-  saleEndDate: z.string().optional(),
+  // saleEndDate: z.string().optional(),
+  saleEndDate: z.date().optional(),
   freeShippingForAllCountries: z.boolean().default(false),
   freeShippingCountriesIds: z.array(
     z.object({
