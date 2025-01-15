@@ -20,7 +20,7 @@ import InputFileUpload from '@/components/shared/InputFileUpload'
 
 import { Switch } from '@/components/ui/switch'
 import { ProductFormSchema } from '@/lib/schemas/dashboard'
-import { usePathname } from '@/navigation'
+import { Link, usePathname } from '@/navigation'
 import { FC, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import {
   Category,
@@ -72,7 +72,9 @@ import {
   MultiSelectorTrigger,
 } from '@/components/ui/multi-selector'
 import { TagsInput } from '@/components/shared/tag-input'
-
+// import { useQueryState } from 'nuqs'
+import { getSubCategoryByCategoryId } from '@/lib/actions/dashboard/categories'
+import { useQuery } from '@tanstack/react-query'
 interface ProductDetailProps {
   // data?: Product & {
   //   variants: (ProductVariant & { images: Image[] } & { sizes: Size[] } & {
@@ -86,6 +88,7 @@ interface ProductDetailProps {
   storeUrl: string
   offerTags: OfferTag[]
   countries: Country[]
+  // subCategories?: SubCategory[]
 }
 
 const ProductDetails: FC<ProductDetailProps> = ({
@@ -94,6 +97,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
   offerTags,
   storeUrl,
   countries,
+  // subCategories,
 }) => {
   // console.log(data.cover.flatMap((cover) => cover.url))
   // console.log(data.logo.url)
@@ -119,8 +123,8 @@ const ProductDetails: FC<ProductDetailProps> = ({
   )
 
   // State for subCategories
-  const [subCategories, setSubCategories] = useState<SubCategory[]>([])
-
+  // const [subCategories, setSubCategories] = useState<SubCategory[] | null>([])
+  // const [categoryId, setCategoryId] = useQueryState('categoryId')
   // State for colors
   const [colors, setColors] = useState<{ color: string }[]>(
     data?.colors || [{ color: '' }]
@@ -197,16 +201,30 @@ const ProductDetails: FC<ProductDetailProps> = ({
     second: '2-digit', // Two-digit second (optional)
     hour12: false, // 12-hour format (change to false for 24-hour format)
   })
-
+  const { data: SubCategories } = useQuery({
+    queryKey: ['subCateByCat', form.watch().categoryId],
+    queryFn: () => getSubCategoryByCategoryId(form.watch().categoryId),
+  })
   // UseEffect to get subCategories when user pick/change a category
-  useEffect(() => {
-    const getSubCategories = async () => {
-      const res = await getAllCategoriesForCategory(form.watch().categoryId)
-      // console.log({ res })
-      setSubCategories(res)
-    }
-    getSubCategories()
-  }, [form.watch().categoryId])
+  // useEffect(() => {
+  //   const getSubCategories = async () => {
+  //     try {
+  //       const res = await getSubCategoryByCategoryId(form.watch().categoryId)
+
+  //       if (res) {
+  //         setSubCategories(res)
+  //       }
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  //   }
+  //   if (form.watch().categoryId) {
+  //     getSubCategories()
+  //   }
+  //   // setCategoryId(form.watch().categoryId)
+
+  //   // console.log(form.watch().categoryId)
+  // }, [form.watch().categoryId])
 
   // Extract errors state from form
   const errors = form.formState.errors
@@ -882,7 +900,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {subCategories?.map((sub) => (
+                                {SubCategories?.map((sub) => (
                                   <SelectItem key={sub.id} value={sub.id}>
                                     {sub.name}
                                   </SelectItem>

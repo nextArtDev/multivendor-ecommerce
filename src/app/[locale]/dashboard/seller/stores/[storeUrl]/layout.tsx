@@ -7,6 +7,7 @@ import { currentUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import Header from '@/components/dashboard/header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+// import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 export default async function SellerStoreDashboardLayout({
   children,
@@ -33,7 +34,9 @@ export default async function SellerStoreDashboardLayout({
         <SidebarInset>
           <div className="w-full mt-[75px] p-4">
             <Header />
+            {/* <NuqsAdapter> */}
             {children}
+            {/* </NuqsAdapter> */}
           </div>
         </SidebarInset>
       </SidebarProvider>

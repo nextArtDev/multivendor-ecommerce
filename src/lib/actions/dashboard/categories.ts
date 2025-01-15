@@ -12,6 +12,7 @@ import {
   CategoryServerFormSchema,
 } from '@/lib/schemas/dashboard'
 import { headers } from 'next/headers'
+import { getAllCategoriesForCategory } from '@/lib/queries/dashboard'
 
 interface CreateCategoryFormState {
   success?: string
@@ -384,4 +385,13 @@ export async function deleteCategory(
   }
   revalidatePath(path)
   redirect(`/${locale}/dashboard/admin/categories`)
+}
+
+export const getSubCategoryByCategoryId = async (categoryId: string) => {
+  try {
+    const subCategories = await getAllCategoriesForCategory(categoryId)
+    return subCategories
+  } catch (error) {
+    console.log(error)
+  }
 }

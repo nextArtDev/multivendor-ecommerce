@@ -9,6 +9,7 @@ import { ThemeProvider } from '@/providers/theme-providers'
 import { notFound } from 'next/navigation'
 import AuthProvider from '@/providers/AuthProvider'
 import { Toaster } from 'sonner'
+import QueryProviders from '@/providers/query-provider'
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -41,21 +42,23 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <AuthProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
+        <QueryProviders>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
-            <NextIntlClientProvider messages={messages}>
-              {children}
-              <Toaster />
-            </NextIntlClientProvider>
-          </ThemeProvider>
-        </body>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <NextIntlClientProvider messages={messages}>
+                {children}
+                <Toaster />
+              </NextIntlClientProvider>
+            </ThemeProvider>
+          </body>
+        </QueryProviders>
       </AuthProvider>
     </html>
   )
