@@ -3,10 +3,21 @@ import { Category, Image, Store, SubCategory } from '@prisma/client'
 import { cache } from 'react'
 
 export const getAllCategories = cache(
-  (): Promise<(Category & { images: Image[] })[] | null> => {
+  (storeId?: string): Promise<(Category & { images: Image[] })[]> => {
     const categories = prisma.category.findMany({
+      where: storeId
+        ? {
+            products: {
+              some: {
+                storeId,
+              },
+            },
+          }
+        : {},
+
       include: {
         images: true,
+        subCategories: true,
       },
 
       orderBy: {

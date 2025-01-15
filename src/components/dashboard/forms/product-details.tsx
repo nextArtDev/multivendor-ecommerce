@@ -75,6 +75,7 @@ import { TagsInput } from '@/components/shared/tag-input'
 // import { useQueryState } from 'nuqs'
 import { getSubCategoryByCategoryId } from '@/lib/actions/dashboard/categories'
 import { useQuery } from '@tanstack/react-query'
+import MultipleSelector, { Option } from '@/components/shared/multiple-selector'
 interface ProductDetailProps {
   // data?: Product & {
   //   variants: (ProductVariant & { images: Image[] } & { sizes: Size[] } & {
@@ -103,7 +104,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
   // console.log(data.logo.url)
 
   const path = usePathname()
-  const [files, setFiles] = useState<File[]>([])
+
   const [isPending, startTransition] = useTransition()
   // Is new variant page
   const isNewVariantPage = data?.productId && !data?.variantId
@@ -122,9 +123,6 @@ const ProductDetails: FC<ProductDetailProps> = ({
     [theme]
   )
 
-  // State for subCategories
-  // const [subCategories, setSubCategories] = useState<SubCategory[] | null>([])
-  // const [categoryId, setCategoryId] = useQueryState('categoryId')
   // State for colors
   const [colors, setColors] = useState<{ color: string }[]>(
     data?.colors || [{ color: '' }]
@@ -201,36 +199,16 @@ const ProductDetails: FC<ProductDetailProps> = ({
     second: '2-digit', // Two-digit second (optional)
     hour12: false, // 12-hour format (change to false for 24-hour format)
   })
-  const { data: SubCategories } = useQuery({
+  const { data: SubCategories, isPending: isPendingCategory } = useQuery({
     queryKey: ['subCateByCat', form.watch().categoryId],
     queryFn: () => getSubCategoryByCategoryId(form.watch().categoryId),
   })
-  // UseEffect to get subCategories when user pick/change a category
-  // useEffect(() => {
-  //   const getSubCategories = async () => {
-  //     try {
-  //       const res = await getSubCategoryByCategoryId(form.watch().categoryId)
 
-  //       if (res) {
-  //         setSubCategories(res)
-  //       }
-  //     } catch (error) {
-  //       console.log(error)
-  //     }
-  //   }
-  //   if (form.watch().categoryId) {
-  //     getSubCategories()
-  //   }
-  //   // setCategoryId(form.watch().categoryId)
-
-  //   // console.log(form.watch().categoryId)
-  // }, [form.watch().categoryId])
-
-  // Extract errors state from form
+  // // Extract errors state from form
   const errors = form.formState.errors
 
-  // Loading status based on form submission
-  const isLoading = form.formState.isSubmitting
+  // // Loading status based on form submission
+  // const isPending = form.formState.isSubmitting
 
   useEffect(() => {
     if (data) {
@@ -273,43 +251,37 @@ const ProductDetails: FC<ProductDetailProps> = ({
     formData.append('name', data.name)
     formData.append('description', data.description)
     formData.append('variantName', data.variantName)
-    formData.append('variantDescription', data.variantDescription)
+    formData.append('variantDescription', data.variantDescription || '')
     formData.append('name_fa', data.name_fa || '')
     formData.append('description_fa', data.description_fa || '')
     formData.append('variantName_fa', data.variantName_fa || '')
     formData.append('variantDescription_fa', data.variantDescription_fa || '')
-    formData.append('images', data.images)
-    formData.append('variantImage', data.variantImage)
+    // formData.append('images', data.images)
+    // formData.append('variantImage', data.variantImage)
     formData.append('categoryId', data.categoryId)
     formData.append('subCategoryId', data.subCategoryId)
     formData.append('offerTagId', data.offerTagId || '')
-    formData.append('isSale', data.isSale)
-    formData.append('saleEndDate', data.saleEndDate)
+    if (data.isSale) {
+      formData.append('isSale', 'true')
+    }
+    // formData.append('saleEndDate', data.saleEndDate)
     formData.append('brand', data.brand)
     formData.append('sku', data.sku)
-    formData.append('weight', data.weight || 0)
-    formData.append('colors', data.colors || [])
-    formData.append('sizes', data.sizes || [])
+
+    formData.append('weight', String(data.weight))
+
+    // formData.append('colors', data.colors || [])
+    // formData.append('sizes', data.sizes || [])
     formData.append('product_specs', data.product_specs)
     formData.append('variant_specs', data.variant_specs)
     formData.append('keywords', data.keywords)
-    formData.append('keywords_fa', data.keywords_fa || [])
+    // formData.append('keywords_fa', data.keywords_fa || [])
     formData.append('questions', data.questions)
-    // formData.append('shippingFeeMethod', data.shippingFeeMethod)
+    formData.append('shippingFeeMethod', data.shippingFeeMethod || [])
     formData.append(
       'freeShippingForAllCountries',
       data.freeShippingForAllCountries
     )
-    // formData.append('freeShippingCountriesIds', data.freeShippingCountriesIds)
-    // formData.append('name', data.name)
-    // formData.append('name', data.name)
-    // formData.append('name', data.name)
-    // formData.append('name_fa', data.name_fa || '')
-    // formData.append('description', data.description)
-    // formData.append('description_fa', data.description_fa || '')
-    // formData.append('email', data.email)
-    // formData.append('phone', data.phone)
-    // formData.append('url', data.url)
 
     // if (data.featured) {
     //   formData.append('featured', 'true')
@@ -623,21 +595,6 @@ const ProductDetails: FC<ProductDetailProps> = ({
       toast.error('مشکلی پیش آمده، لطفا دوباره امتحان کنید!')
     }
   }
-  const [keywords, setKeywords] = useState<string[]>(data?.keywords || [])
-
-  interface Keyword {
-    id: string
-    text: string
-  }
-
-  const handleAddition = (keyword: Keyword) => {
-    if (keywords.length === 10) return
-    setKeywords([...keywords, keyword.text])
-  }
-
-  const handleDeleteKeyword = (i: number) => {
-    setKeywords(keywords.filter((_, index) => index !== i))
-  }
 
   //Countries options
   type CountryOption = {
@@ -645,7 +602,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
     value: string
   }
 
-  const countryOptions: CountryOption[] = countries.map((c) => ({
+  const countryOptions: Option[] = countries.map((c) => ({
     label: c.name,
     value: c.id,
   }))
@@ -655,19 +612,16 @@ const ProductDetails: FC<ProductDetailProps> = ({
     const updatedValues = currentValues.filter((_, i) => i !== index)
     form.setValue('freeShippingCountriesIds', updatedValues)
   }
-  const validUrls =
-    data && data.images
-      ? (data.images.map((img) => img.url).filter(Boolean) as string[])
-      : (files
-          .map((file) => URL.createObjectURL(file))
-          .filter(Boolean) as string[])
+
   useEffect(() => {
     form.setValue('colors', colors)
     form.setValue('sizes', sizes)
   }, [colors, form, sizes])
+  // console.log(form.watch().keywords)
   // console.log('form sizes', form.watch().sizes)
   // console.log('form colors', form.watch().colors)
   // console.log('form images', form.watch().images)
+  console.log('form images', form.watch().freeShippingCountriesIds)
   return (
     <AlertDialog>
       <Card className="w-full">
@@ -689,7 +643,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-4"
             >
-              <div className="flex flex-col gap-y-6 xl:flex-row">
+              <div className="flex flex-col gap-y-6 ">
                 <ImageInput
                   name="images"
                   label="images"
@@ -737,7 +691,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                   <div className="flex flex-col lg:flex-row gap-4">
                     {!isNewVariantPage && (
                       <FormField
-                        disabled={isLoading}
+                        disabled={isPending}
                         control={form.control}
                         name="name"
                         render={({ field }) => (
@@ -751,7 +705,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                       />
                     )}
                     <FormField
-                      disabled={isLoading}
+                      disabled={isPending}
                       control={form.control}
                       name="variantName"
                       render={({ field }) => (
@@ -790,7 +744,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                     )}
                     <TabsContent value="product">
                       <FormField
-                        disabled={isLoading}
+                        disabled={isPending}
                         control={form.control}
                         name="description"
                         render={({ field }) => (
@@ -812,7 +766,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                     </TabsContent>
                     <TabsContent value="variant">
                       <FormField
-                        disabled={isLoading}
+                        disabled={isPending}
                         control={form.control}
                         name="variantDescription"
                         render={({ field }) => (
@@ -841,13 +795,17 @@ const ProductDetails: FC<ProductDetailProps> = ({
                   <InputFieldset label="Category">
                     <div className="flex gap-4">
                       <FormField
-                        disabled={isLoading}
+                        disabled={isPending}
                         control={form.control}
                         name="categoryId"
                         render={({ field }) => (
                           <FormItem className="flex-1">
                             <Select
-                              disabled={isLoading || categories.length == 0}
+                              disabled={
+                                isPending ||
+                                isPendingCategory ||
+                                categories.length == 0
+                              }
                               onValueChange={field.onChange}
                               value={field.value}
                               defaultValue={field.value}
@@ -876,14 +834,15 @@ const ProductDetails: FC<ProductDetailProps> = ({
                         )}
                       />
                       <FormField
-                        disabled={isLoading}
+                        disabled={isPending}
                         control={form.control}
                         name="subCategoryId"
                         render={({ field }) => (
                           <FormItem className="flex-1">
                             <Select
                               disabled={
-                                isLoading ||
+                                isPending ||
+                                isPendingCategory ||
                                 categories.length == 0 ||
                                 !form.getValues().categoryId
                               }
@@ -913,13 +872,13 @@ const ProductDetails: FC<ProductDetailProps> = ({
                       />
                       {/* Offer Tag */}
                       <FormField
-                        disabled={isLoading}
+                        disabled={isPending}
                         control={form.control}
                         name="offerTagId"
                         render={({ field }) => (
                           <FormItem className="flex-1">
                             <Select
-                              disabled={isLoading || categories.length == 0}
+                              disabled={isPending || categories.length == 0}
                               onValueChange={field.onChange}
                               value={field.value}
                               defaultValue={field.value}
@@ -957,7 +916,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                   <div className="flex flex-col lg:flex-row gap-4">
                     {!isNewVariantPage && (
                       <FormField
-                        disabled={isLoading}
+                        disabled={isPending}
                         control={form.control}
                         name="brand"
                         render={({ field }) => (
@@ -971,7 +930,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                       />
                     )}
                     <FormField
-                      disabled={isLoading}
+                      disabled={isPending}
                       control={form.control}
                       name="sku"
                       render={({ field }) => (
@@ -984,7 +943,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                       )}
                     />
                     {/* <FormField
-                      disabled={isLoading}
+                      disabled={isPending}
                       control={form.control}
                       name="weight"
                       render={({ field }) => (
@@ -1011,10 +970,9 @@ const ProductDetails: FC<ProductDetailProps> = ({
                   <div className="w-60 h-60">
                     <InputFileUpload
                       className="w-full"
-                      // initialDataImages={
-                      //   data?.variantImage ? data?.variantImage : []
-                      // }
-                      initialDataImages={[]}
+                      initialDataImages={
+                        data?.variantImage ? data?.variantImage : []
+                      }
                       name="variantImage"
                       label="VariantImage"
                     />
@@ -1038,6 +996,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                               }}
                             /> */}
                             <TagsInput
+                              maxItems={10}
                               value={field?.value || []}
                               onValueChange={field.onChange}
                               placeholder="Enter your tags"
@@ -1046,7 +1005,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                         </FormItem>
                       )}
                     />
-                    <div className="flex flex-wrap gap-1">
+                    {/* <div className="flex flex-wrap gap-1">
                       {keywords.map((k, i) => (
                         <div
                           key={i}
@@ -1061,7 +1020,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                           </span>
                         </div>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 {/* Product and variant specs*/}
@@ -1187,7 +1146,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                       />
                       <span>Yes</span>
                     </label>
-                    {form.getValues().isSale && (
+                    {/* {form.getValues()?.isSale && (
                       <div className="mt-5">
                         <p className="text-sm text-main-secondary dark:text-gray-400 pb-3 flex">
                           <Dot className="-me-1" />
@@ -1234,20 +1193,20 @@ const ProductDetails: FC<ProductDetailProps> = ({
                           <span>{formattedDate}</span>
                         </div>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </InputFieldset>
                 {/* Shipping fee method */}
                 {/* {!isNewVariantPage && (
                   <InputFieldset label="Product shipping fee method">
                     <FormField
-                      disabled={isLoading}
+                      disabled={isPending}
                       control={form.control}
                       name="shippingFeeMethod"
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <Select
-                            disabled={isLoading}
+                            disabled={isPending}
                             onValueChange={field.onChange}
                             value={field.value}
                             defaultValue={field.value}
@@ -1303,7 +1262,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                                     hidden
                                   />
                                   <Checkbox
-                                    checked={field.value}
+                                    checked={field?.value}
                                     // @ts-ignore
                                     onCheckedChange={field.onChange}
                                   />
@@ -1331,37 +1290,18 @@ const ProductDetails: FC<ProductDetailProps> = ({
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  {/* <MultiSelect
-                                    className="!max-w-[800px]"
-                                    options={countryOptions} // Array of options, each with `label` and `value`
-                                    value={field.value} // Pass the array of objects directly
-                                    onChange={(selected: CountryOption[]) => {
-                                      field.onChange(selected)
-                                    }}
-                                    labelledBy="Select"
-                                  /> */}
-                                  {/* <MultiSelector
-                                    value={field.value}
-                                    onValuesChange={field.onChange}
-                                    loop
-                                    className="max-w-xs"
-                                  >
-                                    <MultiSelectorTrigger>
-                                      <MultiSelectorInput placeholder="Select languages" />
-                                    </MultiSelectorTrigger>
-                                    <MultiSelectorContent>
-                                      <MultiSelectorList>
-                                        {countryOptions.map((country) => (
-                                          <MultiSelectorItem
-                                            key={country.value}
-                                            value={country.value}
-                                          >
-                                            {country.label}
-                                          </MultiSelectorItem>
-                                        ))}
-                                      </MultiSelectorList>
-                                    </MultiSelectorContent>
-                                  </MultiSelector> */}
+                                  <MultipleSelector
+                                    {...field}
+                                    // value={field?.value}
+                                    // onChange={field.onChange}
+                                    defaultOptions={countryOptions}
+                                    placeholder="Select frameworks you like..."
+                                    emptyIndicator={
+                                      <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                                        no results found.
+                                      </p>
+                                    }
+                                  />
                                 </FormControl>
                               </FormItem>
                             )}
@@ -1375,14 +1315,14 @@ const ProductDetails: FC<ProductDetailProps> = ({
                                 .length === 0 &&
                               'None'}
                           </p>
-                          {/* Free shipping counties */}
+
                           <div className="flex flex-wrap gap-1">
                             {form
                               .getValues()
                               .freeShippingCountriesIds?.map(
                                 (country, index) => (
                                   <div
-                                    key={country.id}
+                                    key={country.label}
                                     className="text-xs inline-flex items-center px-3 py-1 bg-blue-200 text-blue-primary rounded-md gap-x-2"
                                   >
                                     <span>{country.label}</span>
@@ -1404,8 +1344,8 @@ const ProductDetails: FC<ProductDetailProps> = ({
                   </InputFieldset>
                 )}
               </div>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading
+              <Button type="submit" disabled={isPending}>
+                {isPending
                   ? 'loading...'
                   : data?.productId && data.variantId
                   ? 'Save product information'

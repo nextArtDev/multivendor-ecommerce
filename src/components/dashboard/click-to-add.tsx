@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { PaintBucket } from 'lucide-react'
 
 // Color picker
-import { SketchPicker } from 'react-color'
+// import { SketchPicker } from 'react-color'
 import { cn } from '@/lib/utils'
 import { ColorPicker } from '../shared/color-picker'
 

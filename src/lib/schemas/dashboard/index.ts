@@ -397,14 +397,16 @@ export const ProductFormSchema = z.object({
     message: 'Please provide a valid product weight.',
   }),
   keywords: z
-    .string({
-      required_error: 'Product keywords are mandatory.',
-      invalid_type_error: 'Keywords must be valid strings.',
-    })
-    .array()
-    .min(5, {
-      message: 'Please provide at least 5 keywords.',
-    })
+    .array(z.string())
+    .nonempty('Please at least one item')
+    // .string({
+    //   required_error: 'Product keywords are mandatory.',
+    //   invalid_type_error: 'Keywords must be valid strings.',
+    // })
+    // .array()
+    // .min(5, {
+    //   message: 'Please provide at least 5 keywords.',
+    // })
     .max(10, {
       message: 'You can provide up to 10 keywords.',
     }),
@@ -491,18 +493,24 @@ export const ProductFormSchema = z.object({
   isSale: z.boolean().default(false),
   saleEndDate: z.string().optional(),
   freeShippingForAllCountries: z.boolean().default(false),
-  freeShippingCountriesIds: z
-    .object({
-      id: z.string().optional(),
+  freeShippingCountriesIds: z.array(
+    z.object({
       label: z.string(),
       value: z.string(),
+      disable: z.boolean().optional(),
     })
-    .array()
-    .optional()
-    .refine(
-      (ids) => ids?.every((item) => item.label && item.value),
-      'Each country must have a valid name and ID.'
-    )
-    .default([]),
+  ),
+  // .object({
+  //   id: z.string().optional(),
+  //   label: z.string(),
+  //   value: z.string(),
+  // })
+  // .array()
+  // .optional()
+  // .refine(
+  //   (ids) => ids?.every((item) => item.label && item.value),
+  //   'Each country must have a valid name and ID.'
+  // )
+  // .default([]),
   // shippingFeeMethod: z.nativeEnum(ShippingFeeMethod),
 })
