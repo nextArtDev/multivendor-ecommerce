@@ -7,6 +7,8 @@ import { Plus } from 'lucide-react'
 import { getAllCategories } from '@/lib/queries/dashboard'
 import { prisma } from '@/lib/prisma'
 import ProductDetails from '@/components/dashboard/forms/product-details'
+import { getAllOfferTags } from '@/lib/queries/dashboard/tags'
+import { getAllStoreProducts } from '@/lib/queries/dashboard/products'
 
 export default async function SellerProductsPage({
   params,
@@ -15,10 +17,11 @@ export default async function SellerProductsPage({
 }) {
   const storeUrl = (await params).storeUrl
   // Fetching products data from the database for the active store
-  // const products = await getAllStoreProducts(storeUrl)
+  const products = await getAllStoreProducts(storeUrl)
+  console.log({ products })
 
   const categories = await getAllCategories()
-  //   const offerTags = await getAllOfferTags()
+  const offerTags = await getAllOfferTags()
 
   const countries = await prisma.country.findMany({
     orderBy: {
@@ -36,14 +39,14 @@ export default async function SellerProductsPage({
       modalChildren={
         <ProductDetails
           categories={categories}
-          //   offerTags={offerTags}
+          offerTags={offerTags}
           storeUrl={storeUrl}
           countries={countries}
         />
       }
       newTabLink={`/dashboard/seller/stores/${storeUrl}/products/new`}
       filterValue="name"
-      // data={products}
+      data={products}
       columns={columns}
       searchPlaceholder="Search product name..."
     />

@@ -634,6 +634,11 @@ const ProductDetails: FC<ProductDetailProps> = ({
   // console.log('form sizes', form.watch().sizes)
   // console.log('form colors', form.watch().colors)
   // console.log('form images', form.watch().images)
+  // console.log('saleEndDate', form.watch().saleEndDate)
+  // console.log('form variantImage', form.watch().variantImage)
+  // console.log('form isSale', form.watch().isSale)
+  // console.log('form sku', form.watch().sku)
+  // console.log('form questions', form.watch().questions)
   // console.log('form isSale', form.watch().saleEndDate)
   // console.log('form images', form.watch().freeShippingCountriesIds)
   return (
@@ -1000,15 +1005,6 @@ const ProductDetails: FC<ProductDetailProps> = ({
                         <FormItem className="relative flex-1">
                           <FormLabel>Product Keywords</FormLabel>
                           <FormControl>
-                            {/* <ReactTags
-                              handleAddition={handleAddition}
-                              handleDelete={() => {}}
-                              placeholder="Keywords (e.g., winter jacket, warm, stylish)"
-                              classNames={{
-                                tagInputField:
-                                  'bg-background border rounded-md p-2 w-full focus:outline-none',
-                              }}
-                            /> */}
                             <TagsInput
                               maxItems={10}
                               value={field?.value || []}
@@ -1019,22 +1015,6 @@ const ProductDetails: FC<ProductDetailProps> = ({
                         </FormItem>
                       )}
                     />
-                    {/* <div className="flex flex-wrap gap-1">
-                      {keywords.map((k, i) => (
-                        <div
-                          key={i}
-                          className="text-xs inline-flex items-center px-3 py-1 bg-blue-200 text-blue-700 rounded-full gap-x-2"
-                        >
-                          <span>{k}</span>
-                          <span
-                            className="cursor-pointer"
-                            onClick={() => handleDeleteKeyword(i)}
-                          >
-                            x
-                          </span>
-                        </div>
-                      ))}
-                    </div> */}
                   </div>
                 </div>
                 {/* Product and variant specs*/}
