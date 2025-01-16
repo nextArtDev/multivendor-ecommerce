@@ -533,19 +533,69 @@ export async function deleteProduct(
         }
       }
     }
+    const variants = isExisting.variants?.flatMap((variant) => variant)
+
+    if (variants) {
+      for (const variant of variants) {
+        if (variant.id) {
+          await prisma.product.update({
+            where: { id: productId },
+            data: {
+              variants: {
+                disconnect: {
+                  id: variant.id,
+                },
+              },
+            },
+          })
+          await prisma.productVariant.delete({
+            where: {
+              id: variant.id,
+            },
+          })
+        }
+      }
+    }
+
+    // if (isExisting.variants) {
+    //   const allDeleetedVariants = await Promise.all(
+    //     isExisting.variants?.map(async (variant) => {
+    //       await prisma.product.update({
+    //         where: { id: productId },
+    //         data: {
+    //           variants: {
+    //             disconnect: {
+    //               id: variant.id,
+    //             },
+    //           },
+    //         },
+    //       })
+    //       console.log(isExisting)
+    //       return await prisma.productVariant.delete({
+    //         where: { id: variant.id },
+    //       })
+    //     })
+    //   )
+    // }
+
+    // const variants = await prisma.productVariant.findMany({
+    //   where: { productId },
+    // })
+    // variants.map(async (variant) => {
+    //   await prisma.productVariant.delete({
+    //     where: {
+    //       id: variant.id,
+    //     },
+    //   })
+    // })
 
     await prisma.product.delete({
       where: {
-        id: productId,
-      },
-    })
-
-    await prisma.product.delete({
-      where: {
-        id: productId,
+        id: isExisting.id,
       },
     })
   } catch (err: unknown) {
+    console.log(err)
     if (err instanceof Error) {
       return {
         errors: {

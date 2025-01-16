@@ -49,7 +49,7 @@
 // import { getHomeFeaturedCategories } from "@/queries/home";
 // import { retrieveProductDetailsOptimized } from "@/queries/product-optimized";
 
-import { Prisma } from '@prisma/client'
+import { Image, Prisma, ShippingFeeMethod } from '@prisma/client'
 import { getAllStoreProducts } from './queries/dashboard/products'
 
 export interface DashboardSidebarMenuInterface {
@@ -75,8 +75,8 @@ export type ProductWithVariantType = {
   description_fa: string
   variantName_fa: string
   variantDescription_fa: string
-  images: { id?: string; url: string }[]
-  variantImage: { id?: string; url: string }[]
+  images: Image[]
+  variantImage: Image[]
   categoryId: string
   offerTagId: string
   subCategoryId: string
@@ -100,7 +100,7 @@ export type ProductWithVariantType = {
   questions: { id?: string; question: string; answer: string }[]
   freeShippingForAllCountries: boolean
   freeShippingCountriesIds: { id?: string; label: string; value: string }[]
-  // shippingFeeMethod: ShippingFeeMethod;
+  shippingFeeMethod: ShippingFeeMethod
   createdAt: Date
   updatedAt: Date
 }

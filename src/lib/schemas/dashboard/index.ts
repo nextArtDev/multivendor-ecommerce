@@ -1,3 +1,4 @@
+import { ShippingFeeMethod } from '@prisma/client'
 import * as z from 'zod'
 import { zfd } from 'zod-form-data'
 
@@ -280,8 +281,9 @@ export const ProductFormSchema = z.object({
       required_error: 'Product name is mandatory.',
       invalid_type_error: 'Product name must be a valid string.',
     })
-    .min(2, { message: 'Product name should be at least 2 characters long.' })
-    .max(200, { message: 'Product name cannot exceed 200 characters.' }),
+    // .min(2, { message: 'Product name should be at least 2 characters long.' })
+    .max(200, { message: 'Product name cannot exceed 200 characters.' })
+    .optional(),
   /*
     .regex(/^(?!.*(?:[-_ &' ]){2,})[a-zA-Z0-9_ '&-]+$/, {
       message:
@@ -300,9 +302,10 @@ export const ProductFormSchema = z.object({
       required_error: 'Product description is mandatory.',
       invalid_type_error: 'Product description must be a valid string.',
     })
-    .min(200, {
-      message: 'Product description should be at least 200 characters long.',
-    }),
+    // .min(200, {
+    //   message: 'Product description should be at least 200 characters long.',
+    // })
+    .optional(),
   variantName: z
     .string({
       required_error: 'Product variant name is mandatory.',
@@ -319,12 +322,13 @@ export const ProductFormSchema = z.object({
       required_error: 'Product variant name is mandatory.',
       invalid_type_error: 'Product variant name must be a valid string.',
     })
-    .min(2, {
-      message: 'Product variant name should be at least 2 characters long.',
-    })
+    // .min(2, {
+    //   message: 'Product variant name should be at least 2 characters long.',
+    // })
     .max(100, {
       message: 'Product variant name cannot exceed 100 characters.',
-    }),
+    })
+    .optional(),
   /*
     .regex(/^(?!.*(?:[-_ ]){2,})[a-zA-Z0-9_ -]+$/, {
       message:
@@ -381,7 +385,8 @@ export const ProductFormSchema = z.object({
     })
     .max(50, {
       message: 'Product brand cannot exceed 50 characters.',
-    }),
+    })
+    .optional(),
   sku: z
     .string({
       required_error: 'Product SKU is mandatory.',
@@ -392,10 +397,14 @@ export const ProductFormSchema = z.object({
     })
     .max(50, {
       message: 'Product SKU cannot exceed 50 characters.',
-    }),
-  weight: z.number().min(0.01, {
-    message: 'Please provide a valid product weight.',
-  }),
+    })
+    .optional(),
+  weight: z
+    .number()
+    .min(0.01, {
+      message: 'Please provide a valid product weight.',
+    })
+    .optional(),
   keywords: z
     .array(z.string())
     .nonempty('Please at least one item')
@@ -409,16 +418,11 @@ export const ProductFormSchema = z.object({
     // })
     .max(10, {
       message: 'You can provide up to 10 keywords.',
-    }),
+    })
+    .optional(),
   keywords_fa: z
-    .string({
-      required_error: 'Product keywords are mandatory.',
-      invalid_type_error: 'Keywords must be valid strings.',
-    })
-    .array()
-    .min(5, {
-      message: 'Please provide at least 5 keywords.',
-    })
+    .array(z.string())
+    .nonempty('Please at least one item')
     .max(10, {
       message: 'You can provide up to 10 keywords.',
     })
@@ -429,7 +433,8 @@ export const ProductFormSchema = z.object({
     .min(1, 'Please provide at least one color.')
     .refine((colors) => colors.every((c) => c.color.length > 0), {
       message: 'All color inputs must be filled.',
-    }),
+    })
+    .optional(),
   sizes: z
     .object({
       size: z.string(),
@@ -448,59 +453,67 @@ export const ProductFormSchema = z.object({
         message: 'All size inputs must be filled correctly.',
       }
     ),
-  product_specs: z
-    .object({
-      name: z.string(),
-      value: z.string(),
-    })
-    .array()
-    .min(1, 'Please provide at least one product spec.')
-    .refine(
-      (product_specs) =>
-        product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
-      {
-        message: 'All product specs inputs must be filled correctly.',
-      }
-    ),
-  variant_specs: z
-    .object({
-      name: z.string(),
-      value: z.string(),
-    })
-    .array()
-    .min(1, 'Please provide at least one product variant spec.')
-    .refine(
-      (product_specs) =>
-        product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
-      {
-        message: 'All product variant specs inputs must be filled correctly.',
-      }
-    ),
-  questions: z
-    .object({
-      question: z.string(),
-      answer: z.string(),
-    })
-    .array()
-    .min(1, 'Please provide at least one product question.')
-    .refine(
-      (questions) =>
-        questions.every((q) => q.question.length > 0 && q.answer.length > 0),
-      {
-        message: 'All product question inputs must be filled correctly.',
-      }
-    ),
+  // product_specs: z
+  //   .object({
+  //     name: z.string(),
+  //     value: z.string(),
+  //   })
+  //   .array()
+  //   .min(1, 'Please provide at least one product spec.')
+  //   .refine(
+  //     (product_specs) =>
+  //       product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
+  //     {
+  //       message: 'All product specs inputs must be filled correctly.',
+  //     }
+  //   ),
+  // variant_specs: z
+  //   .object({
+  //     name: z.string(),
+  //     value: z.string(),
+  //   })
+  //   .array()
+  //   .min(1, 'Please provide at least one product variant spec.')
+  //   .refine(
+  //     (product_specs) =>
+  //       product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
+  //     {
+  //       message: 'All product variant specs inputs must be filled correctly.',
+  //     }
+  //   ),
+  // questions: z
+  //   .object({
+  //     question: z.string(),
+  //     answer: z.string(),
+  //   })
+  //   .array()
+  //   .min(1, 'Please provide at least one product question.')
+  //   .refine(
+  //     (questions) =>
+  //       questions.every((q) => q.question.length > 0 && q.answer.length > 0),
+  //     {
+  //       message: 'All product question inputs must be filled correctly.',
+  //     }
+  //   ),
   isSale: z.boolean().default(false),
   // saleEndDate: z.string().optional(),
-  saleEndDate: z.date().optional(),
+  saleEndDate: z.union([z.date(), z.string()]).optional(),
   freeShippingForAllCountries: z.boolean().default(false),
-  freeShippingCountriesIds: z.array(
-    z.object({
-      label: z.string(),
-      value: z.string(),
-      disable: z.boolean().optional(),
-    })
-  ),
+  freeShippingCountriesIds: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        label: z.string(),
+        value: z.string(),
+        disable: z.boolean().optional(),
+      })
+    )
+    .optional()
+    .refine(
+      (ids) => ids?.every((item) => item.label && item.value),
+      'Each country must have a valid name and ID.'
+    )
+    .default([]),
   // .object({
   //   id: z.string().optional(),
   //   label: z.string(),
@@ -513,5 +526,5 @@ export const ProductFormSchema = z.object({
   //   'Each country must have a valid name and ID.'
   // )
   // .default([]),
-  // shippingFeeMethod: z.nativeEnum(ShippingFeeMethod),
+  shippingFeeMethod: z.nativeEnum(ShippingFeeMethod),
 })

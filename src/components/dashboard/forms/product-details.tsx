@@ -30,6 +30,7 @@ import {
   OfferTag,
   Product,
   ProductVariant,
+  ShippingFeeMethod,
   Size,
   Spec,
   SubCategory,
@@ -71,12 +72,28 @@ import {
   MultiSelectorList,
   MultiSelectorTrigger,
 } from '@/components/ui/multi-selector'
+import { NumberInput } from '@tremor/react'
 import { TagsInput } from '@/components/shared/tag-input'
 // import { useQueryState } from 'nuqs'
 import { getSubCategoryByCategoryId } from '@/lib/actions/dashboard/categories'
 import { useQuery } from '@tanstack/react-query'
 import MultipleSelector, { Option } from '@/components/shared/multiple-selector'
 import { DateTimePicker } from '@/components/shared/date-time-picker'
+const shippingFeeMethods = [
+  {
+    value: ShippingFeeMethod.ITEM,
+    description: 'ITEM (Fees calculated based on number of products.)',
+  },
+  {
+    value: ShippingFeeMethod.WEIGHT,
+    description: 'WEIGHT (Fees calculated based on product weight)',
+  },
+  {
+    value: ShippingFeeMethod.FIXED,
+    description: 'FIXED (Fees are fixed.)',
+  },
+]
+
 interface ProductDetailProps {
   // data?: Product & {
   //   variants: (ProductVariant & { images: Image[] } & { sizes: Size[] } & {
@@ -175,39 +192,39 @@ const ProductDetails: FC<ProductDetailProps> = ({
       colors: data?.colors,
       sizes: data?.sizes,
       product_specs: data?.product_specs,
-      variant_specs: data?.variant_specs,
+      // variant_specs: data?.variant_specs,
       keywords: data?.keywords,
       keywords_fa: data?.keywords_fa,
-      questions: data?.questions,
+      // questions: data?.questions,
       isSale: data?.isSale || false,
       weight: data?.weight,
       saleEndDate:
-        data?.saleEndDate || format(new Date(), "yyyy-MM-dd'T'HH:mm:ss"),
+        data?.saleEndDate || new Date(new Date().setHours(0, 0, 0, 0)),
       freeShippingForAllCountries: data?.freeShippingForAllCountries,
       freeShippingCountriesIds: data?.freeShippingCountriesIds || [],
-      // shippingFeeMethod: data?.shippingFeeMethod,
+      shippingFeeMethod: data?.shippingFeeMethod,
     },
   })
-  const saleEndDate = form.getValues().saleEndDate || new Date().toISOString()
+  // const saleEndDate = form.getValues().saleEndDate || new Date().toISOString()
 
-  const formattedDate = new Date(saleEndDate).toLocaleString('en-Us', {
-    weekday: 'short', // Abbreviated day name (e.g., "Mon")
-    month: 'long', // Abbreviated month name (e.g., "Nov")
-    day: '2-digit', // Two-digit day (e.g., "25")
-    year: 'numeric', // Full year (e.g., "2024")
-    hour: '2-digit', // Two-digit hour (e.g., "02")
-    minute: '2-digit', // Two-digit minute (e.g., "30")
-    second: '2-digit', // Two-digit second (optional)
-    hour12: false, // 12-hour format (change to false for 24-hour format)
-  })
+  // const formattedDate = new Date(saleEndDate).toLocaleString('en-Us', {
+  //   weekday: 'short', // Abbreviated day name (e.g., "Mon")
+  //   month: 'long', // Abbreviated month name (e.g., "Nov")
+  //   day: '2-digit', // Two-digit day (e.g., "25")
+  //   year: 'numeric', // Full year (e.g., "2024")
+  //   hour: '2-digit', // Two-digit hour (e.g., "02")
+  //   minute: '2-digit', // Two-digit minute (e.g., "30")
+  //   second: '2-digit', // Two-digit second (optional)
+  //   hour12: false, // 12-hour format (change to false for 24-hour format)
+  // })
   const { data: SubCategories, isPending: isPendingCategory } = useQuery({
     queryKey: ['subCateByCat', form.watch().categoryId],
     queryFn: () => getSubCategoryByCategoryId(form.watch().categoryId),
   })
   // console.log({ SubCategories })
-  // console.log({ categories })
   // // Extract errors state from form
   const errors = form.formState.errors
+  console.log({ errors })
 
   // // Loading status based on form submission
   // const isPending = form.formState.isSubmitting
@@ -233,20 +250,20 @@ const ProductDetails: FC<ProductDetailProps> = ({
         colors: data?.colors,
         sizes: data?.sizes,
         product_specs: data?.product_specs,
-        variant_specs: data?.variant_specs,
+        // variant_specs: data?.variant_specs,
         keywords: data?.keywords,
         keywords_fa: data?.keywords_fa,
-        questions: data?.questions,
+        // questions: data?.questions,
         isSale: data?.isSale || false,
         weight: data?.weight,
         freeShippingForAllCountries: data?.freeShippingForAllCountries,
         freeShippingCountriesIds: data?.freeShippingCountriesIds || [],
-        // shippingFeeMethod: data?.shippingFeeMethod,
+        shippingFeeMethod: data?.shippingFeeMethod,
       })
     }
   }, [data, form])
 
-  const handleSubmit = async (data: z.infer<typeof ProductFormSchema>) => {
+  const handleSubmit = (data) => {
     const formData = new FormData()
 
     console.log({ data })
@@ -638,9 +655,12 @@ const ProductDetails: FC<ProductDetailProps> = ({
   // console.log('form variantImage', form.watch().variantImage)
   // console.log('form isSale', form.watch().isSale)
   // console.log('form sku', form.watch().sku)
-  // console.log('form questions', form.watch().questions)
-  // console.log('form isSale', form.watch().saleEndDate)
-  // console.log('form images', form.watch().freeShippingCountriesIds)
+  // // console.log('form questions', form.watch().questions)
+  // console.log('form saleEndDate', form.watch().saleEndDate)
+  // console.log(
+  //   'form freeShippingCountriesIds',
+  //   form.watch().freeShippingCountriesIds
+  // )
   return (
     <AlertDialog>
       <Card className="w-full">
@@ -770,6 +790,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                           <FormItem className="flex-1">
                             <FormControl>
                               <JoditEditor
+                                {...field}
                                 ref={productDescEditor}
                                 config={config}
                                 value={form.getValues().description}
@@ -792,6 +813,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                           <FormItem className="flex-1">
                             <FormControl>
                               <JoditEditor
+                                {...field}
                                 ref={variantDescEditor}
                                 config={config}
                                 value={
@@ -961,7 +983,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                         </FormItem>
                       )}
                     />
-                    {/* <FormField
+                    <FormField
                       disabled={isPending}
                       control={form.control}
                       name="weight"
@@ -980,7 +1002,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                           <FormMessage />
                         </FormItem>
                       )}
-                    /> */}
+                    />
                   </div>
                 </InputFieldset>
                 {/* Variant image - Keywords*/}
@@ -993,6 +1015,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                         data?.variantImage ? data?.variantImage : []
                       }
                       name="variantImage"
+                      multiple={false}
                       label="VariantImage"
                     />
                   </div>
@@ -1018,7 +1041,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                   </div>
                 </div>
                 {/* Product and variant specs*/}
-                <InputFieldset
+                {/* <InputFieldset
                   label="Specifications"
                   description={
                     isNewVariantPage
@@ -1081,9 +1104,9 @@ const ProductDetails: FC<ProductDetailProps> = ({
                       </div>
                     </TabsContent>
                   </Tabs>
-                </InputFieldset>
+                </InputFieldset> */}
                 {/* Questions*/}
-                {!isNewVariantPage && (
+                {/* {!isNewVariantPage && (
                   <InputFieldset label="Questions & Answers">
                     <div className="w-full flex flex-col gap-y-3">
                       <ClickToAddInputs
@@ -1103,7 +1126,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                       )}
                     </div>
                   </InputFieldset>
-                )}
+                )} */}
                 {/* Is On Sale */}
 
                 <InputFieldset
@@ -1197,7 +1220,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                   </div>
                 </InputFieldset>
                 {/* Shipping fee method */}
-                {/* {!isNewVariantPage && (
+                {!isNewVariantPage && (
                   <InputFieldset label="Product shipping fee method">
                     <FormField
                       disabled={isPending}
@@ -1235,7 +1258,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                       )}
                     />
                   </InputFieldset>
-                )} */}
+                )}
                 {/* Fee Shipping */}
                 {!isNewVariantPage && (
                   <InputFieldset
@@ -1263,6 +1286,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                                   />
                                   <Checkbox
                                     checked={field?.value}
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                     // @ts-ignore
                                     onCheckedChange={field.onChange}
                                   />
@@ -1281,7 +1305,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                         product to for free
                       </p>
                     </div>
-                    {/* <div className="">
+                    <div className="">
                       {!form.getValues().freeShippingForAllCountries && (
                         <div>
                           <FormField
@@ -1340,7 +1364,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                           </div>
                         </div>
                       )}
-                    </div> */}
+                    </div>
                   </InputFieldset>
                 )}
               </div>

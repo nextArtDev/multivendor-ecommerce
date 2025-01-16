@@ -65,6 +65,8 @@ model Image {
   storeId          String?
   storeIcon        Store?          @relation("storeLogo", fields: [storeIconId], references: [id])
   storeIconId      String?         @unique
+  variantImage     ProductVariant? @relation("variantImage", fields: [variantImageId], references: [id])
+  variantImageId   String?         @unique
   productVariant   ProductVariant? @relation(fields: [productVariantId], references: [id])
   productVariantId String?
   review           Review?         @relation(fields: [reviewId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -77,6 +79,7 @@ model Image {
   @@index([categoryId])
   @@index([productVariantId])
   @@index([reviewId])
+  @@index([variantImageId])
 }
 
 model Category {
@@ -216,7 +219,7 @@ model ProductVariant {
   variantDescription    String? @db.LongText
   variantName_fa        String?
   variantDescription_fa String? @db.LongText
-  // variantImage          String
+  variantImage          Image?  @relation("variantImage")
   slug                  String  @unique
   isSale                Boolean @default(false)
   saleEndDate           String?
