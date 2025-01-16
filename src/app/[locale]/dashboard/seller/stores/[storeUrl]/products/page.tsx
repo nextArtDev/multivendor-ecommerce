@@ -9,6 +9,7 @@ import { prisma } from '@/lib/prisma'
 import ProductDetails from '@/components/dashboard/forms/product-details'
 import { getAllOfferTags } from '@/lib/queries/dashboard/tags'
 import { getAllStoreProducts } from '@/lib/queries/dashboard/products'
+import { notFound } from 'next/navigation'
 
 export default async function SellerProductsPage({
   params,
@@ -18,6 +19,7 @@ export default async function SellerProductsPage({
   const storeUrl = (await params).storeUrl
   // Fetching products data from the database for the active store
   const products = await getAllStoreProducts(storeUrl)
+  if (!products) return notFound()
   // console.log({ products })
 
   const categories = await getAllCategories()

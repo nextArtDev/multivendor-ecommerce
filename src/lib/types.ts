@@ -49,6 +49,9 @@
 // import { getHomeFeaturedCategories } from "@/queries/home";
 // import { retrieveProductDetailsOptimized } from "@/queries/product-optimized";
 
+import { Prisma } from '@prisma/client'
+import { getAllStoreProducts } from './queries/dashboard/products'
+
 export interface DashboardSidebarMenuInterface {
   label: string
   icon: string
@@ -102,10 +105,10 @@ export type ProductWithVariantType = {
   updatedAt: Date
 }
 
-// // Store product
-// export type StoreProductType = Prisma.PromiseReturnType<
-//   typeof getAllStoreProducts
-// >[0];
+// Store product
+export type StoreProductType = Prisma.PromiseReturnType<
+  typeof getAllStoreProducts
+>[0]
 
 // // Store default shipping details
 // export type StoreDefaultShippingType = Prisma.PromiseReturnType<
