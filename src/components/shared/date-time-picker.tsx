@@ -31,7 +31,7 @@ interface DateTimePickerProps {
   label?: string
   description?: string
   className?: string
-  initialDataTime?: Partial<Date>[] | null
+  // initialDataTime?: Partial<Date>[] | null
 }
 export function DateTimePicker({
   name,

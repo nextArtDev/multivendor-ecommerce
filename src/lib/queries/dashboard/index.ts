@@ -5,15 +5,15 @@ import { cache } from 'react'
 export const getAllCategories = cache(
   (storeId?: string): Promise<(Category & { images: Image[] })[]> => {
     const categories = prisma.category.findMany({
-      where: storeId
-        ? {
-            products: {
-              some: {
-                storeId,
-              },
-            },
-          }
-        : {},
+      where: {},
+      // ? {
+      //     products: {
+      //       some: {
+      //         storeId,
+      //       },
+      //     },
+      //   }
+      // : {},
 
       include: {
         images: true,
