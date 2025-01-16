@@ -1,9 +1,8 @@
 'use client'
 
 // React, Next.js imports
-import { useState } from 'react'
+import { useActionState } from 'react'
 import NextImage from 'next/image'
-import { useRouter } from 'next/navigation'
 
 // UI components
 import {
@@ -45,6 +44,8 @@ import Link from 'next/link'
 // import { deleteProduct } from '@/lib/actions/dashboard/products'
 import { StoreProductType } from '@/lib/types'
 import { Color, Image, ProductVariant, Size } from '@prisma/client'
+import { deleteProduct } from '@/lib/actions/dashboard/products'
+import { usePathname } from '@/navigation'
 
 export const columns: ColumnDef<StoreProductType>[] = [
   {
@@ -184,12 +185,20 @@ interface CellActionsProps {
 const CellActions: React.FC<CellActionsProps> = ({ productId }) => {
   // Hooks
   const { setClose } = useModal()
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
+  const path = usePathname()
 
-  const router = useRouter()
+  // const router = useRouter()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, deleteAction, pending] = useActionState(
+    deleteProduct.bind(null, path, productId as string),
+    {
+      errors: {},
+    }
+  )
+  if (!productId) return null
 
   // Return null if rowData or rowData.id don't exist
-  if (!productId) return null
 
   return (
     <AlertDialog>
@@ -222,21 +231,23 @@ const CellActions: React.FC<CellActionsProps> = ({ productId }) => {
         <AlertDialogFooter className="flex items-center">
           <AlertDialogCancel className="mb-2">Cancel</AlertDialogCancel>
           <AlertDialogAction
-            disabled={loading}
+            disabled={pending}
             className="bg-destructive hover:bg-destructive mb-2 text-white"
-            onClick={async () => {
-              setLoading(true)
-              // await deleteProduct(productId)
-              // toast({
-              //   title: 'Deleted product',
-              //   description: 'The product has been deleted.',
-              // })
-              setLoading(false)
-              router.refresh()
+            onClick={() => {
               setClose()
             }}
           >
-            Delete
+            <form action={deleteAction}>
+              <input className="hidden" />
+              <Button
+                disabled={pending}
+                variant={'ghost'}
+                type="submit"
+                className="hover:bg-transparent active:bg-transparent w-full outline-none"
+              >
+                Delete
+              </Button>
+            </form>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

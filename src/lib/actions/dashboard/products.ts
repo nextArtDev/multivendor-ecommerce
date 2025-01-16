@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from '@/auth'
-import { Image, Product } from '@prisma/client'
+import { Image, Product, ProductVariant } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { prisma } from '../../prisma'
@@ -505,14 +505,16 @@ export async function deleteProduct(
   try {
     const isExisting:
       | (Product & {
-          cover: { id: string; key: string }[] | null
-          logo: Image | null
+          variants: (ProductVariant & { images: Image[] })[] | null
         })
       | null = await prisma.product.findFirst({
       where: { id: productId },
       include: {
-        cover: { select: { id: true, key: true } },
-        logo: true,
+        variants: {
+          include: {
+            images: true,
+          },
+        },
       },
     })
     if (!isExisting) {
@@ -522,24 +524,22 @@ export async function deleteProduct(
         },
       }
     }
-
-    if (isExisting.cover) {
-      for (const image of isExisting.cover) {
+    // console.log(isExisting.variants?.flatMap((variant) => variant.images))
+    const images = isExisting.variants?.flatMap((variant) => variant.images)
+    if (images) {
+      for (const image of images) {
         if (image.key) {
           await deleteFileFromS3(image.key)
         }
       }
     }
+
     await prisma.product.delete({
       where: {
         id: productId,
       },
     })
-    if (isExisting.logo) {
-      if (isExisting.logo.key) {
-        await deleteFileFromS3(isExisting.logo.key)
-      }
-    }
+
     await prisma.product.delete({
       where: {
         id: productId,
