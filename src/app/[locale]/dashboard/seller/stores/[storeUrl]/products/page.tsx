@@ -18,7 +18,7 @@ export default async function SellerProductsPage({
   const storeUrl = (await params).storeUrl
   // Fetching products data from the database for the active store
   const products = await getAllStoreProducts(storeUrl)
-  console.log({ products })
+  // console.log({ products })
 
   const categories = await getAllCategories()
   const offerTags = await getAllOfferTags()

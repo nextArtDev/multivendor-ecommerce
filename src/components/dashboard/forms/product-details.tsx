@@ -85,7 +85,7 @@ interface ProductDetailProps {
   // } & { category: { id: string } } & { store: { id: string } } & {
   //   cover: Image[] | null
   // }
-  data?: ProductWithVariantType
+  data?: Partial<ProductWithVariantType>
   categories: Category[]
   storeUrl: string
   offerTags: OfferTag[]

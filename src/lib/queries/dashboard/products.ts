@@ -36,9 +36,44 @@ export const getAllStoreProducts = async (storeUrl: string) => {
         },
       },
     })
-    console.log({ products })
+    // console.log({ products })
     return products
   } catch (error) {
     console.log(error)
+  }
+}
+
+export const getProductMainInfo = async (productId: string) => {
+  // Retrieve the product from the database
+  const product = await prisma.product.findUnique({
+    where: {
+      id: productId,
+    },
+    include: {
+      questions: true,
+      specs: true,
+    },
+  })
+  if (!product) return null
+
+  // Return the main information of the product
+  return {
+    productId: product.id,
+    name: product.name,
+    description: product.description,
+    brand: product.brand,
+    categoryId: product.categoryId,
+    subCategoryId: product.subCategoryId,
+    offerTagId: product.offerTagId || undefined,
+    storeId: product.storeId,
+    shippingFeeMethod: product.shippingFeeMethod,
+    questions: product.questions.map((q) => ({
+      question: q.question,
+      answer: q.answer,
+    })),
+    product_specs: product.specs.map((spec) => ({
+      name: spec.name,
+      value: spec.value,
+    })),
   }
 }
