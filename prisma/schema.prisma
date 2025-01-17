@@ -105,7 +105,7 @@ model SubCategory {
   featured Boolean @default(false)
 
   categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   products Product[] @relation("SubCategoryToProduct")
 
@@ -190,7 +190,7 @@ model Product {
   updatedAt DateTime @default(now()) @updatedAt
 
   storeId String
-  store   Store  @relation("StoreToProduct", fields: [storeId], references: [id])
+  store   Store  @relation("StoreToProduct", fields: [storeId], references: [id], onDelete: Cascade)
 
   variants  ProductVariant[] @relation("ProductToProductVariant")
   specs     Spec[]           @relation("ProductSpec")
@@ -231,7 +231,7 @@ model ProductVariant {
   images                Image[]
 
   productId String
-  product   Product @relation("ProductToProductVariant", fields: [productId], references: [id])
+  product   Product @relation("ProductToProductVariant", fields: [productId], references: [id], onDelete: Cascade)
 
   sizes    Size[]     @relation("ProductVariantSizes")
   // images   ProductVariantImage[] @relation("ProductVariantToVariantImage")

@@ -49,7 +49,7 @@
 // import { getHomeFeaturedCategories } from "@/queries/home";
 // import { retrieveProductDetailsOptimized } from "@/queries/product-optimized";
 
-import { Image, Prisma, ShippingFeeMethod } from '@prisma/client'
+import { Image, Prisma, ShippingFeeMethod, Spec } from '@prisma/client'
 import { getAllStoreProducts } from './queries/dashboard/products'
 
 export interface DashboardSidebarMenuInterface {
@@ -93,8 +93,8 @@ export type ProductWithVariantType = {
     price: number
     discount: number
   }[]
-  product_specs: { id?: string; name: string; value: string }[]
-  variant_specs: { id?: string; name: string; value: string }[]
+  product_specs: Spec[]
+  variant_specs: Spec[]
   keywords: string[]
   keywords_fa: string[]
   questions: { id?: string; question: string; answer: string }[]

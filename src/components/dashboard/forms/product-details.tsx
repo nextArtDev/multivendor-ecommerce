@@ -79,8 +79,7 @@ import { getSubCategoryByCategoryId } from '@/lib/actions/dashboard/categories'
 import { useQuery } from '@tanstack/react-query'
 import MultipleSelector, { Option } from '@/components/shared/multiple-selector'
 import { DateTimePicker } from '@/components/shared/date-time-picker'
-import { UUID } from 'crypto'
-import { ScrollArea } from '@/components/ui/scroll-area'
+
 const shippingFeeMethods = [
   {
     value: ShippingFeeMethod.ITEM,
@@ -193,8 +192,8 @@ const ProductDetails: FC<ProductDetailProps> = ({
       sku: data?.sku,
       colors: data?.colors,
       sizes: data?.sizes,
-      // product_specs: data?.product_specs,
-      // variant_specs: data?.variant_specs,
+      product_specs: data?.product_specs,
+      variant_specs: data?.variant_specs,
       keywords: data?.keywords,
       keywords_fa: data?.keywords_fa,
       // questions: data?.questions,
@@ -251,8 +250,8 @@ const ProductDetails: FC<ProductDetailProps> = ({
         sku: data?.sku,
         colors: data?.colors,
         sizes: data?.sizes,
-        // product_specs: data?.product_specs,
-        // variant_specs: data?.variant_specs,
+        product_specs: data?.product_specs,
+        variant_specs: data?.variant_specs,
         keywords: data?.keywords,
         keywords_fa: data?.keywords_fa,
         // questions: data?.questions,
@@ -281,11 +280,14 @@ const ProductDetails: FC<ProductDetailProps> = ({
     // formData.append('variantImage', data.variantImage)
     formData.append('categoryId', data.categoryId)
     formData.append('subCategoryId', data.subCategoryId)
-    formData.append('offerTagId', (data.offerTagId as UUID) || '')
+    formData.append('offerTagId', (data.offerTagId as string) || '')
     if (data.isSale) {
       formData.append('isSale', 'true')
     }
-    formData.append('saleEndDate', data?.saleEndDate || undefined || '')
+    formData.append(
+      'saleEndDate',
+      data?.saleEndDate || new Date(new Date().setHours(0, 0, 0, 0))
+    )
     formData.append('brand', data.brand || '')
     formData.append('sku', data.sku || '')
 
@@ -342,10 +344,25 @@ const ProductDetails: FC<ProductDetailProps> = ({
         formData.append('variantImage', data.variantImage[i] as string | Blob)
       }
     }
-    if (data.variantImage && data.variantImage.length > 0) {
-      for (let i = 0; i < data.variantImage.length; i++) {
-        formData.append('variantImage', data.variantImage[i] as string | Blob)
-      }
+    // if (data.product_specs && data.product_specs.length > 0) {
+    //   for (let i = 0; i < data.product_specs.length; i++) {
+    //     formData.append('product_specs', JSON.stringify(data.product_specs))
+    //   }
+    // }
+    // if (data.variant_specs && data.variant_specs.length > 0) {
+    //   for (let i = 0; i < data.variant_specs.length; i++) {
+    //     formData.append('variant_specs', JSON.stringify(data.variant_specs))
+    //   }
+    // }
+    if (data.product_specs && data.product_specs.length > 0) {
+      data.product_specs.forEach((size) => {
+        formData.append('product_specs', JSON.stringify(size))
+      })
+    }
+    if (data.variant_specs && data.variant_specs.length > 0) {
+      data.variant_specs.forEach((size) => {
+        formData.append('variant_specs', JSON.stringify(size))
+      })
     }
     if (data.sizes && data.sizes.length > 0) {
       data.sizes.forEach((size) => {
@@ -668,13 +685,17 @@ const ProductDetails: FC<ProductDetailProps> = ({
   useEffect(() => {
     form.setValue('colors', colors)
     form.setValue('sizes', sizes)
-  }, [colors, form, sizes])
+    form.setValue('product_specs', productSpecs)
+    form.setValue('variant_specs', variantSpecs)
+    //  form.setValue('questions', questions)
+  }, [colors, form, productSpecs, sizes, variantSpecs])
   // console.log(form.watch().keywords)
   // console.log('form sizes', form.watch().sizes)
   // console.log('form colors', form.watch().colors)
   // console.log('form images', form.watch().images)
   // console.log('saleEndDate', form.watch().saleEndDate)
-  // console.log('form variantImage', form.watch().variantImage)
+  // console.log('form description', form.watch().product_specs)
+  // console.log('form description', form.watch().variant_specs)
   // console.log('form isSale', form.watch().isSale)
   // console.log('form sku', form.watch().sku)
   // // console.log('form questions', form.watch().questions)
@@ -683,6 +704,13 @@ const ProductDetails: FC<ProductDetailProps> = ({
   //   'form freeShippingCountriesIds',
   //   form.watch().freeShippingCountriesIds
   // )
+  // const initialValue = [
+  //   { type: 'p', children: [{ text: '' }] },
+  // ]
+  // const editor = usePlateEditor({
+  //   value: initialValue,
+  //   plugins: [...editorPlugins],
+  // })
   return (
     <AlertDialog>
       <Card className="w-full">
@@ -805,56 +833,61 @@ const ProductDetails: FC<ProductDetailProps> = ({
                     </TabsList>
                   )}
                   <TabsContent value="product">
-                    <ScrollArea className="w-[98vw] mx-auto">
-                      <FormField
-                        disabled={isPending}
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <JoditEditor
-                                {...field}
-                                ref={productDescEditor}
-                                config={config}
-                                value={form.getValues().description}
-                                onChange={(content) => {
-                                  form.setValue('description', content)
-                                }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </ScrollArea>
+                    <FormField
+                      disabled={isPending}
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormControl>
+                            <JoditEditor
+                              {...field}
+                              ref={productDescEditor}
+                              config={config}
+                              value={form.getValues().description}
+                              onChange={(content) => {
+                                form.setValue('description', content)
+                              }}
+                            />
+                            {/* <Plate
+                              editor={editor}
+                              onChange={({ value }) => {
+                                // Sync to the form
+                                field.onChange(value)
+                              }}
+                            >
+                              <EditorContainer variant="demo">
+                                <Editor />
+                              </EditorContainer>
+                            </Plate> */}
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </TabsContent>
                   <TabsContent value="variant">
-                    <ScrollArea className="w-[98vw] mx-auto">
-                      <FormField
-                        disabled={isPending}
-                        control={form.control}
-                        name="variantDescription"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormControl>
-                              <JoditEditor
-                                {...field}
-                                ref={variantDescEditor}
-                                config={config}
-                                value={
-                                  form.getValues().variantDescription || ''
-                                }
-                                onChange={(content) => {
-                                  form.setValue('variantDescription', content)
-                                }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </ScrollArea>
+                    <FormField
+                      disabled={isPending}
+                      control={form.control}
+                      name="variantDescription"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormControl>
+                            <JoditEditor
+                              {...field}
+                              ref={variantDescEditor}
+                              config={config}
+                              value={form.getValues().variantDescription || ''}
+                              onChange={(content) => {
+                                form.setValue('variantDescription', content)
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </TabsContent>
                 </Tabs>
               </InputFieldset>
@@ -1066,70 +1099,70 @@ const ProductDetails: FC<ProductDetailProps> = ({
                 </div>
               </div>
               {/* Product and variant specs*/}
-              {/* <InputFieldset
-                  label="Specifications"
-                  description={
-                    isNewVariantPage
-                      ? ''
-                      : "Note: The product specifications are the main specs for the product (Will display in every variant page). You can add extra specs specific to this variant using 'Variant Specifications' tab."
+              <InputFieldset
+                label="Specifications"
+                description={
+                  isNewVariantPage
+                    ? ''
+                    : "Note: The product specifications are the main specs for the product (Will display in every variant page). You can add extra specs specific to this variant using 'Variant Specifications' tab."
+                }
+              >
+                <Tabs
+                  defaultValue={
+                    isNewVariantPage ? 'variantSpecs' : 'productSpecs'
                   }
+                  className="w-full"
                 >
-                  <Tabs
-                    defaultValue={
-                      isNewVariantPage ? 'variantSpecs' : 'productSpecs'
-                    }
-                    className="w-full"
-                  >
-                    {!isNewVariantPage && (
-                      <TabsList className="w-full grid grid-cols-2">
-                        <TabsTrigger value="productSpecs">
-                          Product Specifications
-                        </TabsTrigger>
-                        <TabsTrigger value="variantSpecs">
-                          Variant Specifications
-                        </TabsTrigger>
-                      </TabsList>
-                    )}
-                    <TabsContent value="productSpecs">
-                      <div className="w-full flex flex-col gap-y-3">
-                        <ClickToAddInputs
-                          details={productSpecs}
-                          setDetails={setProductSpecs}
-                          initialDetail={{
-                            name: '',
-                            value: '',
-                          }}
-                          containerClassName="flex-1"
-                          inputClassName="w-full"
-                        />
-                        {errors.product_specs && (
-                          <span className="text-sm font-medium text-destructive">
-                            {errors.product_specs.message}
-                          </span>
-                        )}
-                      </div>
-                    </TabsContent>
-                    <TabsContent value="variantSpecs">
-                      <div className="w-full flex flex-col gap-y-3">
-                        <ClickToAddInputs
-                          details={variantSpecs}
-                          setDetails={setVariantSpecs}
-                          initialDetail={{
-                            name: '',
-                            value: '',
-                          }}
-                          containerClassName="flex-1"
-                          inputClassName="w-full"
-                        />
-                        {errors.variant_specs && (
-                          <span className="text-sm font-medium text-destructive">
-                            {errors.variant_specs.message}
-                          </span>
-                        )}
-                      </div>
-                    </TabsContent>
-                  </Tabs>
-                </InputFieldset> */}
+                  {!isNewVariantPage && (
+                    <TabsList className="w-full grid grid-cols-2">
+                      <TabsTrigger value="productSpecs">
+                        Product Specifications
+                      </TabsTrigger>
+                      <TabsTrigger value="variantSpecs">
+                        Variant Specifications
+                      </TabsTrigger>
+                    </TabsList>
+                  )}
+                  <TabsContent value="productSpecs">
+                    <div className="w-full flex flex-col gap-y-3">
+                      <ClickToAddInputs
+                        details={productSpecs}
+                        setDetails={setProductSpecs}
+                        initialDetail={{
+                          name: '',
+                          value: '',
+                        }}
+                        containerClassName="flex-1"
+                        inputClassName="w-full"
+                      />
+                      {errors.product_specs && (
+                        <span className="text-sm font-medium text-destructive">
+                          {errors.product_specs.message}
+                        </span>
+                      )}
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="variantSpecs">
+                    <div className="w-full flex flex-col gap-y-3">
+                      <ClickToAddInputs
+                        details={variantSpecs}
+                        setDetails={setVariantSpecs}
+                        initialDetail={{
+                          name: '',
+                          value: '',
+                        }}
+                        containerClassName="flex-1"
+                        inputClassName="w-full"
+                      />
+                      {errors.variant_specs && (
+                        <span className="text-sm font-medium text-destructive">
+                          {errors.variant_specs.message}
+                        </span>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </InputFieldset>
               {/* Questions*/}
               {/* {!isNewVariantPage && (
                   <InputFieldset label="Questions & Answers">
@@ -1193,55 +1226,6 @@ const ProductDetails: FC<ProductDetailProps> = ({
                     ) : null}
                   </>
                   {/* <span>Yes</span> */}
-
-                  {/* {form.getValues()?.isSale && (
-                      <div className="mt-5">
-                        <p className="text-sm text-main-secondary dark:text-gray-400 pb-3 flex">
-                          <Dot className="-me-1" />
-                          When sale does end ?
-                        </p>
-                        <div className="flex items-center gap-x-5">
-                          <FormField
-                            control={form.control}
-                            name="saleEndDate"
-                            render={({ field }) => (
-                              <FormItem className="ml-4">
-                                <FormControl>
-                                  <DateTimePicker
-                                    className="inline-flex items-center gap-2 p-2 border rounded-md shadow-sm"
-                                    calendarIcon={
-                                      <span className="text-gray-500 hover:text-gray-600">
-                                        📅
-                                      </span>
-                                    }
-                                    clearIcon={
-                                      <span className="text-gray-500 hover:text-gray-600">
-                                        ✖️
-                                      </span>
-                                    }
-                                    onChange={(date) => {
-                                      field.onChange(
-                                        date
-                                          ? format(
-                                              date,
-                                              "yyyy-MM-dd'T'HH:mm:ss"
-                                            )
-                                          : ''
-                                      )
-                                    }}
-                                    value={
-                                      field.value ? new Date(field.value) : null
-                                    }
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <ArrowRight className="w-4 text-[#1087ff]" />
-                          <span>{formattedDate}</span>
-                        </div>
-                      </div>
-                    )} */}
                 </div>
               </InputFieldset>
               {/* Shipping fee method */}

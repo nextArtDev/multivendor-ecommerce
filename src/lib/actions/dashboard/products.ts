@@ -68,6 +68,12 @@ export async function createProduct(
     sku: formData.get('sku'),
     weight: Number(formData.get('weight')),
     keywords: formData.getAll('keywords'),
+    product_specs: formData
+      .getAll('product_specs')
+      .map((product_specs) => JSON.parse(product_specs.toString())),
+    variant_specs: formData
+      .getAll('variant_specs')
+      .map((variant_specs) => JSON.parse(variant_specs.toString())),
     sizes: formData.getAll('sizes').map((size) => JSON.parse(size.toString())),
     shippingFeeMethod: formData.get('shippingFeeMethod'),
     freeShippingForAllCountries: Boolean(
@@ -204,8 +210,8 @@ export async function createProduct(
       }
     }
   }
-  revalidatePath(path)
-  redirect(`/${locale}/dashboard/seller/products`)
+  // revalidatePath(path)
+  // redirect(`/${locale}/dashboard/seller/products`)
 }
 interface EditProductFormState {
   errors: {
