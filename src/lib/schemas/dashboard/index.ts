@@ -373,7 +373,7 @@ export const ProductFormSchema = z.object({
       required_error: 'Product offer tag ID is mandatory.',
       invalid_type_error: 'Product offer tag ID must be a valid UUID.',
     })
-    .uuid()
+    // .uuid()
     .optional(),
   brand: z
     .string({

@@ -52,17 +52,31 @@ export async function createProduct(
 
   const result = ProductFormSchema.safeParse({
     name: formData.get('name'),
-    name_fa: formData.get('name_fa'),
     description: formData.get('description'),
+    variantName: formData.get('variantName'),
+    variantDescription: formData.get('variantDescription'),
+    name_fa: formData.get('name_fa'),
     description_fa: formData.get('description_fa'),
-    phone: formData.get('phone'),
-    email: formData.get('email'),
-    url: formData.get('url'),
-    featured: Boolean(formData.get('featured')),
-
-    logo: formData.getAll('logo'),
-    cover: formData.getAll('cover'),
+    variantName_fa: formData.get('variantName_fa'),
+    variantDescription_fa: formData.get('variantDescription_fa'),
+    categoryId: formData.get('categoryId'),
+    subCategoryId: formData.get('subCategoryId'),
+    offerTagId: formData.get('offerTagId'),
+    isSale: Boolean(formData.get('isSale')),
+    saleEndDate: formData.get('saleEndDate'),
+    brand: formData.get('brand'),
+    sku: formData.get('sku'),
+    weight: Number(formData.get('weight')),
+    keywords: formData.getAll('keywords'),
+    sizes: formData.getAll('sizes').map((size) => JSON.parse(size.toString())),
+    shippingFeeMethod: formData.get('shippingFeeMethod'),
+    freeShippingForAllCountries: Boolean(
+      formData.get('freeShippingForAllCountries')
+    ),
+    images: formData.getAll('images'),
+    variantImage: formData.getAll('variantImage'),
   })
+  console.log(result?.data)
 
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
@@ -86,98 +100,95 @@ export async function createProduct(
   }
 
   try {
-    const isExisting = await prisma.product.findFirst({
-      where: {
-        // OR: [{ name: result.data.name }, { url: result.data.url }],
-        AND: [
-          {
-            OR: [
-              { name: result.data.name },
-              { name_fa: result.data?.name_fa },
-              { email: result.data.email },
-              { phone: result.data.phone },
-              { url: result.data.url },
-            ],
-          },
-        ],
-      },
-    })
-    // console.log({ isExisting })
-    if (isExisting) {
-      let errorMessage = ''
-      if (isExisting.name === result.data.name) {
-        errorMessage = 'A product with the same name already exists'
-      } else if (isExisting.email === result.data.email) {
-        errorMessage = 'A product with the same email already exists'
-      } else if (isExisting.phone === result.data.phone) {
-        errorMessage = 'A product with the same phone number already exists'
-      } else if (isExisting.url === result.data.url) {
-        errorMessage = 'A product with the same URL already exists'
-      }
-      return {
-        errors: {
-          _form: [errorMessage],
-        },
-      }
-    }
+    // const isExisting = await prisma.product.findFirst({
+    //   where: {
+    //     // OR: [{ name: result.data.name }, { url: result.data.url }],
+    //     AND: [
+    //       {
+    //         OR: [
+    //           { name: result.data.name },
+    //           { name_fa: result.data?.name_fa },
+    //           { email: result.data.email },
+    //           { phone: result.data.phone },
+    //           { url: result.data.url },
+    //         ],
+    //       },
+    //     ],
+    //   },
+    // })
+    // // console.log({ isExisting })
     // if (isExisting) {
+    //   let errorMessage = ''
+    //   if (isExisting.name === result.data.name) {
+    //     errorMessage = 'A product with the same name already exists'
+    //   } else if (isExisting.email === result.data.email) {
+    //     errorMessage = 'A product with the same email already exists'
+    //   } else if (isExisting.phone === result.data.phone) {
+    //     errorMessage = 'A product with the same phone number already exists'
+    //   } else if (isExisting.url === result.data.url) {
+    //     errorMessage = 'A product with the same URL already exists'
+    //   }
     //   return {
     //     errors: {
-    //       _form: ['فروشگاه شما موجود است!'],
+    //       _form: [errorMessage],
     //     },
     //   }
     // }
-    // console.log(isExisting)
-    // console.log(billboard)
-    const featured = result.data.featured == true ? true : false
-    const coverIds: string[] = []
-    for (const img of result.data?.cover || []) {
-      if (img instanceof File) {
-        const buffer = Buffer.from(await img.arrayBuffer())
-        const res = await uploadFileToS3(buffer, img.name)
-
-        if (res?.imageId && typeof res.imageId === 'string') {
-          coverIds.push(res.imageId)
-        }
-      }
-    }
-    const logoIds: string[] = []
-    for (const img of result.data?.logo || []) {
-      if (img instanceof File) {
-        const buffer = Buffer.from(await img.arrayBuffer())
-        const res = await uploadFileToS3(buffer, img.name)
-
-        if (res?.imageId && typeof res.imageId === 'string') {
-          logoIds.push(res.imageId)
-        }
-      }
-    }
-    await prisma.product.create({
-      data: {
-        name: result.data.name,
-        userId: session.user.id,
-        name_fa: result.data?.name_fa,
-        description: result.data.description,
-        description_fa: result.data?.description_fa,
-        url: result.data.url,
-        featured,
-        phone: result.data.phone,
-        email: result.data.email,
-        logo: {
-          connect: logoIds.map((id) => ({
-            id: id,
-          }))[0],
-        },
-        cover: {
-          connect: coverIds.map((id) => ({
-            id: id,
-          })),
-        },
-      },
-    })
-
-    // console.log(res?.imageUrl)
-    // console.log(product)
+    // // if (isExisting) {
+    // //   return {
+    // //     errors: {
+    // //       _form: ['فروشگاه شما موجود است!'],
+    // //     },
+    // //   }
+    // // }
+    // // console.log(isExisting)
+    // // console.log(billboard)
+    // const featured = result.data.featured == true ? true : false
+    // const coverIds: string[] = []
+    // for (const img of result.data?.cover || []) {
+    //   if (img instanceof File) {
+    //     const buffer = Buffer.from(await img.arrayBuffer())
+    //     const res = await uploadFileToS3(buffer, img.name)
+    //     if (res?.imageId && typeof res.imageId === 'string') {
+    //       coverIds.push(res.imageId)
+    //     }
+    //   }
+    // }
+    // const logoIds: string[] = []
+    // for (const img of result.data?.logo || []) {
+    //   if (img instanceof File) {
+    //     const buffer = Buffer.from(await img.arrayBuffer())
+    //     const res = await uploadFileToS3(buffer, img.name)
+    //     if (res?.imageId && typeof res.imageId === 'string') {
+    //       logoIds.push(res.imageId)
+    //     }
+    //   }
+    // }
+    // await prisma.product.create({
+    //   data: {
+    //     name: result.data.name,
+    //     userId: session.user.id,
+    //     name_fa: result.data?.name_fa,
+    //     description: result.data.description,
+    //     description_fa: result.data?.description_fa,
+    //     url: result.data.url,
+    //     featured,
+    //     phone: result.data.phone,
+    //     email: result.data.email,
+    //     logo: {
+    //       connect: logoIds.map((id) => ({
+    //         id: id,
+    //       }))[0],
+    //     },
+    //     cover: {
+    //       connect: coverIds.map((id) => ({
+    //         id: id,
+    //       })),
+    //     },
+    //   },
+    // })
+    // // console.log(res?.imageUrl)
+    // // console.log(product)
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {

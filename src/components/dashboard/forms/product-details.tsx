@@ -79,6 +79,7 @@ import { getSubCategoryByCategoryId } from '@/lib/actions/dashboard/categories'
 import { useQuery } from '@tanstack/react-query'
 import MultipleSelector, { Option } from '@/components/shared/multiple-selector'
 import { DateTimePicker } from '@/components/shared/date-time-picker'
+import { UUID } from 'crypto'
 const shippingFeeMethods = [
   {
     value: ShippingFeeMethod.ITEM,
@@ -191,7 +192,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
       sku: data?.sku,
       colors: data?.colors,
       sizes: data?.sizes,
-      product_specs: data?.product_specs,
+      // product_specs: data?.product_specs,
       // variant_specs: data?.variant_specs,
       keywords: data?.keywords,
       keywords_fa: data?.keywords_fa,
@@ -249,7 +250,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
         sku: data?.sku,
         colors: data?.colors,
         sizes: data?.sizes,
-        product_specs: data?.product_specs,
+        // product_specs: data?.product_specs,
         // variant_specs: data?.variant_specs,
         keywords: data?.keywords,
         keywords_fa: data?.keywords_fa,
@@ -263,44 +264,44 @@ const ProductDetails: FC<ProductDetailProps> = ({
     }
   }, [data, form])
 
-  const handleSubmit = (data) => {
+  const handleSubmit = async (data: z.infer<typeof ProductFormSchema>) => {
     const formData = new FormData()
 
     console.log({ data })
-    // formData.append('name', data.name)
-    // formData.append('description', data.description)
-    // formData.append('variantName', data.variantName)
-    // formData.append('variantDescription', data.variantDescription || '')
-    // formData.append('name_fa', data.name_fa || '')
-    // formData.append('description_fa', data.description_fa || '')
-    // formData.append('variantName_fa', data.variantName_fa || '')
-    // formData.append('variantDescription_fa', data.variantDescription_fa || '')
-    // // formData.append('images', data.images)
-    // // formData.append('variantImage', data.variantImage)
-    // formData.append('categoryId', data.categoryId)
-    // formData.append('subCategoryId', data.subCategoryId)
-    // formData.append('offerTagId', data.offerTagId || '')
-    // if (data.isSale) {
-    //   formData.append('isSale', 'true')
-    // }
-    // // formData.append('saleEndDate', data.saleEndDate)
-    // formData.append('brand', data.brand)
-    // formData.append('sku', data.sku)
+    formData.append('name', data.name)
+    formData.append('description', data.description)
+    formData.append('variantName', data.variantName)
+    formData.append('variantDescription', data.variantDescription || '')
+    formData.append('name_fa', data.name_fa || '')
+    formData.append('description_fa', data.description_fa || '')
+    formData.append('variantName_fa', data.variantName_fa || '')
+    formData.append('variantDescription_fa', data.variantDescription_fa || '')
+    // formData.append('images', data.images)
+    // formData.append('variantImage', data.variantImage)
+    formData.append('categoryId', data.categoryId)
+    formData.append('subCategoryId', data.subCategoryId)
+    formData.append('offerTagId', (data.offerTagId as UUID) || '')
+    if (data.isSale) {
+      formData.append('isSale', 'true')
+    }
+    formData.append('saleEndDate', data?.saleEndDate || undefined || '')
+    formData.append('brand', data.brand || '')
+    formData.append('sku', data.sku || '')
 
-    // formData.append('weight', String(data.weight))
+    formData.append('weight', String(data.weight))
 
-    // // formData.append('colors', data.colors || [])
-    // // formData.append('sizes', data.sizes || [])
+    // formData.append('colors', data.colors || [])
+    // formData.append('sizes', data.sizes || [])
     // if (data.product_specs && data.product_specs.length > 0) {
     //   for (let i = 0; i < data.product_specs.length; i++) {
     //     formData.append('product_specs', data.product_specs[i] as string | Blob)
     //   }
     // }
-    // if (data.keywords && data.keywords.length > 0) {
-    //   for (let i = 0; i < data.keywords.length; i++) {
-    //     formData.append('data.keywords', data.keywords[i] as string | Blob)
-    //   }
-    // }
+    if (data.keywords && data.keywords.length > 0) {
+      for (let i = 0; i < data.keywords.length; i++) {
+        formData.append('keywords', data.keywords[i] as string | Blob)
+      }
+    }
     // if (data.variant_specs && data.variant_specs.length > 0) {
     //   for (let i = 0; i < data.variant_specs.length; i++) {
     //     formData.append(
@@ -311,13 +312,12 @@ const ProductDetails: FC<ProductDetailProps> = ({
     // }
     // formData.append('variant_specs', data.variant_specs)
     // formData.append('keywords', data.keywords)
-    // // formData.append('keywords_fa', data.keywords_fa || [])
+    // formData.append('keywords_fa', data.keywords_fa || [])
     // formData.append('questions', data.questions)
-    // formData.append('shippingFeeMethod', data.shippingFeeMethod || [])
-    // formData.append(
-    //   'freeShippingForAllCountries',
-    //   data.freeShippingForAllCountries
-    // )
+    formData.append('shippingFeeMethod', data.shippingFeeMethod || [])
+    if (data.freeShippingForAllCountries) {
+      formData.append('freeShippingForAllCountries', 'true')
+    }
 
     // if (data.featured) {
     //   formData.append('featured', 'true')
@@ -331,11 +331,35 @@ const ProductDetails: FC<ProductDetailProps> = ({
     //   }
     // })
 
-    // if (data.cover && data.cover.length > 0) {
-    //   for (let i = 0; i < data.cover.length; i++) {
-    //     formData.append('cover', data.cover[i] as string | Blob)
+    if (data.images && data.images.length > 0) {
+      for (let i = 0; i < data.images.length; i++) {
+        formData.append('images', data.images[i] as string | Blob)
+      }
+    }
+    if (data.variantImage && data.variantImage.length > 0) {
+      for (let i = 0; i < data.variantImage.length; i++) {
+        formData.append('variantImage', data.variantImage[i] as string | Blob)
+      }
+    }
+    if (data.variantImage && data.variantImage.length > 0) {
+      for (let i = 0; i < data.variantImage.length; i++) {
+        formData.append('variantImage', data.variantImage[i] as string | Blob)
+      }
+    }
+    if (data.sizes && data.sizes.length > 0) {
+      data.sizes.forEach((size) => {
+        formData.append('sizes', JSON.stringify(size))
+      })
+    }
+    // if (data.sizes && data.sizes.length > 0) {
+    //   for (let i = 0; i < data.sizes.length; i++) {
+    //     const sizeData = data.sizes[i]
+    //     formData.append(`sizes`, {sizeData.size,sizeData.quantity,sizeData.price,sizeData.discount})
     //   }
     // }
+    // formData.append(`sizes`, sizeData.quantity.toString())
+    // formData.append(`sizes`, sizeData.price.toString())
+    // formData.append(`sizes`, sizeData.discount.toString())
     // try {
     //   if (data) {
     //     startTransition(async () => {
@@ -483,150 +507,147 @@ const ProductDetails: FC<ProductDetailProps> = ({
     //       }
     //     })
     //   } else {
-    //     startTransition(async () => {
-    //       try {
-    //         const res = await createProduct(formData, path)
-    //         if (res?.errors?.name) {
-    //           form.setError('name', {
-    //             type: 'custom',
-    //             message: res?.errors.name?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.description) {
-    //           form.setError('description', {
-    //             type: 'custom',
-    //             message: res?.errors.description?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.variantName) {
-    //           form.setError('variantName', {
-    //             type: 'custom',
-    //             message: res?.errors.variantName?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.variantDescription) {
-    //           form.setError('variantDescription', {
-    //             type: 'custom',
-    //             message: res?.errors.variantDescription?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.name_fa) {
-    //           form.setError('name_fa', {
-    //             type: 'custom',
-    //             message: res?.errors.name_fa?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.description_fa) {
-    //           form.setError('description_fa', {
-    //             type: 'custom',
-    //             message: res?.errors.description_fa?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.variantName_fa) {
-    //           form.setError('variantName_fa', {
-    //             type: 'custom',
-    //             message: res?.errors.variantName_fa?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.variantDescription_fa) {
-    //           form.setError('variantDescription_fa', {
-    //             type: 'custom',
-    //             message: res?.errors.variantDescription_fa?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.images) {
-    //           form.setError('images', {
-    //             type: 'custom',
-    //             message: res?.errors.images?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.variantImage) {
-    //           form.setError('variantImage', {
-    //             type: 'custom',
-    //             message: res?.errors.variantImage?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.categoryId) {
-    //           form.setError('categoryId', {
-    //             type: 'custom',
-    //             message: res?.errors.categoryId?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.subCategoryId) {
-    //           form.setError('subCategoryId', {
-    //             type: 'custom',
-    //             message: res?.errors.subCategoryId?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.offerTagId) {
-    //           form.setError('offerTagId', {
-    //             type: 'custom',
-    //             message: res?.errors.offerTagId?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.isSale) {
-    //           form.setError('isSale', {
-    //             type: 'custom',
-    //             message: res?.errors.isSale?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.saleEndDate) {
-    //           form.setError('saleEndDate', {
-    //             type: 'custom',
-    //             message: res?.errors.saleEndDate?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.brand) {
-    //           form.setError('brand', {
-    //             type: 'custom',
-    //             message: res?.errors.brand?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.sku) {
-    //           form.setError('sku', {
-    //             type: 'custom',
-    //             message: res?.errors.sku?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.weight) {
-    //           form.setError('weight', {
-    //             type: 'custom',
-    //             message: res?.errors.weight?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.colors) {
-    //           form.setError('colors', {
-    //             type: 'custom',
-    //             message: res?.errors.colors?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.sizes) {
-    //           form.setError('sizes', {
-    //             type: 'custom',
-    //             message: res?.errors.sizes?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.product_specs) {
-    //           form.setError('product_specs', {
-    //             type: 'custom',
-    //             message: res?.errors.product_specs?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.variant_specs) {
-    //           form.setError('variant_specs', {
-    //             type: 'custom',
-    //             message: res?.errors.variant_specs?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.keywords) {
-    //           form.setError('keywords', {
-    //             type: 'custom',
-    //             message: res?.errors.keywords?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.keywords_fa) {
-    //           form.setError('keywords_fa', {
-    //             type: 'custom',
-    //             message: res?.errors.keywords_fa?.join(' و '),
-    //           })
-    //         } else if (res?.errors?.questions) {
-    //           form.setError('questions', {
-    //             type: 'custom',
-    //             message: res?.errors.questions?.join(' و '),
-    //           })
-    //         } else if (res?.errors?._form) {
-    //           toast.error(res?.errors._form?.join(' و '))
-    //         }
-    //       } catch (error) {
-    //         // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
-    //         if (
-    //           !(
-    //             error instanceof Error &&
-    //             error.message.includes('NEXT_REDIRECT')
-    //           )
-    //         ) {
-    //           toast.error('مشکلی پیش آمده.')
-    //         }
-    //       }
-    //     })
-    //   }
+    startTransition(async () => {
+      try {
+        const res = await createProduct(formData, path)
+        if (res?.errors?.name) {
+          form.setError('name', {
+            type: 'custom',
+            message: res?.errors.name?.join(' و '),
+          })
+        } else if (res?.errors?.description) {
+          form.setError('description', {
+            type: 'custom',
+            message: res?.errors.description?.join(' و '),
+          })
+        } else if (res?.errors?.variantName) {
+          form.setError('variantName', {
+            type: 'custom',
+            message: res?.errors.variantName?.join(' و '),
+          })
+        } else if (res?.errors?.variantDescription) {
+          form.setError('variantDescription', {
+            type: 'custom',
+            message: res?.errors.variantDescription?.join(' و '),
+          })
+        } else if (res?.errors?.name_fa) {
+          form.setError('name_fa', {
+            type: 'custom',
+            message: res?.errors.name_fa?.join(' و '),
+          })
+        } else if (res?.errors?.description_fa) {
+          form.setError('description_fa', {
+            type: 'custom',
+            message: res?.errors.description_fa?.join(' و '),
+          })
+        } else if (res?.errors?.variantName_fa) {
+          form.setError('variantName_fa', {
+            type: 'custom',
+            message: res?.errors.variantName_fa?.join(' و '),
+          })
+        } else if (res?.errors?.variantDescription_fa) {
+          form.setError('variantDescription_fa', {
+            type: 'custom',
+            message: res?.errors.variantDescription_fa?.join(' و '),
+          })
+        } else if (res?.errors?.images) {
+          form.setError('images', {
+            type: 'custom',
+            message: res?.errors.images?.join(' و '),
+          })
+        } else if (res?.errors?.variantImage) {
+          form.setError('variantImage', {
+            type: 'custom',
+            message: res?.errors.variantImage?.join(' و '),
+          })
+        } else if (res?.errors?.categoryId) {
+          form.setError('categoryId', {
+            type: 'custom',
+            message: res?.errors.categoryId?.join(' و '),
+          })
+        } else if (res?.errors?.subCategoryId) {
+          form.setError('subCategoryId', {
+            type: 'custom',
+            message: res?.errors.subCategoryId?.join(' و '),
+          })
+        } else if (res?.errors?.offerTagId) {
+          form.setError('offerTagId', {
+            type: 'custom',
+            message: res?.errors.offerTagId?.join(' و '),
+          })
+        } else if (res?.errors?.isSale) {
+          form.setError('isSale', {
+            type: 'custom',
+            message: res?.errors.isSale?.join(' و '),
+          })
+        } else if (res?.errors?.saleEndDate) {
+          form.setError('saleEndDate', {
+            type: 'custom',
+            message: res?.errors.saleEndDate?.join(' و '),
+          })
+        } else if (res?.errors?.brand) {
+          form.setError('brand', {
+            type: 'custom',
+            message: res?.errors.brand?.join(' و '),
+          })
+        } else if (res?.errors?.sku) {
+          form.setError('sku', {
+            type: 'custom',
+            message: res?.errors.sku?.join(' و '),
+          })
+        } else if (res?.errors?.weight) {
+          form.setError('weight', {
+            type: 'custom',
+            message: res?.errors.weight?.join(' و '),
+          })
+        } else if (res?.errors?.colors) {
+          form.setError('colors', {
+            type: 'custom',
+            message: res?.errors.colors?.join(' و '),
+          })
+        } else if (res?.errors?.sizes) {
+          form.setError('sizes', {
+            type: 'custom',
+            message: res?.errors.sizes?.join(' و '),
+          })
+        } else if (res?.errors?.product_specs) {
+          form.setError('product_specs', {
+            type: 'custom',
+            message: res?.errors.product_specs?.join(' و '),
+          })
+        } else if (res?.errors?.variant_specs) {
+          form.setError('variant_specs', {
+            type: 'custom',
+            message: res?.errors.variant_specs?.join(' و '),
+          })
+        } else if (res?.errors?.keywords) {
+          form.setError('keywords', {
+            type: 'custom',
+            message: res?.errors.keywords?.join(' و '),
+          })
+        } else if (res?.errors?.keywords_fa) {
+          form.setError('keywords_fa', {
+            type: 'custom',
+            message: res?.errors.keywords_fa?.join(' و '),
+          })
+        } else if (res?.errors?.questions) {
+          form.setError('questions', {
+            type: 'custom',
+            message: res?.errors.questions?.join(' و '),
+          })
+        } else if (res?.errors?._form) {
+          toast.error(res?.errors._form?.join(' و '))
+        }
+      } catch (error) {
+        // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
+        if (
+          !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
+        ) {
+          toast.error('مشکلی پیش آمده.')
+        }
+      }
+    })
+    // }
     // } catch {
     //   toast.error('مشکلی پیش آمده، لطفا دوباره امتحان کنید!')
     // }
