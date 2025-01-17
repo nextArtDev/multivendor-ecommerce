@@ -196,7 +196,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
       variant_specs: data?.variant_specs,
       keywords: data?.keywords,
       keywords_fa: data?.keywords_fa,
-      // questions: data?.questions,
+      questions: data?.questions,
       isSale: data?.isSale || false,
       weight: data?.weight,
       saleEndDate:
@@ -254,7 +254,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
         variant_specs: data?.variant_specs,
         keywords: data?.keywords,
         keywords_fa: data?.keywords_fa,
-        // questions: data?.questions,
+        questions: data?.questions,
         isSale: data?.isSale || false,
         weight: data?.weight,
         freeShippingForAllCountries: data?.freeShippingForAllCountries,
@@ -305,18 +305,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
         formData.append('keywords', data.keywords[i] as string | Blob)
       }
     }
-    // if (data.variant_specs && data.variant_specs.length > 0) {
-    //   for (let i = 0; i < data.variant_specs.length; i++) {
-    //     formData.append(
-    //       'data.variant_specs',
-    //       data.variant_specs[i] as string | Blob
-    //     )
-    //   }
-    // }
-    // formData.append('variant_specs', data.variant_specs)
-    // formData.append('keywords', data.keywords)
-    // formData.append('keywords_fa', data.keywords_fa || [])
-    // formData.append('questions', data.questions)
+
     formData.append('shippingFeeMethod', data.shippingFeeMethod || [])
     if (data.freeShippingForAllCountries) {
       formData.append('freeShippingForAllCountries', 'true')
@@ -328,12 +317,6 @@ const ProductDetails: FC<ProductDetailProps> = ({
     //   formData.append('featured', 'false')
     // }
 
-    // data.logo?.forEach((item) => {
-    //   if (item instanceof File) {
-    //     formData.append('logo', item)
-    //   }
-    // })
-
     if (data.images && data.images.length > 0) {
       for (let i = 0; i < data.images.length; i++) {
         formData.append('images', data.images[i] as string | Blob)
@@ -344,16 +327,12 @@ const ProductDetails: FC<ProductDetailProps> = ({
         formData.append('variantImage', data.variantImage[i] as string | Blob)
       }
     }
-    // if (data.product_specs && data.product_specs.length > 0) {
-    //   for (let i = 0; i < data.product_specs.length; i++) {
-    //     formData.append('product_specs', JSON.stringify(data.product_specs))
-    //   }
-    // }
-    // if (data.variant_specs && data.variant_specs.length > 0) {
-    //   for (let i = 0; i < data.variant_specs.length; i++) {
-    //     formData.append('variant_specs', JSON.stringify(data.variant_specs))
-    //   }
-    // }
+
+    if (data.questions && data.questions.length > 0) {
+      data.questions.forEach((questions) => {
+        formData.append('questions', JSON.stringify(questions))
+      })
+    }
     if (data.product_specs && data.product_specs.length > 0) {
       data.product_specs.forEach((size) => {
         formData.append('product_specs', JSON.stringify(size))
@@ -367,6 +346,11 @@ const ProductDetails: FC<ProductDetailProps> = ({
     if (data.sizes && data.sizes.length > 0) {
       data.sizes.forEach((size) => {
         formData.append('sizes', JSON.stringify(size))
+      })
+    }
+    if (data.questions && data.questions.length > 0) {
+      data.questions.forEach((question) => {
+        formData.append('question', JSON.stringify(question))
       })
     }
     // if (data.sizes && data.sizes.length > 0) {
@@ -687,8 +671,8 @@ const ProductDetails: FC<ProductDetailProps> = ({
     form.setValue('sizes', sizes)
     form.setValue('product_specs', productSpecs)
     form.setValue('variant_specs', variantSpecs)
-    //  form.setValue('questions', questions)
-  }, [colors, form, productSpecs, sizes, variantSpecs])
+    form.setValue('questions', questions)
+  }, [colors, form, productSpecs, questions, sizes, variantSpecs])
   // console.log(form.watch().keywords)
   // console.log('form sizes', form.watch().sizes)
   // console.log('form colors', form.watch().colors)
@@ -1164,27 +1148,27 @@ const ProductDetails: FC<ProductDetailProps> = ({
                 </Tabs>
               </InputFieldset>
               {/* Questions*/}
-              {/* {!isNewVariantPage && (
-                  <InputFieldset label="Questions & Answers">
-                    <div className="w-full flex flex-col gap-y-3">
-                      <ClickToAddInputs
-                        details={questions}
-                        setDetails={setQuestions}
-                        initialDetail={{
-                          question: '',
-                          answer: '',
-                        }}
-                        containerClassName="flex-1"
-                        inputClassName="w-full"
-                      />
-                      {errors.questions && (
-                        <span className="text-sm font-medium text-destructive">
-                          {errors.questions.message}
-                        </span>
-                      )}
-                    </div>
-                  </InputFieldset>
-                )} */}
+              {!isNewVariantPage && (
+                <InputFieldset label="Questions & Answers">
+                  <div className="w-full flex flex-col gap-y-3">
+                    <ClickToAddInputs
+                      details={questions}
+                      setDetails={setQuestions}
+                      initialDetail={{
+                        question: '',
+                        answer: '',
+                      }}
+                      containerClassName="flex-1"
+                      inputClassName="w-full"
+                    />
+                    {errors.questions && (
+                      <span className="text-sm font-medium text-destructive">
+                        {errors.questions.message}
+                      </span>
+                    )}
+                  </div>
+                </InputFieldset>
+              )}
               {/* Is On Sale */}
 
               <InputFieldset

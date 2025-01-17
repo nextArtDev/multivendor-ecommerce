@@ -70,10 +70,13 @@ export async function createProduct(
     keywords: formData.getAll('keywords'),
     product_specs: formData
       .getAll('product_specs')
-      .map((product_specs) => JSON.parse(product_specs.toString())),
+      .map((product_spec) => JSON.parse(product_spec.toString())),
     variant_specs: formData
       .getAll('variant_specs')
-      .map((variant_specs) => JSON.parse(variant_specs.toString())),
+      .map((variant_spec) => JSON.parse(variant_spec.toString())),
+    questions: formData
+      .getAll('questions')
+      .map((question) => JSON.parse(question.toString())),
     sizes: formData.getAll('sizes').map((size) => JSON.parse(size.toString())),
     shippingFeeMethod: formData.get('shippingFeeMethod'),
     freeShippingForAllCountries: Boolean(

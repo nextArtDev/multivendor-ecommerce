@@ -49,7 +49,13 @@
 // import { getHomeFeaturedCategories } from "@/queries/home";
 // import { retrieveProductDetailsOptimized } from "@/queries/product-optimized";
 
-import { Image, Prisma, ShippingFeeMethod, Spec } from '@prisma/client'
+import {
+  Image,
+  Prisma,
+  Question,
+  ShippingFeeMethod,
+  Spec,
+} from '@prisma/client'
 import { getAllStoreProducts } from './queries/dashboard/products'
 
 export interface DashboardSidebarMenuInterface {
@@ -75,8 +81,8 @@ export type ProductWithVariantType = {
   description_fa: string
   variantName_fa: string
   variantDescription_fa: string
-  images: Image[]
-  variantImage: Image[]
+  images: Partial<Image[]>
+  variantImage: Partial<Image[]>
   categoryId: string
   offerTagId: string
   subCategoryId: string
@@ -93,14 +99,14 @@ export type ProductWithVariantType = {
     price: number
     discount: number
   }[]
-  product_specs: Spec[]
+  product_specs: Partial<Spec[]>
   variant_specs: Spec[]
   keywords: string[]
-  keywords_fa: string[]
-  questions: { id?: string; question: string; answer: string }[]
+  keywords_fa: Partial<string[]>
+  questions: Partial<Question[]>
   freeShippingForAllCountries: boolean
   freeShippingCountriesIds: { id?: string; label: string; value: string }[]
-  shippingFeeMethod: ShippingFeeMethod
+  shippingFeeMethod: Partial<ShippingFeeMethod>
   createdAt: Date
   updatedAt: Date
 }
