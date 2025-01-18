@@ -1,7 +1,17 @@
 'use server'
 
+import slugify from 'slugify'
+
 import { auth } from '@/auth'
-import { Image, Product, ProductVariant } from '@prisma/client'
+import {
+  Color,
+  Image,
+  Product,
+  ProductVariant,
+  Question,
+  Size,
+  Spec,
+} from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { prisma } from '../../prisma'
@@ -9,6 +19,7 @@ import { prisma } from '../../prisma'
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
 import { ProductFormSchema } from '@/lib/schemas/dashboard'
 import { headers } from 'next/headers'
+import { generateUniqueSlug } from '@/lib/dashborad-utils'
 
 interface CreateProductFormState {
   success?: string
@@ -45,6 +56,7 @@ interface CreateProductFormState {
 
 export async function createProduct(
   formData: FormData,
+  storeUrl,
   path: string
 ): Promise<CreateProductFormState> {
   const headerResponse = await headers()
@@ -78,6 +90,9 @@ export async function createProduct(
       .getAll('questions')
       .map((question) => JSON.parse(question.toString())),
     sizes: formData.getAll('sizes').map((size) => JSON.parse(size.toString())),
+    colors: formData
+      .getAll('colors')
+      .map((size) => JSON.parse(size.toString())),
     shippingFeeMethod: formData.get('shippingFeeMethod'),
     freeShippingForAllCountries: Boolean(
       formData.get('freeShippingForAllCountries')
@@ -108,96 +123,260 @@ export async function createProduct(
     }
   }
 
+  // const store = await prisma.store.findUnique({
+  //   where: {
+  //     url: storeUrl,
+  //     userId: session.user.id,
+  //   },
+  // })
+  // if (!store) {
+  //   return {
+  //     errors: {
+  //       _form: ['فروشگاه حذف شده است!'],
+  //     },
+  //   }
+  // }
+
   try {
-    // const isExisting = await prisma.product.findFirst({
+    // const isExistingProduct = await prisma.product.findFirst({
     //   where: {
     //     // OR: [{ name: result.data.name }, { url: result.data.url }],
     //     AND: [
     //       {
-    //         OR: [
-    //           { name: result.data.name },
-    //           { name_fa: result.data?.name_fa },
-    //           { email: result.data.email },
-    //           { phone: result.data.phone },
-    //           { url: result.data.url },
-    //         ],
+    //         OR: [{ name: result.data.name }, { name_fa: result.data?.name_fa }],
     //       },
     //     ],
     //   },
     // })
-    // // console.log({ isExisting })
-    // if (isExisting) {
-    //   let errorMessage = ''
-    //   if (isExisting.name === result.data.name) {
-    //     errorMessage = 'A product with the same name already exists'
-    //   } else if (isExisting.email === result.data.email) {
-    //     errorMessage = 'A product with the same email already exists'
-    //   } else if (isExisting.phone === result.data.phone) {
-    //     errorMessage = 'A product with the same phone number already exists'
-    //   } else if (isExisting.url === result.data.url) {
-    //     errorMessage = 'A product with the same URL already exists'
-    //   }
+    // if (isExistingProduct) {
     //   return {
     //     errors: {
-    //       _form: [errorMessage],
+    //       _form: ['محصول با این نام موجود است!'],
     //     },
     //   }
     // }
+    // // const isExistingVariant = await prisma.product.findFirst({
+    // //   where: {
+    // //     // OR: [{ name: result.data.name }, { url: result.data.url }],
+    // //     AND: [
+    // //       {
+    // //         OR: [
+    // //           { name: result.data.name },
+    // //           { name_fa: result.data?.name_fa },
+    // //           { email: result.data.email },
+    // //           { phone: result.data.phone },
+    // //           { url: result.data.url },
+    // //         ],
+    // //       },
+    // //     ],
+    // //   },
+    // // })
+    // // // console.log({ isExisting })
     // // if (isExisting) {
+    // //   let errorMessage = ''
+    // //   if (isExisting.name === result.data.name) {
+    // //     errorMessage = 'A product with the same name already exists'
+    // //   } else if (isExisting.email === result.data.email) {
+    // //     errorMessage = 'A product with the same email already exists'
+    // //   } else if (isExisting.phone === result.data.phone) {
+    // //     errorMessage = 'A product with the same phone number already exists'
+    // //   } else if (isExisting.url === result.data.url) {
+    // //     errorMessage = 'A product with the same URL already exists'
+    // //   }
     // //   return {
     // //     errors: {
-    // //       _form: ['فروشگاه شما موجود است!'],
+    // //       _form: [errorMessage],
     // //     },
     // //   }
     // // }
-    // // console.log(isExisting)
-    // // console.log(billboard)
-    // const featured = result.data.featured == true ? true : false
-    // const coverIds: string[] = []
-    // for (const img of result.data?.cover || []) {
+    // const productSlug = await generateUniqueSlug(
+    //   slugify(result.data.name, {
+    //     replacement: '-',
+    //     lower: true,
+    //     trim: true,
+    //   }),
+    //   'product'
+    // )
+    // const variantSlug = await generateUniqueSlug(
+    //   slugify(result.data.variantName, {
+    //     replacement: '-',
+    //     lower: true,
+    //     trim: true,
+    //   }),
+    //   'productVariant'
+    // )
+    // //  for (const img of result.data?.logo) {
+    // //    if (img instanceof File) {
+    // //      const buffer = Buffer.from(await img.arrayBuffer())
+    // //      const res = await uploadFileToS3(buffer, img.name)
+    // //      if (res?.imageId && typeof res.imageId === 'string') {
+    // //        imageIds.push(res.imageId)
+    // //      }
+    // //    }
+    // //  }
+    // // Product Specs
+    // let newProductSpecs
+    // if (result.data.product_specs) {
+    //   newProductSpecs = result.data.product_specs.map((spec) => ({
+    //     name: spec.name,
+    //     value: spec.value,
+    //   }))
+    // }
+    // let productSpecs: Spec[]
+    // if (newProductSpecs) {
+    //   productSpecs = await prisma.spec.createMany({
+    //     data: newProductSpecs,
+    //   })
+    // }
+    // // Variant Specs
+    // let newVariantSpecs
+    // if (result.data.variant_specs) {
+    //   newVariantSpecs = result.data.variant_specs.map((spec) => ({
+    //     name: spec.name,
+    //     value: spec.value,
+    //   }))
+    // }
+    // let variantSpecs: Spec[]
+    // if (newVariantSpecs) {
+    //   variantSpecs = await prisma.spec.createMany({
+    //     data: newVariantSpecs,
+    //   })
+    // }
+    // //  new Color
+    // let newColors
+    // if (result.data.colors) {
+    //   newColors = result.data.colors.map((color) => ({
+    //     name: color.color,
+    //   }))
+    // }
+    // let colors: Color[]
+    // if (newColors) {
+    //   colors = await prisma.color.createMany({
+    //     data: newColors,
+    //   })
+    // }
+    // //  new Size
+    // let newSizes
+    // if (result.data.sizes) {
+    //   newSizes = result.data.sizes.map((size) => ({
+    //     size: size.size,
+    //     quantity: size.quantity,
+    //     price: size.price,
+    //     discount: size.discount,
+    //   }))
+    // }
+    // let sizes: Size[]
+    // if (newSizes) {
+    //   sizes = await prisma.size.createMany({
+    //     data: newSizes,
+    //   })
+    // }
+    // //  new Question
+    // let newQuestions
+    // if (result.data.questions) {
+    //   newQuestions = result.data.questions.map((question) => ({
+    //     question: question.question,
+    //     answer: question.answer,
+    //     question_fa: question?.question_fa,
+    //     answer_fa: question?.answer_fa,
+    //   }))
+    // }
+    // let questions: Question[]
+    // if (newQuestions) {
+    //   questions = await prisma.question.createMany({
+    //     data: newQuestions,
+    //   })
+    // }
+    // const imagesIds: string[] = []
+    // for (const img of result.data?.images || []) {
     //   if (img instanceof File) {
     //     const buffer = Buffer.from(await img.arrayBuffer())
     //     const res = await uploadFileToS3(buffer, img.name)
     //     if (res?.imageId && typeof res.imageId === 'string') {
-    //       coverIds.push(res.imageId)
+    //       imagesIds.push(res.imageId)
     //     }
     //   }
     // }
-    // const logoIds: string[] = []
-    // for (const img of result.data?.logo || []) {
+    // const variantImageIds: string[] = []
+    // for (const img of result.data?.variantImage || []) {
     //   if (img instanceof File) {
     //     const buffer = Buffer.from(await img.arrayBuffer())
     //     const res = await uploadFileToS3(buffer, img.name)
     //     if (res?.imageId && typeof res.imageId === 'string') {
-    //       logoIds.push(res.imageId)
+    //       variantImageIds.push(res.imageId)
     //     }
     //   }
     // }
-    // await prisma.product.create({
+    // const Product = await prisma.product.create({
     //   data: {
+    //     storeId: store.id,
+    //     categoryId: result.data.categoryId,
+    //     subCategoryId: result.data.subCategoryId,
     //     name: result.data.name,
-    //     userId: session.user.id,
-    //     name_fa: result.data?.name_fa,
     //     description: result.data.description,
+    //     name_fa: result.data?.name_fa,
     //     description_fa: result.data?.description_fa,
-    //     url: result.data.url,
-    //     featured,
-    //     phone: result.data.phone,
-    //     email: result.data.email,
-    //     logo: {
-    //       connect: logoIds.map((id) => ({
-    //         id: id,
-    //       }))[0],
-    //     },
-    //     cover: {
-    //       connect: coverIds.map((id) => ({
+    //     slug: productSlug,
+    //     brand: result.data?.brand || '',
+    //     shippingFeeMethod: result.data.shippingFeeMethod,
+    //     // freeShipping:result.data.freeShippingCountriesIds?true:false,
+    //     freeShippingForAllCountries: result.data.freeShippingForAllCountries,
+    //     images: {
+    //       connect: imagesIds.map((id) => ({
     //         id: id,
     //       })),
     //     },
+    //     specs: {
+    //       connect: productSpecs.map((id) => ({ id })),
+    //     },
     //   },
     // })
-    // // console.log(res?.imageUrl)
-    // // console.log(product)
+    // // const featured = result.data.featured == true ? true : false
+    // // const coverIds: string[] = []
+    // // for (const img of result.data?.cover || []) {
+    // //   if (img instanceof File) {
+    // //     const buffer = Buffer.from(await img.arrayBuffer())
+    // //     const res = await uploadFileToS3(buffer, img.name)
+    // //     if (res?.imageId && typeof res.imageId === 'string') {
+    // //       coverIds.push(res.imageId)
+    // //     }
+    // //   }
+    // // }
+    // // const logoIds: string[] = []
+    // // for (const img of result.data?.logo || []) {
+    // //   if (img instanceof File) {
+    // //     const buffer = Buffer.from(await img.arrayBuffer())
+    // //     const res = await uploadFileToS3(buffer, img.name)
+    // //     if (res?.imageId && typeof res.imageId === 'string') {
+    // //       logoIds.push(res.imageId)
+    // //     }
+    // //   }
+    // // }
+    // // await prisma.product.create({
+    // //   data: {
+    // //     name: result.data.name,
+    // //     userId: session.user.id,
+    // //     name_fa: result.data?.name_fa,
+    // //     description: result.data.description,
+    // //     description_fa: result.data?.description_fa,
+    // //     url: result.data.url,
+    // //     featured,
+    // //     phone: result.data.phone,
+    // //     email: result.data.email,
+    // //     logo: {
+    // //       connect: logoIds.map((id) => ({
+    // //         id: id,
+    // //       }))[0],
+    // //     },
+    // //     cover: {
+    // //       connect: coverIds.map((id) => ({
+    // //         id: id,
+    // //       })),
+    // //     },
+    // //   },
+    // // })
+    // // // console.log(res?.imageUrl)
+    // // // console.log(product)
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {

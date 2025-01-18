@@ -182,9 +182,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
       variantName_fa: data?.variantName_fa,
       variantDescription_fa: data?.variantDescription_fa,
       images: data?.images || [],
-      variantImage: data?.variantImage
-        ? data.variantImage.map((variantImg) => ({ url: variantImg.url }))
-        : [],
+      variantImage: data?.images || [],
       categoryId: data?.categoryId,
       offerTagId: data?.offerTagId || undefined,
       subCategoryId: data?.subCategoryId,
@@ -240,9 +238,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
         variantName: data?.variantName,
         variantDescription: data?.variantDescription,
         images: data.images,
-        variantImage: data?.variantImage
-          ? data.variantImage.map((variantImg) => ({ url: variantImg.url }))
-          : [],
+        variantImage: data?.variantImage,
         categoryId: data?.categoryId,
         offerTagId: data?.offerTagId,
         subCategoryId: data?.subCategoryId,
@@ -346,6 +342,11 @@ const ProductDetails: FC<ProductDetailProps> = ({
     if (data.sizes && data.sizes.length > 0) {
       data.sizes.forEach((size) => {
         formData.append('sizes', JSON.stringify(size))
+      })
+    }
+    if (data.colors && data.colors.length > 0) {
+      data.colors.forEach((color) => {
+        formData.append('colors', JSON.stringify(color))
       })
     }
     if (data.questions && data.questions.length > 0) {
@@ -511,7 +512,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
     //   } else {
     startTransition(async () => {
       try {
-        const res = await createProduct(formData, path)
+        const res = await createProduct(formData, storeUrl, path)
         if (res?.errors?.name) {
           form.setError('name', {
             type: 'custom',

@@ -457,6 +457,7 @@ export const ProductFormSchema = z.object({
     .object({
       name: z.string(),
       value: z.string(),
+      // name_fa: z.string(),
     })
     .array()
     // .min(1, 'Please provide at least one product spec.')
@@ -472,6 +473,7 @@ export const ProductFormSchema = z.object({
     .object({
       name: z.string(),
       value: z.string(),
+      // name_fa: z.string(),
     })
     .array()
     // .min(1, 'Please provide at least one product variant spec.')
@@ -487,6 +489,8 @@ export const ProductFormSchema = z.object({
     .object({
       question: z.string(),
       answer: z.string(),
+      // question_fa: z.string(),
+      // answer_fa: z.string(),
     })
     .array()
     // .min(1, 'Please provide at least one product question.')

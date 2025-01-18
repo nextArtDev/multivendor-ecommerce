@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 
 // UI Components
+import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 
 // Icons
@@ -176,24 +177,31 @@ const ClickToAddInputs = <T extends Detail>({
               )}
 
               {/* Input field for each property */}
-              <Input
-                className={cn('w-28 placeholder:capitalize', inputClassName)}
-                type={typeof detail[property] === 'number' ? 'number' : 'text'}
-                name={property}
-                placeholder={property}
-                value={detail[property] as string}
-                min={typeof detail[property] === 'number' ? 0 : undefined}
-                step="0.01"
-                onChange={(e) =>
-                  handleDetailsChange(
-                    index,
-                    property,
-                    e.target.type === 'number'
-                      ? parseFloat(e.target.value)
-                      : e.target.value
-                  )
-                }
-              />
+              <div className="flex  flex-col justify-center  gap-1">
+                <Label className="capitalize text-muted-foreground">
+                  {property}
+                </Label>
+                <Input
+                  className={cn('w-28 placeholder:capitalize', inputClassName)}
+                  type={
+                    typeof detail[property] === 'number' ? 'number' : 'text'
+                  }
+                  name={property}
+                  placeholder={property}
+                  value={detail[property] as string}
+                  min={typeof detail[property] === 'number' ? 0 : undefined}
+                  step="0.01"
+                  onChange={(e) =>
+                    handleDetailsChange(
+                      index,
+                      property,
+                      e.target.type === 'number'
+                        ? parseFloat(e.target.value)
+                        : e.target.value
+                    )
+                  }
+                />
+              </div>
             </div>
           ))}
           {/* Show buttons for each row of inputs */}

@@ -100,7 +100,7 @@ export type ProductWithVariantType = {
     discount: number
   }[]
   product_specs: Partial<Spec[]>
-  variant_specs: Spec[]
+  variant_specs: Partial<Spec[]>
   keywords: string[]
   keywords_fa: Partial<string[]>
   questions: Partial<Question[]>

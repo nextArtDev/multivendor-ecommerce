@@ -61,23 +61,26 @@ model Image {
   SubCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
   subCategoryId String?
 
-  storeCover       Store?          @relation(fields: [storeId], references: [id])
-  storeId          String?
-  storeIcon        Store?          @relation("storeLogo", fields: [storeIconId], references: [id])
-  storeIconId      String?         @unique
-  variantImage     ProductVariant? @relation("variantImage", fields: [variantImageId], references: [id])
-  variantImageId   String?         @unique
-  productVariant   ProductVariant? @relation(fields: [productVariantId], references: [id])
-  productVariantId String?
-  review           Review?         @relation(fields: [reviewId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  reviewId         String?
+  storeCover  Store?  @relation(fields: [storeId], references: [id])
+  storeId     String?
+  storeIcon   Store?  @relation("storeLogo", fields: [storeIconId], references: [id])
+  storeIconId String? @unique
+
+  variantImage   ProductVariant? @relation("variantImage", fields: [variantImageId], references: [id])
+  variantImageId String?         @unique
+
+  product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+
+  review   Review? @relation(fields: [reviewId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reviewId String?
 
   @@unique([storeIconId, storeId])
   @@index([storeIconId])
   @@index([storeId])
   @@index([subCategoryId])
   @@index([categoryId])
-  @@index([productVariantId])
+  @@index([productId])
   @@index([reviewId])
   @@index([variantImageId])
 }
@@ -183,6 +186,7 @@ model Product {
   numReviews                  Int               @default(0)
   shippingFeeMethod           ShippingFeeMethod @default(ITEM)
   views                       Int               @default(0)
+  images                      Image[]
   freeShipping                FreeShipping?     @relation("ProductFreeShipping")
   freeShippingForAllCountries Boolean           @default(false)
 
@@ -219,7 +223,7 @@ model ProductVariant {
   variantDescription    String? @db.LongText
   variantName_fa        String?
   variantDescription_fa String? @db.LongText
-  variantImage          Image?  @relation("variantImage")
+  variantImage          Image[] @relation("variantImage")
   slug                  String  @unique
   isSale                Boolean @default(false)
   saleEndDate           String?
@@ -228,7 +232,6 @@ model ProductVariant {
   keywords_fa           String?
   sales                 Int     @default(0)
   weight                Float
-  images                Image[]
 
   productId String
   product   Product @relation("ProductToProductVariant", fields: [productId], references: [id], onDelete: Cascade)
@@ -256,8 +259,8 @@ model Size {
 
   wishlist Wishlist[] @relation("WishlistToSize")
 
-  productVariantId String
-  productVariant   ProductVariant @relation("ProductVariantSizes", fields: [productVariantId], references: [id])
+  productVariantId String?
+  productVariant   ProductVariant? @relation("ProductVariantSizes", fields: [productVariantId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -286,8 +289,8 @@ model Color {
   name    String
   name_fa String?
 
-  productVariantId String
-  productVariant   ProductVariant @relation("ProductVariantColors", fields: [productVariantId], references: [id])
+  productVariantId String?
+  productVariant   ProductVariant? @relation("ProductVariantColors", fields: [productVariantId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -332,8 +335,11 @@ model Question {
   question String
   answer   String
 
-  productId String
-  product   Product @relation("ProductQuestion", fields: [productId], references: [id], onDelete: Cascade)
+  question_fa String?
+  answer_fa   String?
+
+  productId String?
+  product   Product? @relation("ProductQuestion", fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
