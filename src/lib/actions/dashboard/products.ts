@@ -100,7 +100,7 @@ export async function createProduct(
     images: formData.getAll('images'),
     variantImage: formData.getAll('variantImage'),
   })
-  console.log(result?.data)
+  // console.log(result?.data)
 
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
@@ -138,23 +138,23 @@ export async function createProduct(
   }
 
   try {
-    // const isExistingProduct = await prisma.product.findFirst({
-    //   where: {
-    //     // OR: [{ name: result.data.name }, { url: result.data.url }],
-    //     AND: [
-    //       {
-    //         OR: [{ name: result.data.name }, { name_fa: result.data?.name_fa }],
-    //       },
-    //     ],
-    //   },
-    // })
-    // if (isExistingProduct) {
-    //   return {
-    //     errors: {
-    //       _form: ['محصول با این نام موجود است!'],
-    //     },
-    //   }
-    // }
+    const isExistingProduct = await prisma.product.findFirst({
+      where: {
+        // OR: [{ name: result.data.name }, { url: result.data.url }],
+        AND: [
+          {
+            OR: [{ name: result.data.name }, { name_fa: result.data?.name_fa }],
+          },
+        ],
+      },
+    })
+    if (isExistingProduct) {
+      return {
+        errors: {
+          _form: ['محصول با این نام موجود است!'],
+        },
+      }
+    }
     // const isExistingVariant = await prisma.product.findFirst({
     //   where: {
     //     // OR: [{ name: result.data.name }, { url: result.data.url }],
@@ -180,6 +180,7 @@ export async function createProduct(
     //   }),
     //   'product'
     // )
+    // console.log({ productSlug })
     // const variantSlug = await generateUniqueSlug(
     //   slugify(result.data.variantName, {
     //     replacement: '-',
@@ -188,34 +189,10 @@ export async function createProduct(
     //   }),
     //   'productVariant'
     // )
-    //  for (const img of result.data?.logo) {
-    //    if (img instanceof File) {
-    //      const buffer = Buffer.from(await img.arrayBuffer())
-    //      const res = await uploadFileToS3(buffer, img.name)
 
-    //      if (res?.imageId && typeof res.imageId === 'string') {
-    //        imageIds.push(res.imageId)
-    //      }
-    //    }
-    //  }
+    // // Product Specs
 
-    // Product Specs
-    let newProductSpecs
-    if (result.data.product_specs) {
-      newProductSpecs = result.data.product_specs.map((spec) => ({
-        name: spec.name,
-        value: spec.value,
-      }))
-    }
-    console.log({ newProductSpecs })
-    let productSpecs: Spec[]
-    if (newProductSpecs) {
-      productSpecs = await prisma.spec.createMany({
-        data: newProductSpecs,
-      })
-    }
-
-    // // Variant Specs
+    // Variant Specs
     // let newVariantSpecs
     // if (result.data.variant_specs) {
     //   newVariantSpecs = result.data.variant_specs.map((spec) => ({
@@ -231,7 +208,7 @@ export async function createProduct(
     //   })
     // }
 
-    // //  new Color
+    //  new Color
     // let newColors
     // if (result.data.colors) {
     //   newColors = result.data.colors.map((color) => ({
@@ -245,7 +222,7 @@ export async function createProduct(
     //     data: newColors,
     //   })
     // }
-    // //  new Size
+    //  new Size
     // let newSizes
     // if (result.data.sizes) {
     //   newSizes = result.data.sizes.map((size) => ({
@@ -263,89 +240,97 @@ export async function createProduct(
     //   })
     // }
 
-    // //  new Question
-    // let newQuestions
-    // if (result.data.questions) {
-    //   newQuestions = result.data.questions.map((question) => ({
-    //     question: question.question,
-    //     answer: question.answer,
-    //   }))
-    // }
+    const imagesIds: string[] = []
+    for (const img of result.data?.images || []) {
+      if (img instanceof File) {
+        const buffer = Buffer.from(await img.arrayBuffer())
+        const res = await uploadFileToS3(buffer, img.name)
 
-    // let questions:Question[]
-    // if (newQuestions) {
-    //   questions =await prisma.question.createMany({
-    //     data: newQuestions,
+        if (res?.imageId && typeof res.imageId === 'string') {
+          imagesIds.push(res.imageId)
+        }
+      }
+    }
+    const variantImageIds: string[] = []
+    for (const img of result.data?.variantImage || []) {
+      if (img instanceof File) {
+        const buffer = Buffer.from(await img.arrayBuffer())
+        const res = await uploadFileToS3(buffer, img.name)
+
+        if (res?.imageId && typeof res.imageId === 'string') {
+          variantImageIds.push(res.imageId)
+        }
+      }
+    }
+
+    const product = await prisma.product.create({
+      data: {
+        storeId: store.id,
+        categoryId: result.data.categoryId,
+        subCategoryId: result.data.subCategoryId,
+        name: result.data.name,
+        description: result.data.description,
+        name_fa: result.data?.name_fa,
+        description_fa: result.data?.description_fa,
+        slug: 'productSlug',
+        brand: result.data?.brand || '',
+        shippingFeeMethod: result.data.shippingFeeMethod,
+        // freeShipping:result.data.freeShippingCountriesIds?true:false,
+        freeShippingForAllCountries: result.data.freeShippingForAllCountries,
+        images: {
+          connect: imagesIds.map((id) => ({
+            id: id,
+          })),
+        },
+      },
+    })
+
+    // Product Specs
+    let newProductSpecs
+    if (result.data.product_specs) {
+      newProductSpecs = result.data.product_specs.map((spec) => ({
+        name: spec.name,
+        value: spec.value,
+        productId: product.id,
+      }))
+    }
+
+    if (newProductSpecs) {
+      await prisma.spec.createMany({
+        data: newProductSpecs,
+      })
+    }
+
+    //  new Question
+    let newQuestions
+    if (result.data.questions) {
+      newQuestions = result.data.questions.map((question) => ({
+        question: question.question,
+        answer: question.answer,
+        productId: product.id,
+      }))
+    }
+
+    if (newQuestions) {
+      await prisma.question.createMany({
+        data: newQuestions,
+      })
+    }
+
+    // if (newVariantSpecs) {
+    //   await prisma.spec.createMany({
+    //     data: { ...newVariantSpecs, productId: product.id },
     //   })
     // }
-    // const imagesIds: string[] = []
-    // for (const img of result.data?.images || []) {
-    //   if (img instanceof File) {
-    //     const buffer = Buffer.from(await img.arrayBuffer())
-    //     const res = await uploadFileToS3(buffer, img.name)
-
-    //     if (res?.imageId && typeof res.imageId === 'string') {
-    //       imagesIds.push(res.imageId)
-    //     }
-    //   }
+    // if (newColors) {
+    //   await prisma.color.createMany({
+    //     data: { ...newColors },
+    //   })
     // }
-    // const variantImageIds: string[] = []
-    // for (const img of result.data?.variantImage || []) {
-    //   if (img instanceof File) {
-    //     const buffer = Buffer.from(await img.arrayBuffer())
-    //     const res = await uploadFileToS3(buffer, img.name)
-
-    //     if (res?.imageId && typeof res.imageId === 'string') {
-    //       variantImageIds.push(res.imageId)
-    //     }
-    //   }
-    // }
-
-    // const Product = await prisma.product.create({
-    //   data: {
-    //     storeId: store.id,
-    //     categoryId: result.data.categoryId,
-    //     subCategoryId: result.data.subCategoryId,
-    //     name: result.data.name,
-    //     description: result.data.description,
-    //     name_fa: result.data?.name_fa,
-    //     description_fa: result.data?.description_fa,
-    //     slug: productSlug,
-    //     brand: result.data?.brand || '',
-    //     shippingFeeMethod: result.data.shippingFeeMethod,
-    //     // freeShipping:result.data.freeShippingCountriesIds?true:false,
-    //     freeShippingForAllCountries: result.data.freeShippingForAllCountries,
-    //     images: {
-    //       connect: imagesIds.map((id) => ({
-    //         id: id,
-    //       })),
-    //     },
-
-    //     specs: {
-    //       connect: productSpecs.map((id)=>({id})),
-    //     },
-    //   },
-    // })
-    // const featured = result.data.featured == true ? true : false
-    // const coverIds: string[] = []
-    // for (const img of result.data?.cover || []) {
-    //   if (img instanceof File) {
-    //     const buffer = Buffer.from(await img.arrayBuffer())
-    //     const res = await uploadFileToS3(buffer, img.name)
-    //     if (res?.imageId && typeof res.imageId === 'string') {
-    //       coverIds.push(res.imageId)
-    //     }
-    //   }
-    // }
-    // const logoIds: string[] = []
-    // for (const img of result.data?.logo || []) {
-    //   if (img instanceof File) {
-    //     const buffer = Buffer.from(await img.arrayBuffer())
-    //     const res = await uploadFileToS3(buffer, img.name)
-    //     if (res?.imageId && typeof res.imageId === 'string') {
-    //       logoIds.push(res.imageId)
-    //     }
-    //   }
+    // if (newSizes) {
+    //   await prisma.size.createMany({
+    //     data: newSizes,
+    //   })
     // }
     // await prisma.product.create({
     //   data: {

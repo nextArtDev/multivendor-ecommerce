@@ -31,6 +31,7 @@ export const generateUniqueSlug = async (
   field: string = 'slug',
   separator: string = '-'
 ) => {
+  console.log({ baseSlug })
   let slug = baseSlug
   let suffix = 1
 
@@ -41,6 +42,7 @@ export const generateUniqueSlug = async (
         [field]: slug,
       },
     })
+    console.log({ exisitngRecord })
     if (!exisitngRecord) {
       break
     }
