@@ -1,11 +1,9 @@
 'use client'
-import { PrismaClient } from '@prisma/client'
 
 import ColorThief from 'colorthief'
 // import { CartProductType, Country } from './types'
 // import countries from '@/data/countries.json'
 import { differenceInDays, differenceInHours } from 'date-fns'
-import { prisma } from './prisma'
 
 import type React from 'react'
 import { useEffect, useRef } from 'react'
@@ -23,33 +21,6 @@ export function useForwardedRef<T>(ref: React.ForwardedRef<T>) {
   })
 
   return innerRef
-}
-
-export const generateUniqueSlug = async (
-  baseSlug: string,
-  model: keyof PrismaClient,
-  field: string = 'slug',
-  separator: string = '-'
-) => {
-  console.log({ baseSlug })
-  let slug = baseSlug
-  let suffix = 1
-
-  while (true) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const exisitngRecord = await (prisma[model] as any).findFirst({
-      where: {
-        [field]: slug,
-      },
-    })
-    console.log({ exisitngRecord })
-    if (!exisitngRecord) {
-      break
-    }
-    slug = `${slug}${separator}${suffix}`
-    suffix += 1
-  }
-  return slug
 }
 
 // Helper function to grid grid classnames dependng on length

@@ -19,7 +19,7 @@ import { prisma } from '../../prisma'
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
 import { ProductFormSchema } from '@/lib/schemas/dashboard'
 import { headers } from 'next/headers'
-import { generateUniqueSlug } from '@/lib/dashborad-utils'
+import { generateUniqueSlug } from '@/lib/slug-util'
 
 interface CreateProductFormState {
   success?: string
@@ -56,7 +56,7 @@ interface CreateProductFormState {
 
 export async function createProduct(
   formData: FormData,
-  storeUrl,
+  storeUrl: string,
   path: string
 ): Promise<CreateProductFormState> {
   const headerResponse = await headers()
@@ -100,7 +100,6 @@ export async function createProduct(
     images: formData.getAll('images'),
     variantImage: formData.getAll('variantImage'),
   })
-  // console.log(result?.data)
 
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
@@ -172,14 +171,14 @@ export async function createProduct(
     //   },
     // })
 
-    // const productSlug = await generateUniqueSlug(
-    //   slugify(result.data.name, {
-    //     replacement: '-',
-    //     lower: true,
-    //     trim: true,
-    //   }),
-    //   'product'
-    // )
+    const productSlug = await generateUniqueSlug(
+      slugify(result.data.name, {
+        replacement: '-',
+        lower: true,
+        trim: true,
+      }),
+      'product'
+    )
     // console.log({ productSlug })
     // const variantSlug = await generateUniqueSlug(
     //   slugify(result.data.variantName, {
@@ -192,54 +191,6 @@ export async function createProduct(
 
     // // Product Specs
 
-    // Variant Specs
-    // let newVariantSpecs
-    // if (result.data.variant_specs) {
-    //   newVariantSpecs = result.data.variant_specs.map((spec) => ({
-    //     name: spec.name,
-    //     value: spec.value,
-    //   }))
-    // }
-
-    // let variantSpecs: Spec[]
-    // if (newVariantSpecs) {
-    //   variantSpecs =await prisma.spec.createMany({
-    //     data: newVariantSpecs,
-    //   })
-    // }
-
-    //  new Color
-    // let newColors
-    // if (result.data.colors) {
-    //   newColors = result.data.colors.map((color) => ({
-    //     name: color.color,
-    //   }))
-    // }
-
-    // let colors:Color[]
-    // if (newColors) {
-    //   colors =await prisma.color.createMany({
-    //     data: newColors,
-    //   })
-    // }
-    //  new Size
-    // let newSizes
-    // if (result.data.sizes) {
-    //   newSizes = result.data.sizes.map((size) => ({
-    //     size: size.size,
-    //     quantity: size.quantity,
-    //     price: size.price,
-    //     discount: size.discount,
-    //   }))
-    // }
-
-    // let sizes:Size[]
-    // if (newSizes) {
-    //   sizes = await prisma.size.createMany({
-    //     data: newSizes,
-    //   })
-    // }
-
     const imagesIds: string[] = []
     for (const img of result.data?.images || []) {
       if (img instanceof File) {
@@ -251,17 +202,18 @@ export async function createProduct(
         }
       }
     }
-    const variantImageIds: string[] = []
-    for (const img of result.data?.variantImage || []) {
-      if (img instanceof File) {
-        const buffer = Buffer.from(await img.arrayBuffer())
-        const res = await uploadFileToS3(buffer, img.name)
 
-        if (res?.imageId && typeof res.imageId === 'string') {
-          variantImageIds.push(res.imageId)
-        }
-      }
-    }
+    // const variantImageIds: string[] = []
+    // for (const img of result.data?.variantImage || []) {
+    //   if (img instanceof File) {
+    //     const buffer = Buffer.from(await img.arrayBuffer())
+    //     const res = await uploadFileToS3(buffer, img.name)
+
+    //     if (res?.imageId && typeof res.imageId === 'string') {
+    //       variantImageIds.push(res.imageId)
+    //     }
+    //   }
+    // }
 
     const product = await prisma.product.create({
       data: {
@@ -272,7 +224,7 @@ export async function createProduct(
         description: result.data.description,
         name_fa: result.data?.name_fa,
         description_fa: result.data?.description_fa,
-        slug: 'productSlug',
+        slug: productSlug,
         brand: result.data?.brand || '',
         shippingFeeMethod: result.data.shippingFeeMethod,
         // freeShipping:result.data.freeShippingCountriesIds?true:false,
@@ -317,6 +269,24 @@ export async function createProduct(
       })
     }
 
+    const variants = await createVariant({
+      name: result.data.variantName,
+      name_fa: result.data.variantName_fa,
+      description: result.data.description,
+      description_fa: result.data.description_fa,
+      saleEndDate: result.data.saleEndDate,
+      sku: result.data.sku,
+      keywords: result.data.keywords,
+      keywords_fa: result.data.keywords_fa,
+      weight: result.data.weight,
+      isSale: result.data.isSale,
+      productId: product.id,
+      images: result.data.variantImage,
+      sizes: result.data.sizes,
+      colors: result.data.colors,
+      specs: result.data.variant_specs,
+    })
+    // console.log({ variants })
     // if (newVariantSpecs) {
     //   await prisma.spec.createMany({
     //     data: { ...newVariantSpecs, productId: product.id },
@@ -791,5 +761,168 @@ export async function deleteProduct(
   } finally {
     revalidatePath(path)
     redirect(`/dashboard/seller/products`)
+  }
+}
+
+// Product Variant
+
+interface CreateVariantProps {
+  productId: string
+  name: string
+  description: string
+  name_fa: string | undefined
+  description_fa: string | undefined
+
+  saleEndDate: string | Date | undefined
+  sku: string | undefined
+  keywords: string[] | undefined
+  keywords_fa: string[] | undefined
+  weight: number | undefined
+  isSale: boolean
+  specs:
+    | {
+        name: string
+        value: string
+      }[]
+    | undefined
+  images:
+    | string[]
+    | File[]
+    | {
+        url: string
+      }[]
+    | undefined
+  sizes:
+    | {
+        size: string
+        quantity: number
+        discount: number
+        price: number
+      }[]
+    | undefined
+  colors:
+    | {
+        color: string
+      }[]
+    | undefined
+}
+export const createVariant = async ({
+  productId,
+  name,
+  description,
+  name_fa,
+  description_fa,
+  saleEndDate,
+  sku,
+  keywords,
+  keywords_fa,
+  weight,
+  isSale,
+  specs,
+  images,
+  sizes,
+  colors,
+}: CreateVariantProps) => {
+  try {
+    const variantImageIds: string[] = []
+    for (const img of images || []) {
+      if (img instanceof File) {
+        const buffer = Buffer.from(await img.arrayBuffer())
+        const res = await uploadFileToS3(buffer, img.name)
+
+        if (res?.imageId && typeof res.imageId === 'string') {
+          variantImageIds.push(res.imageId)
+        }
+      }
+    }
+    const imagesIds: string[] = []
+    for (const img of images || []) {
+      if (img instanceof File) {
+        const buffer = Buffer.from(await img.arrayBuffer())
+        const res = await uploadFileToS3(buffer, img.name)
+
+        if (res?.imageId && typeof res.imageId === 'string') {
+          imagesIds.push(res.imageId)
+        }
+      }
+    }
+    const variantSlug = await generateUniqueSlug(
+      slugify(name, {
+        replacement: '-',
+        lower: true,
+        trim: true,
+      }),
+      'productVariant'
+    )
+
+    const variant = await prisma.productVariant.create({
+      data: {
+        productId,
+        slug: variantSlug,
+        variantName: name,
+        variantDescription: description,
+        variantName_fa: name_fa,
+        variantDescription_fa: description_fa,
+        saleEndDate: String(saleEndDate),
+        sku: sku ? sku : '',
+        keywords: keywords?.length ? keywords?.join(',') : '',
+        keywords_fa: keywords_fa?.length ? keywords_fa?.join(',') : '',
+        weight: weight ? +weight : 0,
+        isSale,
+        variantImage: {
+          connect: imagesIds.map((id) => ({
+            id: id,
+          })),
+        },
+      },
+    })
+
+    let newVariantSpecs
+    if (specs) {
+      newVariantSpecs = specs.map((spec) => ({
+        name: spec.name,
+        value: spec.value,
+        variantId: variant.id,
+      }))
+    }
+
+    if (newVariantSpecs) {
+      await prisma.spec.createMany({
+        data: newVariantSpecs,
+      })
+    }
+
+    let newColors
+    if (colors) {
+      newColors = colors.map((color) => ({
+        name: color.color,
+        productVariantId: variant.id,
+      }))
+    }
+
+    if (newColors) {
+      await prisma.color.createMany({
+        data: newColors,
+      })
+    }
+    //  new Size
+    let newSizes
+    if (sizes) {
+      newSizes = sizes.map((size) => ({
+        size: size.size,
+        quantity: size.quantity,
+        price: size.price,
+        discount: size.discount,
+        productVariantId: variant.id,
+      }))
+    }
+
+    if (newSizes) {
+      await prisma.size.createMany({
+        data: newSizes,
+      })
+    }
+  } catch (error) {
+    console.log(error)
   }
 }
