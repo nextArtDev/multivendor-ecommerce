@@ -62,15 +62,15 @@ export const columns: ColumnDef<StoreProductType>[] = [
           <div className="relative flex flex-wrap gap-2">
             {row.original.variants.map(
               (
-                variant: ProductVariant & { images: Image[] | null } & {
+                variant: ProductVariant & { variantImage: Image[] | null } & {
                   colors: Color[]
                 } & { sizes: Size[] }
               ) => (
                 <div key={variant.id} className="flex flex-col gap-y-2 group">
                   <div className="relative cursor-pointer p-2">
-                    {variant?.images && (
+                    {variant?.variantImage && (
                       <NextImage
-                        src={variant?.images[0]?.url}
+                        src={variant?.variantImage[0]?.url}
                         alt={`${variant.variantName} image`}
                         width={1000}
                         height={1000}

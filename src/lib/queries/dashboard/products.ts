@@ -21,10 +21,11 @@ export const getAllStoreProducts = async (storeUrl: string) => {
         category: true,
         subCategory: true,
         offerTag: true,
+        images: { orderBy: { created_at: 'asc' } },
         variants: {
           include: {
-            images: { orderBy: { created_at: 'asc' } },
             colors: true,
+            variantImage: true,
             sizes: true,
           },
         },
