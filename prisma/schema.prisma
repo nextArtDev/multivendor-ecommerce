@@ -758,3 +758,23 @@ model PaymentDetails {
   @@index([orderId])
   @@index([userId])
 }
+
+model Province {
+  id        Int    @id @default(autoincrement())
+  name      String @unique
+  center    String
+  latitude  Float
+  longitude Float
+  cities    City[] @relation(name: "ProvinceCities")
+}
+
+model City {
+  id         Int      @id @default(autoincrement())
+  name       String
+  latitude   Float
+  longitude  Float
+  provinceId Int
+  province   Province @relation(name: "ProvinceCities", fields: [provinceId], references: [id], onDelete: Cascade)
+
+  @@index([provinceId])
+}
