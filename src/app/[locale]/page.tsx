@@ -4,9 +4,7 @@ import LangToggle from '@/components/shared/lang-toggle'
 import { ModeToggle } from '@/components/ui/mode-toggle'
 import { UserButton } from '@/components/auth/user-button'
 import { Link } from '@/navigation'
-import { seed } from '@/lib/actions/seed'
 export default async function Home() {
-  // await seed()
   const t = await getTranslations('HomePage')
 
   return (
