@@ -106,6 +106,7 @@
     "date-fns": "^4.1.0",
     "date-fns-jalali": "4.1.0-0",
     "embla-carousel-react": "^8.5.2",
+    "geolib": "^3.3.4",
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
     "jodit-react": "^4.1.2",

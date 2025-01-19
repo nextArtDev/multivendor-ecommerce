@@ -1,5 +1,5 @@
 'use client'
-import { useQuery } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import { FC } from 'react'
 import { useFormContext } from 'react-hook-form'
 import InputFieldset from '../dashboard/input-fieldset'
@@ -12,44 +12,85 @@ import {
   SelectValue,
 } from '../ui/select'
 import { Province } from '@prisma/client'
-import { getCityByProvinceId } from '@/lib/actions/province'
+import { getCityById, getCityByProvinceId } from '@/lib/actions/province'
+import { getDistance, isPointWithinRadius } from 'geolib'
 
 interface ProvinceCityProps {
   isPending?: boolean
-  provinceName: string
   provinceLabel?: string
-  cityName: string
-  cityLabel?: string
+  // provinceName: string
+  // cityName: string
+  // cityLabel?: string
   provinces: Province[]
 }
 
 const ProvinceCity: FC<ProvinceCityProps> = ({
-  isPending,
+  isPending = false,
+  provinceLabel,
   provinces,
-  provinceName,
-  provinceLabel = provinceName,
-  cityName,
+  // provinceName,
+  // cityName,
 }) => {
   const form = useFormContext()
 
-  const { data: cities, isPending: isPendingCategory } = useQuery({
-    queryKey: ['city-by-province', form.watch().provinceId],
-    queryFn: () => getCityByProvinceId(form.watch().provinceId),
-  })
+  const [{ data: cities, isPending: isPendingProvince }, { data: city }] =
+    useQueries({
+      queries: [
+        {
+          queryKey: ['cityByProvince', form.watch().provinceId],
+          queryFn: () => getCityByProvinceId(form.watch().provinceId),
+          // staleTime: Infinity,
+        },
+        {
+          queryKey: ['cityById', form.watch().cityId],
+          queryFn: () => getCityById(form.watch().cityId),
+          // staleTime: Infinity,
+        },
+      ],
+    })
+
+  // console.log({ cities })
+  // console.log({ city })
+  const distance = getDistance(
+    {
+      latitude: '32.390',
+
+      longitude: '51.400',
+    },
+    {
+      latitude: `${city?.latitude}`,
+      longitude: `${city?.longitude}`,
+    }
+  )
+  const isThePointWithinRadius = isPointWithinRadius(
+    {
+      latitude: '32.390',
+
+      longitude: '51.400',
+    },
+    {
+      latitude: `${city?.latitude}`,
+      longitude: `${city?.longitude}`,
+    },
+    500000
+  )
+  console.log(city?.name)
+  console.log({ distance })
+  console.log({ isThePointWithinRadius })
 
   return (
     <div>
-      <InputFieldset label={provinceLabel}>
+      <InputFieldset label={provinceLabel || 'انتخاب شهر'}>
         <div className="flex gap-4">
           <FormField
             disabled={isPending}
             control={form.control}
-            name={provinceName}
+            name={'provinceId'}
             render={({ field }) => (
               <FormItem className="flex-1">
                 <Select
                   disabled={
-                    isPending || isPendingCategory || provinces.length == 0
+                    isPending || isPendingProvince || provinces?.length == 0
                   }
                   onValueChange={field.onChange}
                   value={field.value}
@@ -64,7 +105,7 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {provinces.map((province) => (
+                    {provinces?.map((province) => (
                       <SelectItem key={province.id} value={String(province.id)}>
                         {province.name}
                       </SelectItem>
@@ -78,15 +119,15 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
           <FormField
             disabled={isPending}
             control={form.control}
-            name={cityName}
+            name={'cityId'}
             render={({ field }) => (
               <FormItem className="flex-1">
                 <Select
                   disabled={
-                    isPending ||
-                    isPendingCategory ||
+                    // isPending ||
+                    isPendingProvince ||
                     provinces.length == 0 ||
-                    !form.getValues().categoryId
+                    !form.getValues().provinceId
                   }
                   onValueChange={field.onChange}
                   value={field.value}
