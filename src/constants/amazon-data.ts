@@ -1,6 +1,13 @@
 import { toSlug } from '@/components/amazon/utils'
 import { locales } from '@/navigation'
 import bcrypt from 'bcryptjs'
+
+export const SENDER_NAME = process.env.SENDER_NAME || 'support'
+export const SENDER_EMAIL = process.env.SENDER_EMAIL || 'onboarding@resend.dev'
+
+export const USER_ROLES = ['Admin', 'User']
+export const COLORS = ['Gold', 'Green', 'Red']
+
 // import { i18n } from '@/i18n-config'
 // import { toSlug } from './utils'
 // import { Data, IProductInput, IUserInput } from '@/types'

@@ -15,13 +15,14 @@ import { auth } from '@/auth'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { getDirection } from '@/lib/utils'
 import { SignOut } from '@/lib/actions/auth/logout'
+import { Category } from '@prisma/client'
 // import { SignOut } from '@/lib/actions/user.actions'
 // import { getDirection } from '@/i18n-config'
 
 export default async function Sidebar({
   categories,
 }: {
-  categories: string[]
+  categories: Category[]
 }) {
   const session = await auth()
 
@@ -82,12 +83,12 @@ export default async function Sidebar({
             </div>
             <nav className="flex flex-col">
               {categories.map((category) => (
-                <DrawerClose asChild key={category}>
+                <DrawerClose asChild key={category.id}>
                   <Link
-                    href={`/search?category=${category}`}
+                    href={`/search?category=${category.url}`}
                     className={`flex items-center justify-between item-button`}
                   >
-                    <span>{category}</span>
+                    <span>{category.name}</span>
                     <ChevronRight className="h-4 w-4" />
                   </Link>
                 </DrawerClose>

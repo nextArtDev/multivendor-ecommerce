@@ -27,14 +27,14 @@ export default async function Search() {
         <SelectTrigger className="w-auto h-full dark:border-gray-200 bg-gray-100 text-black border-r  rounded-r-none rounded-l-md rtl:rounded-r-md rtl:rounded-l-none  ">
           <SelectValue placeholder={t('Header.All')} />
         </SelectTrigger>
-        {/* <SelectContent position='popper'>
-          <SelectItem value='all'>{t('Header.All')}</SelectItem>
+        <SelectContent position="popper">
+          <SelectItem value="all">{t('Header.All')}</SelectItem>
           {categories.map((category) => (
-            <SelectItem key={category} value={category}>
-              {category}
+            <SelectItem key={category.id} value={category.name}>
+              {category.name}
             </SelectItem>
           ))}
-        </SelectContent> */}
+        </SelectContent>
       </Select>
       <Input
         className="flex-1 rounded-none dark:border-gray-200 bg-gray-100 text-black text-base h-full"
