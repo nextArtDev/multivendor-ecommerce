@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Autoplay from 'embla-carousel-autoplay'
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -19,6 +20,31 @@ import data from '@/constants/amazon-data'
 
 // export function HomeCarousel({ items }: { items: ICarousel[] }) {
 export default function HeroCarousel() {
+  const [carouselApi, setCarouselApi] = React.useState<CarouselApi | null>(null)
+  const [currentIndex, setCurrentIndex] = React.useState(0)
+  const [totalItems, setTotalItems] = React.useState(0)
+
+  React.useEffect(() => {
+    if (!carouselApi) return
+
+    const updateCarouselState = () => {
+      setCurrentIndex(carouselApi.selectedScrollSnap())
+      setTotalItems(carouselApi.scrollSnapList().length)
+    }
+
+    updateCarouselState()
+
+    carouselApi.on('select', updateCarouselState)
+
+    return () => {
+      carouselApi.off('select', updateCarouselState) // Clean up on unmount
+    }
+  }, [carouselApi])
+
+  const scrollToIndex = (index: number) => {
+    carouselApi?.scrollTo(index)
+  }
+
   const plugin = React.useRef(
     Autoplay({ delay: 3000, stopOnInteraction: true })
   )
@@ -28,6 +54,8 @@ export default function HeroCarousel() {
   return (
     <Carousel
       dir="ltr"
+      setApi={setCarouselApi}
+      opts={{ loop: true }}
       plugins={[plugin.current]}
       className="w-full mx-auto "
       onMouseEnter={plugin.current.stop}
@@ -35,8 +63,8 @@ export default function HeroCarousel() {
     >
       <CarouselContent>
         {/* {items.map((item) => ( */}
-        {data.carousels.map((item) => (
-          <CarouselItem key={item.title}>
+        {data.carousels.map((item, index) => (
+          <CarouselItem key={index}>
             <Link href={item.url}>
               <div className="flex aspect-[16/6] items-center justify-center p-6 relative -m-1">
                 <Image
@@ -67,6 +95,17 @@ export default function HeroCarousel() {
       </CarouselContent>
       <CarouselPrevious className="left-0 md:left-12" />
       <CarouselNext className="right-0 md:right-12" />
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-20">
+        {Array.from({ length: totalItems }).map((_, index) => (
+          <button
+            key={index}
+            onClick={() => scrollToIndex(index)}
+            className={`w-3 h-3 rounded-full ${
+              currentIndex === index ? 'bg-black' : 'bg-gray-300'
+            }`}
+          />
+        ))}
+      </div>
     </Carousel>
   )
 }
