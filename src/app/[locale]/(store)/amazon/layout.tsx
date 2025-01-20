@@ -7,7 +7,7 @@ import { Toaster } from 'sonner'
 export default function StoreLayout({ children }: { children: ReactNode }) {
   return (
     <div>
-      <div>
+      <div className="overflow-hidden">
         <Header />
         {children}
       </div>

@@ -27,12 +27,13 @@ export default async function Sidebar({
 
   const locale = await getLocale()
 
-  const t = await getTranslations()
+  // const t = await getTranslations()
   return (
     <Drawer direction={getDirection(locale) === 'rtl' ? 'right' : 'left'}>
       <DrawerTrigger className="header-button flex items-center !p-2  ">
         <MenuIcon className="h-5 w-5 mr-1" />
-        {t('Header.All')}
+        {/* {t('Header.All')} */}
+        {'Header.All'[0]}
       </DrawerTrigger>
       <DrawerContent className="w-[350px] mt-0 top-0">
         <div className="flex flex-col h-full">
@@ -45,7 +46,8 @@ export default async function Sidebar({
                   <DrawerClose asChild>
                     <Link href="/account">
                       <span className="text-lg font-semibold">
-                        {t('Header.Hello')}, {session.user.name}
+                        {/* {t('Header.Hello')}, {session.user.name} */}
+                        {'Header.Hello'[0]}, {session.user.name}
                       </span>
                     </Link>
                   </DrawerClose>
@@ -53,7 +55,8 @@ export default async function Sidebar({
                   <DrawerClose asChild>
                     <Link href="/sign-in">
                       <span className="text-lg font-semibold">
-                        {t('Header.Hello')}, {t('Header.sign in')}
+                        {/* {t('Header.Hello')}, {t('Header.sign in')} */}
+                        {'Header.Hello'[0]}, {'Header.sign in'[0]}
                       </span>
                     </Link>
                   </DrawerClose>
@@ -73,7 +76,8 @@ export default async function Sidebar({
           <div className="flex-1 overflow-y-auto">
             <div className="p-4 border-b">
               <h2 className="text-lg font-semibold">
-                {t('Header.Shop By Department')}
+                {/* {t('Header.Shop By Department')} */}
+                {'Header.Shop By Department'[0]}
               </h2>
             </div>
             <nav className="flex flex-col">
@@ -95,17 +99,20 @@ export default async function Sidebar({
           <div className="border-t flex flex-col ">
             <div className="p-4">
               <h2 className="text-lg font-semibold">
-                {t('Header.Help & Settings')}
+                {/* {t('Header.Help & Settings')} */}
+                {'Header.Help & Settings'[0]}
               </h2>
             </div>
             <DrawerClose asChild>
               <Link href="/account" className="item-button">
-                {t('Header.Your account')}
+                {/* {t('Header.Your account')} */}
+                {'Header.Your account'[0]}
               </Link>
             </DrawerClose>{' '}
             <DrawerClose asChild>
               <Link href="/page/customer-service" className="item-button">
-                {t('Header.Customer Service')}
+                {/* {t('Header.Customer Service')} */}
+                {'Header.Customer Service'[0]}
               </Link>
             </DrawerClose>
             {session ? (
@@ -114,12 +121,14 @@ export default async function Sidebar({
                   className="w-full justify-start item-button text-base"
                   variant="ghost"
                 >
-                  {t('Header.Sign out')}
+                  {/* {t('Header.Sign out')} */}
+                  {'Header.Sign out'[0]}
                 </Button>
               </form>
             ) : (
               <Link href="/sign-in" className="item-button">
-                {t('Header.Sign in')}
+                {/* {t('Header.Sign in')} */}
+                {'Header.Sign in'[0]}
               </Link>
             )}
           </div>

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { cn, getDirection } from '@/lib/utils'
 import { useLocale, useTranslations } from 'next-intl'
 import { useMounted } from '@/hooks/use-mounted'
+import { getTranslations } from 'next-intl/server'
 // import useIsMounted from '@/hooks/use-is-mounted'
 // import useShowSidebar from '@/hooks/use-cart-sidebar'
 // import useCartStore from '@/hooks/use-cart-store'
@@ -17,7 +18,8 @@ export default function CartButton() {
   // } = useCartStore()
   // const cartItemsCount = items.reduce((a, c) => a + c.quantity, 0)
   // const showSidebar = useShowSidebar()
-  const t = useTranslations()
+  // const t = useTranslations()
+  // const t = useTranslations()
 
   const locale = useLocale()
   return (
@@ -37,7 +39,7 @@ export default function CartButton() {
             {/* {cartItemsCount} */}1
           </span>
         )}
-        <span className="font-bold">{t('Header.Cart')}</span>
+        <span className="font-bold">{'Header.Cart'[0]}</span>
 
         {/* {showSidebar && ( */}
         <div

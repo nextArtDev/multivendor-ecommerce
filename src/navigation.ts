@@ -8,8 +8,8 @@ export const { Link, redirect, usePathname, useRouter, permanentRedirect } =
 
 export const i18n = {
   locales: [
-    { code: 'en-US', name: 'English', icon: '🇺🇸' },
+    { code: 'en', name: 'English', icon: '🇺🇸' },
     { code: 'fa', name: 'فارسی', icon: '🇮🇷' },
   ],
-  defaultLocale: 'en-US',
+  defaultLocale: 'fa',
 }

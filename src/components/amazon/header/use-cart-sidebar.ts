@@ -6,7 +6,7 @@ import useDeviceType from './use-device-type'
 // import { i18n } from '@/i18n-config'
 
 const locales = i18n.locales
-  .filter((locale) => locale.code !== 'en-US')
+  .filter((locale) => locale.code !== 'en')
   .map((locale) => locale.code)
 
 const isNotInPaths = (s: string) => {

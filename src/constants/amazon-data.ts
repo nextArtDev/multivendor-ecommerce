@@ -1290,10 +1290,10 @@ We also provide helpful resources such as order tracking, product guides, and FA
         },
       ],
       availableLanguages: locales.map((locale) => ({
-        // code: locale.code,
-        // name: locale.name,
+        code: locale.code,
+        name: locale.name,
       })),
-      defaultLanguage: 'en-US',
+      defaultLanguage: 'en',
       availableCurrencies: [
         {
           name: 'United States Dollar',

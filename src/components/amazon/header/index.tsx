@@ -7,6 +7,7 @@ import Sidebar from './sidebar'
 // import { getTranslations } from 'next-intl/server'
 import { getAllCategories } from '@/lib/queries/dashboard'
 import data from '@/constants/amazon-data'
+import { getTranslations } from 'next-intl/server'
 // import { getAllCategories } from '@/lib/actions/product.actions'
 // import { getSetting } from '@/lib/actions/setting.actions'
 
