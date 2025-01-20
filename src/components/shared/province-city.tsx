@@ -31,6 +31,7 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
   // provinceName,
   // cityName,
 }) => {
+  // online :https://iran-locations-api.ir/api/v1/fa/states
   const form = useFormContext()
 
   const [{ data: cities, isPending: isPendingProvince }, { data: city }] =
@@ -74,9 +75,9 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
     },
     500000
   )
-  console.log(city?.name)
-  console.log({ distance })
-  console.log({ isThePointWithinRadius })
+  // console.log(city?.name)
+  // console.log({ distance })
+  // console.log({ isThePointWithinRadius })
 
   return (
     <div>

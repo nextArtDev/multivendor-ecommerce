@@ -5,3 +5,11 @@ export const localePrefix = 'always'
 
 export const { Link, redirect, usePathname, useRouter, permanentRedirect } =
   createSharedPathnamesNavigation({ locales, localePrefix })
+
+export const i18n = {
+  locales: [
+    { code: 'en-US', name: 'English', icon: '🇺🇸' },
+    { code: 'fa', name: 'فارسی', icon: '🇮🇷' },
+  ],
+  defaultLocale: 'en-US',
+}

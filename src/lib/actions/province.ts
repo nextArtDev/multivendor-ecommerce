@@ -3,7 +3,6 @@
 import { prisma } from '../prisma'
 
 export const getCityByProvinceId = async (provinceId: string) => {
-  console.log({ provinceId })
   try {
     const cities = await prisma.city.findMany({
       where: {
