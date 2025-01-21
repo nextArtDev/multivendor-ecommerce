@@ -1,7 +1,6 @@
 import HeroCard from '@/components/amazon/hero/hero-card'
-import HeroCarousel, {
-  HomeCarousel,
-} from '@/components/amazon/hero/hero-carousel'
+import { HeroCarousel } from '@/components/amazon/hero/hero-carousel'
+import { getAllCategories } from '@/lib/queries/dashboard'
 
 const cards = [
   {
@@ -37,15 +36,40 @@ const cards = [
     },
   },
 ]
-function page() {
+const HomePage = async () => {
+  const categories = await getAllCategories()
+  const carouselItems = categories.map((category) => {
+    return {
+      title: category.name,
+      url: category.url,
+
+      image: category.images?.map((image) => image.url)[1],
+      buttonCaption: 'بیشتر',
+    }
+  })
+  const cardItems = categories.map((category) => {
+    return {
+      title: category.name,
+      link: { href: category.id, text: category.name },
+      items: category.subCategories?.map((sub) => {
+        return {
+          name: sub.name,
+          items: sub,
+          image: sub.images.map((image) => image.url)[0],
+          href: sub.url,
+        }
+      }),
+    }
+  })
+
   return (
     <div>
-      <HeroCarousel />
+      <HeroCarousel items={carouselItems} />
       <div className="md:p-4 md:space-y-4 bg-border">
-        <HeroCard cards={cards} />
+        <HeroCard cards={cardItems} />
       </div>
     </div>
   )
 }
 
-export default page
+export default HomePage

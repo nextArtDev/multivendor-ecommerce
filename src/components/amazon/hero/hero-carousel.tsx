@@ -19,7 +19,9 @@ import data from '@/constants/amazon-data'
 // import { ICarousel } from '@/types'
 
 // export function HomeCarousel({ items }: { items: ICarousel[] }) {
-export default function HeroCarousel() {
+export function HeroCarousel({ items }: { items: any[] }) {
+  // export default function HeroCarousel() {
+
   const [carouselApi, setCarouselApi] = React.useState<CarouselApi | null>(null)
   const [currentIndex, setCurrentIndex] = React.useState(0)
   const [totalItems, setTotalItems] = React.useState(0)
@@ -62,11 +64,11 @@ export default function HeroCarousel() {
       onMouseLeave={plugin.current.reset}
     >
       <CarouselContent>
-        {/* {items.map((item) => ( */}
-        {data.carousels.map((item, index) => (
+        {items.map((item, index) => (
+          // {data.carousels.map((item, index) => (
           <CarouselItem key={index}>
             <Link href={item.url}>
-              <div className="flex aspect-[16/6] items-center justify-center p-6 relative -m-1">
+              <div className="flex aspect-[16/9] items-center justify-center p-6 relative -m-1">
                 <Image
                   src={item.image}
                   alt={item.title}
@@ -81,11 +83,11 @@ export default function HeroCarousel() {
                     )}
                   >
                     {/* {t(`${item.title}`)} */}
-                    title
+                    {item.title}
                   </h2>
                   <Button className="hidden md:block">
                     {/* {t(`${item.buttonCaption}`)} */}
-                    buttonCaption
+                    {item.buttonCaption}
                   </Button>
                 </div>
               </div>
