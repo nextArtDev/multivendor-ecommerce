@@ -95,13 +95,13 @@ export default function HeroCarousel() {
       </CarouselContent>
       <CarouselPrevious className="left-0 md:left-12" />
       <CarouselNext className="right-0 md:right-12" />
-      <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-20">
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-1 z-20">
         {Array.from({ length: totalItems }).map((_, index) => (
           <button
             key={index}
             onClick={() => scrollToIndex(index)}
-            className={`w-3 h-3 rounded-full ${
-              currentIndex === index ? 'bg-black' : 'bg-gray-300'
+            className={`w-3 h-2 rounded-full ${
+              currentIndex === index ? 'bg-foreground' : 'bg-foreground/30'
             }`}
           />
         ))}
