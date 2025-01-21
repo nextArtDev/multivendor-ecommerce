@@ -1,6 +1,9 @@
 import HeroCard from '@/components/amazon/hero/hero-card'
 import { HeroCarousel } from '@/components/amazon/hero/hero-carousel'
+import ProductSlider from '@/components/amazon/product/product-slider'
 import Rating from '@/components/amazon/product/rating'
+import { Card, CardContent } from '@/components/ui/card'
+import { prisma } from '@/lib/prisma'
 import { getAllCategories } from '@/lib/queries/dashboard'
 
 const cards = [
@@ -62,13 +65,24 @@ const HomePage = async () => {
       }),
     }
   })
+  const products = await prisma.product.findMany({
+    include: {
+      images: true,
+      reviews: true,
+    },
+  })
 
   return (
     <div>
       {/* <HeroCarousel items={carouselItems} /> */}
       <div className="md:p-4 md:space-y-4 bg-border">
         {/* <HeroCard cards={cardItems} /> */}
-        <Rating rating={4.6} />
+        <Card className="w-full rounded-none">
+          <CardContent className="p-4 items-center gap-3">
+            {/* <ProductSlider title={t("Today's Deals")} products={todaysDeals} /> */}
+            <ProductSlider title={"Today's Deals"} products={products} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

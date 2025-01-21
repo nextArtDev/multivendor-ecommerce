@@ -28,14 +28,17 @@ const ProductCard = ({
       <div className="relative h-52">
         {product.images.length > 1 ? (
           <ImageHover
-            src={product.images[0]}
-            hoverSrc={product.images[1]}
+            // src={product?.images?.url?.[0]}
+            src={product?.images?.map((img) => img.url)[1]}
+            // hoverSrc={product.images[1]}
+            hoverSrc={product?.images?.map((img) => img.url)[0]}
             alt={product.name}
           />
         ) : (
           <div className="relative h-52">
             <Image
-              src={product.images[0]}
+              // src={product.images[0]}
+              src={product?.images?.map((img) => img.url)[1]}
               alt={product.name}
               fill
               sizes="80vw"
@@ -61,7 +64,8 @@ const ProductCard = ({
         {product.name}
       </Link>
       <div className="flex gap-2 justify-center">
-        <Rating rating={product.avgRating} />
+        {/* <Rating rating={product.avgRating} /> */}
+        <Rating rating={product.rating} />
         <span>({formatNumber(product.numReviews)})</span>
       </div>
 
