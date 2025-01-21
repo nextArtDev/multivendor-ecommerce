@@ -1,5 +1,6 @@
 import HeroCard from '@/components/amazon/hero/hero-card'
 import { HeroCarousel } from '@/components/amazon/hero/hero-carousel'
+import Rating from '@/components/amazon/product/rating'
 import { getAllCategories } from '@/lib/queries/dashboard'
 
 const cards = [
@@ -64,9 +65,10 @@ const HomePage = async () => {
 
   return (
     <div>
-      <HeroCarousel items={carouselItems} />
+      {/* <HeroCarousel items={carouselItems} /> */}
       <div className="md:p-4 md:space-y-4 bg-border">
-        <HeroCard cards={cardItems} />
+        {/* <HeroCard cards={cardItems} /> */}
+        <Rating rating={4.6} />
       </div>
     </div>
   )
