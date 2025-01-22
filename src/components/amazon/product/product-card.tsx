@@ -24,9 +24,9 @@ const ProductCard = ({
   hideAddToCart?: boolean
 }) => {
   const ProductImage = () => (
-    <Link href={`/product/${product.slug}`}>
+    <Link href={`/amazon/product/${product.slug}`}>
       <div className="relative h-52">
-        {product.images.length > 1 ? (
+        {product.images?.length > 1 ? (
           <ImageHover
             // src={product?.images?.url?.[0]}
             src={product?.images?.map((img) => img.url)[1]}

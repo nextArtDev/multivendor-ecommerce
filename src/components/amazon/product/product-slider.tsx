@@ -21,7 +21,7 @@ export default function ProductSlider({
   products: any[]
   hideDetails?: boolean
 }) {
-  console.log({ products })
+  // console.log({ products })
   return (
     <div className="w-full bg-background">
       <h2 className="h2-bold mb-5">{title}</h2>
