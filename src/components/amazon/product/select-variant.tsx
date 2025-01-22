@@ -12,8 +12,14 @@ export default function SelectVariant({
   color: string
   size: string
 }) {
-  const selectedColor = color || product.colors[0]
-  const selectedSize = size || product.sizes[0]
+  // console.log({ product })
+  // console.log({ color })
+  // console.log({ size })
+  // const selectedColor = color || product.colors[0]
+  // const selectedSize = size || product.sizes[0]
+  const selectedColor = color || product?.variants?.[0].colors.map((col) => col)
+  const selectedSize =
+    size || product?.variants?.[0].sizes.map((size) => size.size)[0]
 
   return (
     <>

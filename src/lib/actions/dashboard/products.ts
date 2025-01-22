@@ -142,7 +142,8 @@ export async function createProduct(
         // OR: [{ name: result.data.name }, { url: result.data.url }],
         AND: [
           {
-            OR: [{ name: result.data.name }, { name_fa: result.data?.name_fa }],
+            // OR: [{ name: result.data.name }, { name_fa: result.data?.name_fa }],
+            name: result.data.name,
           },
         ],
       },

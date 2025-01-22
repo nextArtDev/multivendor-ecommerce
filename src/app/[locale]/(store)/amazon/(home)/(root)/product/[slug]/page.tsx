@@ -144,14 +144,8 @@ export default async function ProductDetails(props: {
                 product={product}
                 // size={size || product.sizes[0]}
                 // color={color || product.colors[0]}
-                size={
-                  size ||
-                  product?.variants?.[0].sizes.map((size) => size.size)[0]
-                }
-                color={
-                  color ||
-                  product?.variants?.[0].colors.map((col) => col.name)[0]
-                }
+                size={size || product?.variants?.sizes?.[0]}
+                color={color || product?.variants?.colors?.[0]}
               />
             </div>
             <Separator className="my-2" />
