@@ -83,6 +83,16 @@ const HomePage = async () => {
             <ProductSlider title={"Today's Deals"} products={products} />
           </CardContent>
         </Card>
+        <Card className="w-full rounded-none">
+          <CardContent className="p-4 items-center gap-3">
+            <ProductSlider
+              // title={t('Best Selling Products')}
+              title={'Best Selling Products'}
+              products={products}
+              hideDetails
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
