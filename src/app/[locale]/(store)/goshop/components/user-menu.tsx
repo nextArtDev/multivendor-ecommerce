@@ -73,7 +73,7 @@ export default async function UserMenu() {
       >
         <div className="relative left-2 mt-10 right-auto bottom-auto pt-2.5   p-0 text-sm z-40">
           {/* Triangle */}
-          <div className="w-0 h-0 absolute left-[149px] top-1 right-24 !border-l-[10px] !border-l-transparent !border-r-[10px] !border-r-transparent !border-b-[10px] border-b-foreground/20 backdrop-blur-sm" />
+          <div className="w-0 h-0 absolute left-[210px] md:left-[149px] top-1 right-24 !border-l-[10px] !border-l-transparent !border-r-[10px] !border-r-transparent !border-b-[10px] border-b-foreground/20 backdrop-blur-sm" />
           {/* Menu */}
           <div className="rounded-3xl bg-foreground/20 backdrop-blur-md text-sm   shadow-lg">
             <div className="w-[305px]">

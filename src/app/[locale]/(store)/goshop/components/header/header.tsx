@@ -2,11 +2,12 @@ import { Link } from '@/navigation'
 import React from 'react'
 import UserMenu from '../user-menu'
 import Cart from '../cart'
+import Search from '../search/search'
 
 const Header = () => {
   return (
     <div className="bg-gradient-to-r from-slate-500 to-slate-800">
-      <div className="h-full w-full lg:flex text-white px-4 lg:px-12">
+      <div className="h-full w-full lg:flex  px-4 lg:px-12">
         <div className="flex lg:w-full lg:flex-1 flex-col lg:flex-row gap-3 py-3">
           <div className="flex items-center justify-between">
             <Link href="/">
@@ -17,16 +18,14 @@ const Header = () => {
               <Cart />
             </div>
           </div>
-          {/* <Search /> */}
+          <Search />
         </div>
-        {/* <div className="hidden lg:flex w-full lg:w-fit lg:mt-2 justify-end mt-1.5 pl-6">
-          <div className="lg:flex">
-            <DownloadApp />
-          </div>
-          <CountryLanguageCurrencySelector userCountry={userCountry} />
+        <div className="hidden lg:flex w-full lg:w-fit lg:mt-2 justify-end mt-1.5 pl-6">
+          <div className="lg:flex">{/* <DownloadApp /> */}</div>
+          {/* <CountryLanguageCurrencySelector userCountry={userCountry} /> */}
           <UserMenu />
           <Cart />
-        </div> */}
+        </div>
       </div>
     </div>
   )
