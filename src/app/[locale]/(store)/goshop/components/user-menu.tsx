@@ -100,7 +100,7 @@ export default async function UserMenu() {
                   </div>
                 )}
                 {user && (
-                  <p className="my-3  w-full flex items-center justify-center text-center text-sm  cursor-pointer">
+                  <div className="my-3  w-full flex items-center justify-center text-center text-sm  cursor-pointer">
                     <form action={SignOut} className="w-full">
                       <Button
                         className="w-fit   py-4 px-2 h-4 justify-start"
@@ -109,7 +109,7 @@ export default async function UserMenu() {
                         Sign out
                       </Button>
                     </form>
-                  </p>
+                  </div>
                 )}
                 <Separator />
               </div>

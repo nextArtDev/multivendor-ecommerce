@@ -1,6 +1,7 @@
 import { Link } from '@/navigation'
 import React from 'react'
 import UserMenu from '../user-menu'
+import Cart from '../cart'
 
 const Header = () => {
   return (
@@ -13,7 +14,7 @@ const Header = () => {
             </Link>
             <div className="flex lg:hidden">
               <UserMenu />
-              {/* <Cart /> */}
+              <Cart />
             </div>
           </div>
           {/* <Search /> */}

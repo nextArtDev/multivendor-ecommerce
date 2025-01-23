@@ -13,5 +13,6 @@ export const SignOut = async () => {
   const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
 
   const redirectTo = await signOut({ redirect: false })
-  redirect(`/${locale}${redirectTo.redirect}`)
+  // redirect(`/${locale}/${redirectTo.redirect}`)
+  redirect(`/${locale}/`)
 }
