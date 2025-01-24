@@ -17,11 +17,12 @@ import { Button } from '@/components/ui/button'
 import { ProductType, VariantSimplified } from '../../lib/queries/product'
 import ProductCardImageSwiper from './swiper'
 import Rating from '@/components/amazon/product/rating'
+import VariantSwitcher from './variant-switcher'
 
 export default function ProductCard({ product }: { product: ProductType }) {
   const { name, slug, rating, sales, images, variants, id } = product
   const [variant, setVariant] = useState<VariantSimplified>(variants[0])
-  const { variantSlug, variantName, variantImages, sizes } = variant
+  const { variantSlug, variantName, images: variantImages, sizes } = variant
 
   const handleAddToWishlist = async () => {
     try {
@@ -36,7 +37,7 @@ export default function ProductCard({ product }: { product: ProductType }) {
     <section>
       <div
         className={cn(
-          'group w-[190px] min-[480px]:w-[225px] relative transition-all duration-75 bg-secondary/30 backdrop-blur-sm ease-in-out p-4 rounded-t-3xl border border-transparent hover:shadow-xl hover:border-border',
+          'group w-[190px] min-[480px]:w-[225px] relative transition-all duration-75 bg-secondary/30 backdrop-blur-sm ease-in-out p-4 rounded-t-3xl border border-transparent hover:shadow-xl hover:border-bg-secondary/30',
           {
             '': true,
           }
@@ -50,7 +51,7 @@ export default function ProductCard({ product }: { product: ProductType }) {
             {/* Images Swiper */}
             <ProductCardImageSwiper images={images} />
             {/* Title */}
-            <div className="text-sm text-main-primary h-[18px] overflow-hidden overflow-ellipsis line-clamp-1">
+            <div className="text-sm   h-[18px] overflow-hidden overflow-ellipsis line-clamp-1">
               {name} · {variantName}
             </div>
             {/* Rating - Sales */}
@@ -66,27 +67,28 @@ export default function ProductCard({ product }: { product: ProductType }) {
                   edit={false}
                 /> */}
                 <Rating rating={rating} size={5} color="yellow" />
-                <div className="text-xs text-main-secondary">{sales} sold</div>
+                <div className="text-xs ">{sales} sold</div>
               </div>
             )}
             {/* Price */}
             {/* <ProductPrice sizes={sizes} isCard handleChange={() => {}} /> */}
           </Link>
         </div>
-        <div className="hidden group-hover:block absolute -left-[1px] bg-white border border-t-0  w-[calc(100%+2px)] px-4 pb-4 rounded-b-3xl shadow-xl z-30 space-y-2">
+        <div className="hidden group-hover:block absolute -left-[1px] bg-secondary/30 backdrop-blur-sm border border-t-0  w-[calc(100%+2px)] px-4 pb-4 rounded-b-3xl shadow-xl z-30 space-y-2">
           {/* Variant switcher */}
-          {/* <VariantSwitcher
+          <VariantSwitcher
             images={variantImages}
             variants={variants}
             setVariant={setVariant}
             selectedVariant={variant}
-          /> */}
+          />
           {/* Action buttons */}
           <div className="flex flex-items gap-x-1">
-            <Button>
+            <Button className="rounded-full ">
               <Link href={`/product/${slug}/${variantSlug}`}>Add to cart</Link>
             </Button>
             <Button
+              className="rounded-full "
               // variant="black"
               size="icon"
               onClick={() => handleAddToWishlist()}
