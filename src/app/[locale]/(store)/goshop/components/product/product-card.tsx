@@ -1,8 +1,8 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import ReactStars from 'react-rating-stars-component'
 // import { ProductType, VariantSimplified } from "@/lib/types";
-// import ReactStars from "react-rating-stars-component";
 // import ProductCardImageSwiper from "./swiper";
 // import VariantSwitcher from "./variant-switcher";
 // import { Button } from "@/components/store/ui/button";
@@ -14,13 +14,16 @@ import { Heart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { ProductType, VariantSimplified } from '../../lib/queries/product'
+import ProductCardImageSwiper from './swiper'
+import Rating from '@/components/amazon/product/rating'
 
 export default function ProductCard({ product }: { product: ProductType }) {
-  const { name, slug, rating, sales, variantImages, variants, id } = product
+  const { name, slug, rating, sales, images, variants, id } = product
   const [variant, setVariant] = useState<VariantSimplified>(variants[0])
-  const { variantSlug, variantName, images, sizes } = variant
+  const { variantSlug, variantName, variantImages, sizes } = variant
 
-  const handleaddToWishlist = async () => {
+  const handleAddToWishlist = async () => {
     try {
       // const res = await addToWishlist(id, variant.variantId);
       // if (res) toast.success("Product successfully added to wishlist.");
@@ -30,10 +33,10 @@ export default function ProductCard({ product }: { product: ProductType }) {
   }
 
   return (
-    <div>
+    <section>
       <div
         className={cn(
-          'group w-[190px] min-[480px]:w-[225px] relative transition-all duration-75 bg-white ease-in-out p-4 rounded-t-3xl border border-transparent hover:shadow-xl hover:border-border',
+          'group w-[190px] min-[480px]:w-[225px] relative transition-all duration-75 bg-secondary/30 backdrop-blur-sm ease-in-out p-4 rounded-t-3xl border border-transparent hover:shadow-xl hover:border-border',
           {
             '': true,
           }
@@ -53,7 +56,7 @@ export default function ProductCard({ product }: { product: ProductType }) {
             {/* Rating - Sales */}
             {product.rating > 0 && product.sales > 0 && (
               <div className="flex items-center gap-x-1 h-5">
-                <ReactStars
+                {/* <ReactStars
                   count={5}
                   size={24}
                   color="#F5F5F5"
@@ -61,37 +64,38 @@ export default function ProductCard({ product }: { product: ProductType }) {
                   value={rating}
                   isHalf
                   edit={false}
-                />
+                /> */}
+                <Rating rating={rating} size={5} color="yellow" />
                 <div className="text-xs text-main-secondary">{sales} sold</div>
               </div>
             )}
             {/* Price */}
-            <ProductPrice sizes={sizes} isCard handleChange={() => {}} />
+            {/* <ProductPrice sizes={sizes} isCard handleChange={() => {}} /> */}
           </Link>
         </div>
         <div className="hidden group-hover:block absolute -left-[1px] bg-white border border-t-0  w-[calc(100%+2px)] px-4 pb-4 rounded-b-3xl shadow-xl z-30 space-y-2">
           {/* Variant switcher */}
-          <VariantSwitcher
+          {/* <VariantSwitcher
             images={variantImages}
             variants={variants}
             setVariant={setVariant}
             selectedVariant={variant}
-          />
+          /> */}
           {/* Action buttons */}
           <div className="flex flex-items gap-x-1">
             <Button>
               <Link href={`/product/${slug}/${variantSlug}`}>Add to cart</Link>
             </Button>
             <Button
-              variant="black"
+              // variant="black"
               size="icon"
-              onClick={() => handleaddToWishlist()}
+              onClick={() => handleAddToWishlist()}
             >
               <Heart className="w-5" />
             </Button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

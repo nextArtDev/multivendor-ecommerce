@@ -248,6 +248,7 @@ export const getProducts = async (
       variantName: variant.variantName,
       images: variant.variantImage,
       sizes: variant.sizes,
+      colors: variant.colors,
     }))
 
     // Extract variant images for the product
@@ -255,8 +256,8 @@ export const getProducts = async (
       (variant) => ({
         url: `/product/${product.slug}/${variant.slug}`,
         image: variant.variantImage
-          ? variant.variantImage
-          : variant.variantImage[0],
+          ? variant.variantImage[0]
+          : product.images?.[0],
       })
     )
 

@@ -44,15 +44,9 @@ const ProductList: FC<Props> = ({ products, title, link, arrow }) => {
             'mt-2': title,
           })}
         >
-          <div className="flex gap-4 flex-wrap border ">
+          <div className="flex  flex-wrap ">
             {products.map((product) => (
-              // <ProductCard key={product.id} product={product} />
-              <div
-                key={product.id}
-                className="relative flex flex-col border gap-5"
-              >
-                <h1 className="block text-3xl">{product.name}</h1>
-              </div>
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>
