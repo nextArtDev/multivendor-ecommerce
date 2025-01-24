@@ -4,6 +4,7 @@ import UserMenu from '../user-menu'
 import Cart from '../cart'
 import Search from '../search/search'
 import CountryLanguageCurrencySelector from '../country-lang-curr-selector'
+import { cookies } from 'next/headers'
 
 export interface Country {
   name: string
@@ -13,12 +14,18 @@ export interface Country {
 }
 
 const Header = async () => {
-  const userCountry: Country = {
+  const cookieStore = await cookies()
+  const userCountryCookie = cookieStore.get('userCountry')
+  let userCountry: Country = {
     name: 'United States',
     city: '',
     code: 'US',
     region: '',
   }
+  if (userCountryCookie) {
+    userCountry = JSON.parse(userCountryCookie.value) as Country
+  }
+
   return (
     <div className="bg-gradient-to-r from-slate-500 to-slate-800">
       <div className="h-full w-full lg:flex  px-4 lg:px-12">
