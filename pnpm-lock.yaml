@@ -401,6 +401,9 @@ importers:
       slugify:
         specifier: ^1.6.6
         version: 1.6.6
+      social-logos:
+        specifier: ^3.1.17
+        version: 3.1.17(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       sonner:
         specifier: ^1.7.2
         version: 1.7.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -4812,6 +4815,12 @@ packages:
   slugify@1.6.6:
     resolution: {integrity: sha512-h+z7HKHYXj6wJU+AnS/+IH8Uh9fdcX1Lrhg1/VMdf9PwoBQXFcXiAdsy2tSK0P6gKwJLXp02r90ahUCqHk9rrw==}
     engines: {node: '>=8.0.0'}
+
+  social-logos@3.1.17:
+    resolution: {integrity: sha512-vqQ6kQ4zbO3iLgHT1jAD20oM1gaeOODbCuIcQ0QxHvwC7XgNGEpH3xRPMxh+GNGKXDwe2oUf8aMj4LPPLYxsig==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
 
   sonner@1.7.2:
     resolution: {integrity: sha512-zMbseqjrOzQD1a93lxahm+qMGxWovdMxBlkTbbnZdNqVLt4j+amF9PQxUCL32WfztOFt9t9ADYkejAL3jF9iNA==}
@@ -10555,6 +10564,12 @@ snapshots:
   slick@1.12.2: {}
 
   slugify@1.6.6: {}
+
+  social-logos@3.1.17(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      prop-types: 15.8.1
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
 
   sonner@1.7.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:

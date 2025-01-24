@@ -27,7 +27,7 @@ const Header = async () => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-slate-500 to-slate-800">
+    <div className="bg-gradient-to-r dark:from-slate-500 dark:to-slate-800  from-slate-600  to-slate-200">
       <div className="h-full w-full lg:flex  px-4 lg:px-12">
         <div className="flex lg:w-full lg:flex-1 flex-col lg:flex-row gap-3 py-3">
           <div className="flex items-center justify-between">
