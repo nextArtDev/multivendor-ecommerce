@@ -3,6 +3,8 @@ import Header from '../components/header/header'
 import CategoriesHeader from '../components/categories-header'
 import Footer from '../components/footer'
 import { getProducts } from '../lib/queries/product'
+import { Prisma } from '@prisma/client'
+import ProductList from '../components/product/product-list'
 
 const GoshopHomePage = async () => {
   const products = await getProducts({}, '')
@@ -14,7 +16,9 @@ const GoshopHomePage = async () => {
     <div>
       <Header />
       <CategoriesHeader />
-      <div className="min-h-screen w-full"></div>
+      <div className="min-h-screen w-full">
+        <ProductList products={products.products} arrow title="Products" />
+      </div>
       <Footer />
     </div>
   )

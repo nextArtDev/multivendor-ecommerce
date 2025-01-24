@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { Image, ProductVariant, Size } from '@prisma/client'
+import { Image, Prisma, ProductVariant, Size } from '@prisma/client'
 
 export type VariantImageType = {
   url: string
@@ -256,7 +256,7 @@ export const getProducts = async (
         url: `/product/${product.slug}/${variant.slug}`,
         image: variant.variantImage
           ? variant.variantImage
-          : variant.variantImage[0].url,
+          : variant.variantImage[0],
       })
     )
 
@@ -294,3 +294,7 @@ export const getProducts = async (
     totalCount,
   }
 }
+
+export type ProductType = Prisma.PromiseReturnType<
+  typeof getProducts
+>['products'][0]
