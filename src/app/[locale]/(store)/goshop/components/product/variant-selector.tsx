@@ -10,7 +10,7 @@ interface Props {
   variants: ProductVariantDataType[]
   slug: string
   setActiveImage: Dispatch<SetStateAction<{ url: string } | null>>
-  handleChange: (property: keyof CartProductType, value: any) => void
+  handleChange: (property: keyof CartProductType, value: unknown) => void
   setSizeId: Dispatch<SetStateAction<string>>
   setVariant: Dispatch<SetStateAction<ProductVariantDataType>>
 }

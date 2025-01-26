@@ -6,7 +6,7 @@ import { CartProductType } from '../../types'
 interface Props {
   sizes: Size[]
   sizeId: string | undefined
-  handleChange: (property: keyof CartProductType, value: any) => void
+  handleChange: (property: keyof CartProductType, value: unknown) => void
   setSizeId: Dispatch<SetStateAction<string>>
 }
 

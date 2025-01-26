@@ -59,7 +59,7 @@ const ProductInfo: FC<Props> = ({
   // Destructure necessary properties from the productData object
   const { name, store, rating, numReviews, variants } = productData
   const { isSale, saleEndDate, colors } = variant
-  console.log({ store })
+  // console.log({ store })
   // Function to copy the SKU to the clipboard
   const copySkuToClipboard = async () => {
     try {
@@ -186,10 +186,7 @@ const ProductInfo: FC<Props> = ({
       <Separator className="mt-2" />
       <div className="mt-2 flex flex-wrap gap-2">
         {variant.keywords.split(',').map((k) => (
-          <span
-            key={k}
-            className="bg-gray-50 rounded-full px-3 py-1 text-sm text-main-secondary"
-          >
+          <span key={k} className="  rounded-full px-3 py-1 text-sm  ">
             {k}
           </span>
         ))}

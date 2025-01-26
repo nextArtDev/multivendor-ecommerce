@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma'
 
 export const retrieveProductDetailsOptimized = async (productSlug: string) => {
-  console.log('productSlug', productSlug)
+  // console.log('productSlug', productSlug)
   // Fetch the product details from the database
   const product = await prisma.product.findUnique({
     where: { slug: productSlug },

@@ -219,7 +219,7 @@ const ProductPageContainer: FC<Props> = ({
     }
   }, [])
 
-  console.log('stock', productToBeAddedToCart.stock)
+  // console.log('stock', productToBeAddedToCart.stock)
 
   return (
     <div className="relative">

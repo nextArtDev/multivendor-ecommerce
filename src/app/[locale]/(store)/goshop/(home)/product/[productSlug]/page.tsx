@@ -16,17 +16,21 @@ import { Separator } from '@/components/ui/separator'
 import { cookies } from 'next/headers'
 import { Country } from '../../../components/country-lang-curr-selector'
 import ProductPageContainer from '../../../components/product/product-page-container'
+import Header from '../../../components/header/header'
+import CategoriesHeader from '../../../components/categories-header'
 
 export default async function ProductPage({
   params,
   searchParams,
 }: {
-  params: { productSlug: string }
-  searchParams: { variant: string }
+  params: Promise<{ productSlug: string }>
+  searchParams: Promise<{ variant: string }>
 }) {
-  const data = await retrieveProductDetailsOptimized(params.productSlug)
-  console.log({ data })
-  const variant = data.variants.find((v) => v.slug === searchParams.variant)
+  const productSlug = (await params).productSlug
+  const searchParamsVariant = (await searchParams).variant
+  const data = await retrieveProductDetailsOptimized(productSlug)
+  // console.log({ data })
+  const variant = data.variants.find((v) => v.slug === searchParamsVariant)
   // console.log({ data })
   const specs = {
     product: data.specs,
@@ -36,7 +40,7 @@ export default async function ProductPage({
   // Get cookies from the store
   const cookieStore = await cookies()
   const userCountryCookie = cookieStore.get('userCountry')
-
+  // console.log({ userCountryCookie })
   // Set default country if cookie is missing
   let userCountry: Country = {
     name: 'United States',
@@ -46,9 +50,9 @@ export default async function ProductPage({
   }
 
   // If cookie exists, update the user country
-  //   if (userCountryCookie) {
-  //     userCountry = JSON.parse(userCountryCookie.value) as Country
-  //   }
+  if (userCountryCookie) {
+    userCountry = JSON.parse(userCountryCookie.value) as Country
+  }
 
   //   const storeData = {
   //     id: data.store.id,
@@ -61,26 +65,27 @@ export default async function ProductPage({
 
   return (
     <div>
-      {/* <Header />
+      <Header />
       <CategoriesHeader />
       <div className="p-4 2xl:px-28 overflow-x-hidden mx-auto">
-        */}
-      <ProductPageContainer
-        productData={data}
-        variantSlug={searchParams.variant}
-        userCountry={userCountry}
-      >
-        <>
-          <Separator />
-          {/* Related products */}
-          {/* <RelatedProducts
+        {/*
+         */}
+        <ProductPageContainer
+          productData={data}
+          variantSlug={searchParamsVariant}
+          userCountry={userCountry}
+        >
+          <>
+            <Separator />
+            {/* Related products */}
+            {/* <RelatedProducts
               productId={data.id}
               categoryId={data.categoryId}
               subCategoryId={data.subCategoryId}
             /> */}
-        </>
-        {/* Product reviews */}
-        {/* <Separator className="mt-6" />
+          </>
+          {/* Product reviews */}
+          {/* <Separator className="mt-6" />
           <ProductReviews
             productId={data.id}
             rating={data.rating}
@@ -89,12 +94,12 @@ export default async function ProductPage({
           />
           <>
             <Separator className="mt-6" /> */}
-        {/* Product description */}
-        {/* <ProductDescription
+          {/* Product description */}
+          {/* <ProductDescription
               text={[data.description, variant?.variantDescription || '']}
             /> */}
-        {/* </> */}
-        {/* <Separator className="mt-6" />
+          {/* </> */}
+          {/* <Separator className="mt-6" />
           {(specs.product || specs.variant) && <ProductSpecs specs={specs} />}
           <Separator className="mt-6" />
           {data.questions && <ProductQuestions questions={data.questions} />}
@@ -107,8 +112,9 @@ export default async function ProductPage({
             count={5}
           />
         */}
-        {/*    </div> */}
-      </ProductPageContainer>
+          {/*    </div> */}
+        </ProductPageContainer>
+      </div>
     </div>
   )
 }
