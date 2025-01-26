@@ -45,7 +45,7 @@ export default function ProductCard({ product }: { product: ProductType }) {
       >
         <div className="relative w-full h-full">
           <Link
-            href={`/product/${slug}?variant=${variantSlug}`}
+            href={`/goshop/product/${slug}?variant=${variantSlug}`}
             className="w-full relative inline-block overflow-hidden"
           >
             {/* Images Swiper */}
