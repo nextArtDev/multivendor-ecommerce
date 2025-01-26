@@ -68,8 +68,6 @@ export default async function ProductPage({
       <Header />
       <CategoriesHeader />
       <div className="p-4 2xl:px-28 overflow-x-hidden mx-auto">
-        {/*
-         */}
         <ProductPageContainer
           productData={data}
           variantSlug={searchParamsVariant}
