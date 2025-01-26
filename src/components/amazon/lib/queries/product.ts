@@ -64,7 +64,7 @@ export const retrieveProductDetailsOptimized = async (productSlug: string) => {
           },
         },
       },
-      store: true,
+      store: { include: { logo: true } },
     },
   })
 

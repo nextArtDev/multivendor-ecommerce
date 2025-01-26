@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
-import ReactStars from 'react-rating-stars-component'
+// import ReactStars from 'react-rating-stars-component'
 // import { ProductType, VariantSimplified } from "@/lib/types";
 // import ProductCardImageSwiper from "./swiper";
 // import VariantSwitcher from "./variant-switcher";

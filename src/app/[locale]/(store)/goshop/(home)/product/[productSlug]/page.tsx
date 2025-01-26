@@ -15,6 +15,7 @@ import { retrieveProductDetailsOptimized } from '@/components/amazon/lib/queries
 import { Separator } from '@/components/ui/separator'
 import { cookies } from 'next/headers'
 import { Country } from '../../../components/country-lang-curr-selector'
+import ProductPageContainer from '../../../components/product/product-page-container'
 
 export default async function ProductPage({
   params,
@@ -63,22 +64,23 @@ export default async function ProductPage({
       {/* <Header />
       <CategoriesHeader />
       <div className="p-4 2xl:px-28 overflow-x-hidden mx-auto">
-        <ProductPageContainer
-          productData={data}
-          variantSlug={searchParams.variant}
-          userCountry={userCountry}
-        > */}
-      <>
-        <Separator />
-        {/* Related products */}
-        {/* <RelatedProducts
+        */}
+      <ProductPageContainer
+        productData={data}
+        variantSlug={searchParams.variant}
+        userCountry={userCountry}
+      >
+        <>
+          <Separator />
+          {/* Related products */}
+          {/* <RelatedProducts
               productId={data.id}
               categoryId={data.categoryId}
               subCategoryId={data.subCategoryId}
             /> */}
-      </>
-      {/* Product reviews */}
-      {/* <Separator className="mt-6" />
+        </>
+        {/* Product reviews */}
+        {/* <Separator className="mt-6" />
           <ProductReviews
             productId={data.id}
             rating={data.rating}
@@ -87,12 +89,12 @@ export default async function ProductPage({
           />
           <>
             <Separator className="mt-6" /> */}
-      {/* Product description */}
-      {/* <ProductDescription
+        {/* Product description */}
+        {/* <ProductDescription
               text={[data.description, variant?.variantDescription || '']}
             /> */}
-      {/* </> */}
-      {/* <Separator className="mt-6" />
+        {/* </> */}
+        {/* <Separator className="mt-6" />
           {(specs.product || specs.variant) && <ProductSpecs specs={specs} />}
           <Separator className="mt-6" />
           {data.questions && <ProductQuestions questions={data.questions} />}
@@ -104,8 +106,9 @@ export default async function ProductPage({
             storeName={data.store.name}
             count={5}
           />
-        </ProductPageContainer> */}
-      {/*    </div> */}
+        */}
+        {/*    </div> */}
+      </ProductPageContainer>
     </div>
   )
 }
