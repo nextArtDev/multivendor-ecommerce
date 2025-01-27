@@ -20,6 +20,7 @@ import Header from '../../../components/header/header'
 import CategoriesHeader from '../../../components/categories-header'
 import RelatedProducts from '../../../components/product/related-product'
 import ProductDescription from '../../../components/product/product-description'
+import ProductSpecs from '../../../components/product/product-specs'
 
 export default async function ProductPage({
   params,
@@ -99,8 +100,9 @@ export default async function ProductPage({
             text={[data.description, variant?.variantDescription || '']}
           />
           {/* </> */}
-          {/* <Separator className="mt-6" />
+          <Separator className="mt-6" />
           {(specs.product || specs.variant) && <ProductSpecs specs={specs} />}
+          {/*
           <Separator className="mt-6" />
           {data.questions && <ProductQuestions questions={data.questions} />}
           <Separator className="mt-6" />
