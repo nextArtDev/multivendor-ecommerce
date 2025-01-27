@@ -24,6 +24,7 @@ import ShipTo from '../shipping/ship-to'
 import ShippingDetails from '../shipping/shipping-details'
 import ReturnPrivacySecurityCard from '../shipping/returns-security-privacy-card'
 import QuantitySelector from './quantity-selector'
+import SocialShare from '../social-share'
 type HandleChangeType = <T extends keyof CartProductType>(
   property: T,
   value: CartProductType[T]
@@ -134,7 +135,7 @@ export default function ProductPageActions({
           disabled={!isProductValid}
           onClick={() => handleBuy()}
           className={cn(
-            'relative w-full py-2.5 min-w-20 bg-background hover:bg-hover   h-11 rounded-3xl leading-6 inline-block font-bold whitespace-nowrap border border-border cursor-pointer transition-all duration-300 ease-bezier-1 select-none',
+            'relative w-full py-2.5 min-w-20 bg-background hover:bg-muted   h-11 rounded-3xl leading-6 inline-block font-bold whitespace-nowrap border border-border cursor-pointer transition-all duration-300 ease-bezier-1 select-none',
             {
               'cursor-not-allowed': !isProductValid || maxQty <= 0,
             }
@@ -145,7 +146,7 @@ export default function ProductPageActions({
         <button
           disabled={!isProductValid}
           className={cn(
-            'relative w-full py-2.5 min-w-20   hover:bg-[#e4cdce] text-hover h-11 rounded-3xl leading-6 inline-block font-bold whitespace-nowrap border border-border cursor-pointer transition-all duration-300 ease-bezier-1 select-none',
+            'relative w-full py-2.5 min-w-20   hover:bg-muted text-hover h-11 rounded-3xl leading-6 inline-block font-bold whitespace-nowrap border border-border cursor-pointer transition-all duration-300 ease-bezier-1 select-none',
             {
               'cursor-not-allowed': !isProductValid || maxQty <= 0,
             }
@@ -154,12 +155,12 @@ export default function ProductPageActions({
         >
           <span>Add to cart</span>
         </button>
-        {/* <SocialShare
+        <SocialShare
           url=""
           quote=""
           // url={`/product/${productData.productSlug}/${productData.variantSlug}`}
           // quote={`${productData.name} · ${productData.variantName}`}
-        /> */}
+        />
       </div>
     </div>
   )
