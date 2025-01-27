@@ -299,3 +299,115 @@ export const getProducts = async (
 export type ProductType = Prisma.PromiseReturnType<
   typeof getProducts
 >['products'][0]
+
+export const getRelatedProducts = async (
+  productId: string,
+  categoryId: string,
+  subCategoryId: string
+) => {
+  // Fetch up to 6 products in the given subcategory first
+  const subCategoryProducts = await prisma.product.findMany({
+    where: {
+      subCategoryId: subCategoryId,
+      categoryId: categoryId,
+      id: {
+        not: productId,
+      },
+    },
+    include: {
+      images: true,
+      variants: {
+        include: {
+          sizes: true,
+          // images: {
+          //   orderBy: {
+          //     order: 'asc',
+          //   },
+          // },
+          variantImage: true,
+          colors: true,
+        },
+      },
+    },
+    take: 6, // Limit to 6 products from the subcategory
+  })
+
+  // If there are less than 6 products in the subcategory, fetch additional products from the category
+  let relatedProducts = subCategoryProducts
+
+  if (relatedProducts.length < 6) {
+    // Fetch additional products from the category (excluding those already fetched from the subcategory)
+    const remainingCount = 6 - relatedProducts.length
+    const categoryProducts = await prisma.product.findMany({
+      where: {
+        categoryId: categoryId,
+        id: {
+          notIn: [
+            productId, // Exclude the main product
+            ...relatedProducts.map((product) => product.id), // Exclude already fetched products
+          ],
+        },
+      },
+      take: remainingCount, // Fetch only the remaining number of products
+      include: {
+        images: true,
+        variants: {
+          include: {
+            sizes: true,
+            // images: {
+            //   orderBy: {
+            //     order: 'asc',
+            //   },
+            // },
+            variantImage: true,
+            colors: true,
+          },
+        },
+      },
+    })
+
+    // Add the category products to the related products array
+    relatedProducts = [...relatedProducts, ...categoryProducts]
+  }
+
+  // Transform the products into the required structure for ProductCardType
+  const productsWithFilteredVariants = relatedProducts.map((product) => {
+    // Filter the variants based on the filters (no filters in this case)
+    const filteredVariants = product.variants
+
+    // Transform the filtered variants into the VariantSimplified structure
+    const variants: VariantSimplified[] = filteredVariants.map((variant) => ({
+      variantId: variant.id,
+      variantSlug: variant.slug,
+      variantName: variant.variantName,
+      images: variant.variantImage,
+      sizes: variant.sizes,
+    }))
+
+    // Extract variant images for the product
+    const variantImages: VariantImageType[] = filteredVariants.map(
+      (variant) => ({
+        url: `/goshop/product/${product.slug}/${variant.slug}`,
+        image: variant.variantImage
+          ? variant.variantImage[0]
+          : product.images[0],
+      })
+    )
+
+    // Return the product in the ProductCardType structure
+    return {
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      rating: product.rating,
+      sales: product.sales,
+      numReviews: product.numReviews,
+      images: product.images,
+      variants,
+      variantImages,
+    }
+  })
+
+  // Return the related products (up to 6)
+  return productsWithFilteredVariants.slice(0, 6)
+}

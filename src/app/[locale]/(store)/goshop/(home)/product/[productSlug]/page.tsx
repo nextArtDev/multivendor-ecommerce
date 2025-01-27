@@ -18,6 +18,7 @@ import { Country } from '../../../components/country-lang-curr-selector'
 import ProductPageContainer from '../../../components/product/product-page-container'
 import Header from '../../../components/header/header'
 import CategoriesHeader from '../../../components/categories-header'
+import RelatedProducts from '../../../components/product/related-product'
 
 export default async function ProductPage({
   params,
@@ -76,11 +77,11 @@ export default async function ProductPage({
           <>
             <Separator />
             {/* Related products */}
-            {/* <RelatedProducts
+            <RelatedProducts
               productId={data.id}
               categoryId={data.categoryId}
               subCategoryId={data.subCategoryId}
-            /> */}
+            />
           </>
           {/* Product reviews */}
           {/* <Separator className="mt-6" />
