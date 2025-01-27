@@ -47,3 +47,17 @@ export type CartProductType = {
   deliveryTimeMax: number
   isFreeShipping: boolean
 }
+
+export type ShippingDetailsType = {
+  countryCode: string
+  countryName: string
+  city: string
+  shippingFeeMethod: string
+  shippingFee: number
+  extraShippingFee: number
+  deliveryTimeMin: number
+  deliveryTimeMax: number
+  isFreeShipping: boolean
+  shippingService: string
+  returnPolicy: string
+}

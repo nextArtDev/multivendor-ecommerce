@@ -61,3 +61,26 @@ export async function getUserCountry(req: Request): Promise<Country> {
 
   return userCountry
 }
+
+export const getShippingDatesRange = (
+  minDays: number,
+  maxDays: number,
+  date?: Date
+): { minDate: string; maxDate: string } => {
+  // Get the current date
+  const currentDate = date ? new Date(date) : new Date()
+
+  // Calculate minDate by adding minDays to current date
+  const minDate = new Date(currentDate)
+  minDate.setDate(currentDate.getDate() + minDays)
+
+  // Calculate maxDate by adding maxDays to current date
+  const maxDate = new Date(currentDate)
+  maxDate.setDate(currentDate.getDate() + maxDays)
+
+  // Return an object containing minDate and maxDate
+  return {
+    minDate: minDate.toDateString(),
+    maxDate: maxDate.toDateString(),
+  }
+}
