@@ -15,6 +15,7 @@ import {
 import { Country } from '../country-lang-curr-selector'
 import ProductSwiper from './product-swiper'
 import ProductInfo from './product-info'
+import ProductPageActions from './product-actions'
 
 // import { useCartStore } from '@/cart-store/useCartStore'
 // import useFromStore from '@/hooks/useFromStore'
@@ -172,15 +173,15 @@ const ProductPageContainer: FC<Props> = ({
   // Add product to history
   //   updateProductHistory(variantId)
 
-  //   const maxQty = useMemo(() => {
-  //     const search_product = cartItems?.find(
-  //       (p) =>
-  //         p.productId === id && p.variantId === variantId && p.sizeId === sizeId
-  //     )
-  //     return search_product
-  //       ? search_product.stock - search_product.quantity
-  //       : stock
-  //   }, [cartItems, id, variantId, sizeId, stock])
+  // const maxQty = useMemo(() => {
+  //   const search_product = cartItems?.find(
+  //     (p) =>
+  //       p.productId === id && p.variantId === variantId && p.sizeId === sizeId
+  //   )
+  //   return search_product
+  //     ? search_product.stock - search_product.quantity
+  //     : stock
+  // }, [cartItems, id, variantId, sizeId, stock])
 
   // Set view cookie
   //   setCookie(`viewedProduct_${id}`, 'true', {
@@ -257,7 +258,7 @@ const ProductPageContainer: FC<Props> = ({
               transform: isFixed ? 'translateY(0)' : 'translateY(-10px)', // Example of a slight vertical translation when it becomes sticky
             }}
           >
-            {/* <ProductPageActions
+            <ProductPageActions
               freeShipping={productData.freeShipping}
               shippingFeeMethod={productData.shippingFeeMethod}
               store={productData.store}
@@ -269,10 +270,11 @@ const ProductPageContainer: FC<Props> = ({
               productToBeAddedToCart={productToBeAddedToCart}
               isProductValid={isProductValid}
               handleChange={handleChange}
-              maxQty={maxQty}
+              // maxQty={maxQty}
+              maxQty={10}
               sizeId={sizeId}
               sizes={sizes}
-            /> */}
+            />
           </div>
         </div>
       </div>

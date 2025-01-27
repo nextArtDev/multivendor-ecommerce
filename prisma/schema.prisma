@@ -377,6 +377,9 @@ model ShippingRate {
   countryId String
   country   Country @relation("CountryShippingRates", fields: [countryId], references: [id])
 
+  cityId Int
+  city   City @relation("CityShippingRates", fields: [cityId], references: [id])
+
   storeId String
   store   Store  @relation("StoreShippingRates", fields: [storeId], references: [id])
 
@@ -384,6 +387,7 @@ model ShippingRate {
   updatedAt DateTime @default(now()) @updatedAt
 
   @@index([countryId])
+  @@index([cityId])
   @@index([storeId])
 }
 
@@ -396,6 +400,8 @@ model FreeShipping {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  freeShippingCity FreeShippingCity[] @relation("FreeShippingCities")
 }
 
 model FreeShippingCountry {
@@ -412,6 +418,22 @@ model FreeShippingCountry {
 
   @@index([freeShippingId])
   @@index([countryId])
+}
+
+model FreeShippingCity {
+  id String @id @default(uuid())
+
+  freeShippingId String
+  freeShipping   FreeShipping @relation("FreeShippingCities", fields: [freeShippingId], references: [id], onDelete: Cascade)
+
+  cityId Int
+  city   City @relation("FreeShippingToCity", fields: [cityId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([freeShippingId])
+  @@index([cityId])
 }
 
 model Review {
@@ -509,8 +531,8 @@ model ShippingAddress {
   phone     String
   address1  String
   address2  String?
-  state     String
-  city      String
+  // state     String
+  // city      String
   zip_code  String
   default   Boolean @default(false)
 
@@ -522,11 +544,19 @@ model ShippingAddress {
   countryId String
   country   Country @relation("CountryToShippingAddress", fields: [countryId], references: [id])
 
+  provinceId Int
+  province   Province @relation("ProvinceToShippingAddress", fields: [provinceId], references: [id])
+
+  cityId Int
+  city   City @relation("CityToShippingAddress", fields: [cityId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([countryId])
+  @@index([provinceId])
   @@index([userId])
+  @@index([cityId])
 }
 
 enum OrderStatus {
@@ -760,12 +790,13 @@ model PaymentDetails {
 }
 
 model Province {
-  id        Int    @id @default(autoincrement())
-  name      String @unique
-  center    String
-  latitude  Float
-  longitude Float
-  cities    City[] @relation(name: "ProvinceCities")
+  id                Int               @id @default(autoincrement())
+  name              String            @unique
+  center            String
+  latitude          Float
+  longitude         Float
+  cities            City[]            @relation(name: "ProvinceCities")
+  shippingAddresses ShippingAddress[] @relation("ProvinceToShippingAddress")
 }
 
 model City {
@@ -775,6 +806,12 @@ model City {
   longitude  Float
   provinceId Int
   province   Province @relation(name: "ProvinceCities", fields: [provinceId], references: [id], onDelete: Cascade)
+
+  shippingRates ShippingRate[] @relation("CityShippingRates")
+
+  freeShippingCountries FreeShippingCity[] @relation("FreeShippingToCity")
+
+  shippingAddresses ShippingAddress[] @relation("CityToShippingAddress")
 
   @@index([provinceId])
 }

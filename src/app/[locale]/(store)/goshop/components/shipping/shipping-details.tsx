@@ -50,6 +50,8 @@ const ShippingDetails: FC<Props> = ({
   console.log('qty', quantity)
 
   const {
+    // deliveryTimeMax = 0,
+    // deliveryTimeMin = 0,
     deliveryTimeMax = 0,
     deliveryTimeMin = 0,
     shippingFee = 0,
@@ -60,9 +62,9 @@ const ShippingDetails: FC<Props> = ({
   } = shippingDetails || {} // Default to placeholders if shippingDetails is null
 
   // Calculate delivery dates only if shippingDetails is available
-  const { minDate, maxDate } = shippingDetails
-    ? getShippingDatesRange(deliveryTimeMin, deliveryTimeMax)
-    : { minDate: 'Loading...', maxDate: 'Loading...' }
+  // const { minDate, maxDate } = shippingDetails
+  //   ? getShippingDatesRange(deliveryTimeMin, deliveryTimeMax)
+  //   : { minDate: 'Loading...', maxDate: 'Loading...' }
 
   return (
     <div>
@@ -107,13 +109,13 @@ const ShippingDetails: FC<Props> = ({
         </span>
         <span className="flex items-center text-sm ml-5">
           Delivery:&nbsp;
-          <strong className="text-sm">
+          {/* <strong className="text-sm">
             {loading ? (
               <BarLoader width={180} color="#e5e5e5" className="rounded-full" />
             ) : (
               `${minDate.slice(4)} - ${maxDate.slice(4)}`
             )}
-          </strong>
+          </strong> */}
         </span>
         {!isFreeShipping && toggle && shippingDetails && (
           <ProductShippingFee
@@ -126,7 +128,7 @@ const ShippingDetails: FC<Props> = ({
         )}
         <div
           onClick={() => setToggle((prev) => !prev)}
-          className="max-w-[calc(100%-2rem)] ml-4 flex items-center bg-gray-100 hover:bg-gray-200 h-5 cursor-pointer"
+          className="max-w-[calc(100%-2rem)] ml-4 flex items-center  hover:bg-secondary h-5 cursor-pointer"
         >
           <div className="w-full flex items-center justify-between gap-x-1 px-2">
             <span className="text-xs">

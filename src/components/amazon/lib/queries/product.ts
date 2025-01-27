@@ -1,7 +1,12 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { FreeShipping, FreeShippingCountry, Store } from '@prisma/client'
+import {
+  FreeShipping,
+  FreeShippingCity,
+  FreeShippingCountry,
+  Store,
+} from '@prisma/client'
 
 export const retrieveProductDetailsOptimized = async (productSlug: string) => {
   // console.log('productSlug', productSlug)
@@ -77,16 +82,18 @@ export const retrieveProductDetailsOptimized = async (productSlug: string) => {
   return product
 }
 
-export type FreeShippingWithCountriesType = FreeShipping & {
+export type FreeShippingWithCountriesAndCitiesType = FreeShipping & {
   eligibaleCountries: FreeShippingCountry[]
+  // freeShippingCity: FreeShippingCity[]
 }
 
 export const getShippingDetails = async (
   shippingFeeMethod: string,
   userCountry: { name: string; code: string; city: string },
   store: Store,
-  freeShipping: FreeShippingWithCountriesType | null,
+  freeShipping: FreeShippingWithCountriesAndCitiesType | null,
   freeShippingForAllCountries: boolean
+  // freeShippingForAllCities: boolean
 ) => {
   // Default shipping details
   let shippingDetails = {
@@ -109,6 +116,12 @@ export const getShippingDetails = async (
       code: userCountry.code,
     },
   })
+  // const city = await prisma.city.findUnique({
+  //   where: {
+  //     name: userCity.name,
+  //     code: userCity.code,
+  //   },
+  // })
 
   if (country) {
     // Retrieve shipping rate for the country
