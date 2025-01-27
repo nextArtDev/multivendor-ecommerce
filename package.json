@@ -105,6 +105,7 @@
     "colorthief": "^2.6.0",
     "date-fns": "^4.1.0",
     "date-fns-jalali": "4.1.0-0",
+    "dompurify": "^3.2.3",
     "embla-carousel-autoplay": "^8.5.2",
     "embla-carousel-react": "^8.5.2",
     "flag-icons": "^7.3.2",
