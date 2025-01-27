@@ -31,7 +31,7 @@ export type CartProductType = {
   variantSlug: string
   name: string
   variantName: string
-  //   image: string
+  images: string[]
   variantImage: string
   sizeId: string
   size: string

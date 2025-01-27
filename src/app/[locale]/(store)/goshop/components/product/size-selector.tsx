@@ -1,5 +1,5 @@
 import { Size } from '@prisma/client'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+// import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Dispatch, FC, SetStateAction, useEffect } from 'react'
 import { CartProductType } from '../../types'
 
@@ -16,10 +16,10 @@ const SizeSelector: FC<Props> = ({
   sizes,
   handleChange,
 }) => {
-  const pathname = usePathname()
-  const { replace, refresh } = useRouter()
-  const searchParams = useSearchParams()
-  const params = new URLSearchParams(searchParams)
+  // const pathname = usePathname()
+  // const { replace, refresh } = useRouter()
+  // const searchParams = useSearchParams()
+  // const params = new URLSearchParams(searchParams)
 
   useEffect(() => {
     if (sizeId) {
@@ -29,7 +29,7 @@ const SizeSelector: FC<Props> = ({
       }
     } else {
     }
-  }, [sizeId])
+  }, [sizeId, sizes])
 
   const handleSelectSize = (size: Size) => {
     setSizeId(size.id)

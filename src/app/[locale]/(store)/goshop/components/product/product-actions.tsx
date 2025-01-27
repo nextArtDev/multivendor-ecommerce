@@ -94,7 +94,7 @@ export default function ProductPageActions({
     push('/cart')
   }
   return (
-    <div className="  border rounded-md overflow-hidden overflow-y-auto p-4 pb-0">
+    <div className=" bg-background/50 backdrop-blur-md border rounded-md overflow-hidden overflow-y-auto p-4 pb-0">
       <>
         <ShipTo
           countryCode={userCountry.code}

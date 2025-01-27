@@ -1,5 +1,6 @@
-'use server'
+// 'use server'
 import countries from '@/constants/countries.json'
+import { CartProductType } from '../types'
 interface Country {
   name: string
   code: string
@@ -83,4 +84,56 @@ export const getShippingDatesRange = (
     minDate: minDate.toDateString(),
     maxDate: maxDate.toDateString(),
   }
+}
+
+// Function to validate the product data before adding it to the cart
+export const isProductValidToAdd = (product: CartProductType): boolean => {
+  // Check that all required fields are filled
+  const {
+    productId,
+    variantId,
+    productSlug,
+    variantSlug,
+    name,
+    variantName,
+    images,
+    quantity,
+    price,
+    sizeId,
+    size,
+    stock,
+    shippingFee,
+    extraShippingFee,
+    shippingMethod,
+    shippingService,
+    variantImage,
+    weight,
+    deliveryTimeMin,
+    deliveryTimeMax,
+  } = product
+
+  // Ensure that all necessary fields have values
+  if (
+    !productId ||
+    !variantId ||
+    !productSlug ||
+    !variantSlug ||
+    !name ||
+    !variantName ||
+    !images ||
+    quantity <= 0 ||
+    price <= 0 ||
+    !sizeId || // Ensure sizeId is not empty
+    !size || // Ensure size is not empty
+    stock <= 0 ||
+    weight <= 0 || // Weight should be <= 0
+    !shippingMethod ||
+    !variantImage ||
+    deliveryTimeMin < 0 ||
+    deliveryTimeMax < deliveryTimeMin // Ensure delivery times are valid
+  ) {
+    return false // Validation failed
+  }
+
+  return true // Product is valid
 }

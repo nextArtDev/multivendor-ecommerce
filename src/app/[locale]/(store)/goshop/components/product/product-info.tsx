@@ -37,7 +37,7 @@ interface Props {
   quantity: number
   sizeId: string | undefined
   setSizeId: Dispatch<SetStateAction<string>>
-  handleChange: (property: keyof CartProductType, value: any) => void
+  handleChange: (property: keyof CartProductType, value: unknown) => void
   setActiveImage: Dispatch<SetStateAction<{ url: string } | null>>
   variantSlug: string
 }

@@ -16,6 +16,7 @@ import { Country } from '../country-lang-curr-selector'
 import ProductSwiper from './product-swiper'
 import ProductInfo from './product-info'
 import ProductPageActions from './product-actions'
+import { isProductValidToAdd } from '../../lib/utils'
 
 // import { useCartStore } from '@/cart-store/useCartStore'
 // import useFromStore from '@/hooks/useFromStore'
@@ -35,7 +36,7 @@ const ProductPageContainer: FC<Props> = ({
   children,
   userCountry,
 }) => {
-  const { id, slug, variants } = productData
+  const { id, slug, variants, images } = productData
 
   const [variant, setVariant] = useState<ProductVariantDataType>(
     variants.find((v) => v.slug === variantSlug) || variants[0]
@@ -67,7 +68,7 @@ const ProductPageContainer: FC<Props> = ({
     variantSlug: variant.slug,
     name: productData.name,
     variantName: variantName,
-    // image: variantImage[0].url,
+    images: images.map((img) => img.url),
     variantImage: variantImage[0].url,
     quantity: 1,
     price: 0,
@@ -94,7 +95,7 @@ const ProductPageContainer: FC<Props> = ({
   const [isProductValid, setIsProductValid] = useState<boolean>(false)
 
   // Function to handle state changes for the product properties
-  const handleChange = (property: keyof CartProductType, value: any) => {
+  const handleChange = (property: keyof CartProductType, value: unknown) => {
     setProductToBeAddedToCart((prevProduct) => ({
       ...prevProduct,
       [property]: value,
@@ -102,39 +103,40 @@ const ProductPageContainer: FC<Props> = ({
   }
 
   // Automatically update the product data in cart whenever `productData` or `variant` changes
-  // useEffect(() => {
-  //   setProductToBeAddedToCart((prevProduct) => ({
-  //     ...prevProduct,
-  //     productId: id,
-  //     variantId,
-  //     productSlug: slug,
-  //     variantSlug: variant.slug,
-  //     name: productData.name,
-  //     variantName: variantName,
-  //     image: images[0].url,
-  //     variantImage: variantImage,
-  //     stock: variant.sizes.find((s) => s.id === sizeId)?.quantity || 1,
-  //     weight: weight,
-  //   }))
-  // }, [
-  //   id,
-  //   slug,
-  //   variantSlug,
-  //   variant,
-  //   productData,
-  //   variantName,
-  //   variantImage,
-  //   weight,
-  //   images,
-  //   sizeId,
-  // ])
+  useEffect(() => {
+    setProductToBeAddedToCart((prevProduct) => ({
+      ...prevProduct,
+      productId: id,
+      variantId,
+      productSlug: slug,
+      variantSlug: variant.slug,
+      name: productData.name,
+      variantName: variantName,
+      images: images.map((img) => img.url),
+      variantImage: variantImage[0].url,
+      stock: variant.sizes.find((s) => s.id === sizeId)?.quantity || 1,
+      weight: weight,
+    }))
+  }, [
+    id,
+    slug,
+    variantSlug,
+    variant,
+    productData,
+    variantName,
+    variantImage,
+    weight,
+    images,
+    sizeId,
+    variantId,
+  ])
 
-  // useEffect(() => {
-  //   const check = isProductValidToAdd(productToBeAddedToCart)
-  //   if (check !== isProductValid) {
-  //     setIsProductValid(check)
-  //   }
-  // }, [productToBeAddedToCart])
+  useEffect(() => {
+    const check = isProductValidToAdd(productToBeAddedToCart)
+    if (check !== isProductValid) {
+      setIsProductValid(check)
+    }
+  }, [productToBeAddedToCart])
 
   // Get the set Cart action to update items in cart
   //   const setCart = useCartStore((state) => state.setCart)
@@ -157,7 +159,9 @@ const ProductPageContainer: FC<Props> = ({
           ) {
             // setCart(parsedValue.state.cart)
           }
-        } catch (error) {}
+        } catch (error) {
+          console.log({ error })
+        }
       }
     }
 
@@ -171,7 +175,7 @@ const ProductPageContainer: FC<Props> = ({
   }, [])
 
   // Add product to history
-  //   updateProductHistory(variantId)
+  // updateProductHistory(variantId)
 
   // const maxQty = useMemo(() => {
   //   const search_product = cartItems?.find(
@@ -183,7 +187,7 @@ const ProductPageContainer: FC<Props> = ({
   //     : stock
   // }, [cartItems, id, variantId, sizeId, stock])
 
-  // Set view cookie
+  // // Set view cookie
   //   setCookie(`viewedProduct_${id}`, 'true', {
   //     maxAge: 3600,
   //     path: '/',
