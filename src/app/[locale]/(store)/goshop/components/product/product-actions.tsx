@@ -23,6 +23,7 @@ import { toast } from 'sonner'
 import ShipTo from '../shipping/ship-to'
 import ShippingDetails from '../shipping/shipping-details'
 import ReturnPrivacySecurityCard from '../shipping/returns-security-privacy-card'
+import QuantitySelector from './quantity-selector'
 type HandleChangeType = <T extends keyof CartProductType>(
   property: T,
   value: CartProductType[T]
@@ -118,7 +119,7 @@ export default function ProductPageActions({
       <div className="mt-5  bottom-0 pb-4 space-y-3 sticky">
         {sizeId && (
           <div className="w-full flex justify-end mt-4">
-            {/* <QuantitySelector
+            <QuantitySelector
               productId={productToBeAddedToCart.productId}
               variantId={productToBeAddedToCart.variantId}
               sizeId={productToBeAddedToCart.sizeId}
@@ -126,7 +127,7 @@ export default function ProductPageActions({
               stock={productToBeAddedToCart.stock}
               handleChange={handleChange}
               sizes={sizes}
-            /> */}
+            />
           </div>
         )}
         <button
