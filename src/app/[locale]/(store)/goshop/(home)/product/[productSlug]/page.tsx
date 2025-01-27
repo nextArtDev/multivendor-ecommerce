@@ -21,6 +21,7 @@ import CategoriesHeader from '../../../components/categories-header'
 import RelatedProducts from '../../../components/product/related-product'
 import ProductDescription from '../../../components/product/product-description'
 import ProductSpecs from '../../../components/product/product-specs'
+import ProductQuestions from '../../../components/product/product-questions'
 
 export default async function ProductPage({
   params,
@@ -102,9 +103,9 @@ export default async function ProductPage({
           {/* </> */}
           <Separator className="mt-6" />
           {(specs.product || specs.variant) && <ProductSpecs specs={specs} />}
-          {/*
           <Separator className="mt-6" />
           {data.questions && <ProductQuestions questions={data.questions} />}
+          {/*
           <Separator className="mt-6" />
           <div className="h-6"></div>
           <StoreCard store={storeData} />
