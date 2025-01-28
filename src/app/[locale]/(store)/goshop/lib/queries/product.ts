@@ -1,5 +1,6 @@
 'use server'
 
+import { currentUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Image, Prisma, ProductVariant, Size } from '@prisma/client'
 
@@ -410,4 +411,47 @@ export const getRelatedProducts = async (
 
   // Return the related products (up to 6)
   return productsWithFilteredVariants.slice(0, 6)
+}
+
+export const getStoreFollowingInfo = async (storeId: string) => {
+  const user = await currentUser()
+  let isUserFollowingStore = false
+  if (user) {
+    const storeFollowersInfo = await prisma.store.findUnique({
+      where: {
+        id: storeId,
+      },
+      select: {
+        followers: {
+          where: {
+            id: user.id, // Check if this user is following the store
+          },
+          select: { id: true }, // Select the user id if following
+        },
+      },
+    })
+    if (storeFollowersInfo && storeFollowersInfo.followers.length > 0) {
+      isUserFollowingStore = true
+    }
+  }
+
+  const storeFollowersInfo = await prisma.store.findUnique({
+    where: {
+      id: storeId,
+    },
+    select: {
+      _count: {
+        select: {
+          followers: true,
+        },
+      },
+    },
+  })
+
+  return {
+    isUserFollowingStore,
+    followersCount: storeFollowersInfo
+      ? storeFollowersInfo._count.followers
+      : 0,
+  }
 }
