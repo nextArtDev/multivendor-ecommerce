@@ -23,6 +23,7 @@ import ProductDescription from '../../../components/product/product-description'
 import ProductSpecs from '../../../components/product/product-specs'
 import ProductQuestions from '../../../components/product/product-questions'
 import StoreCard from '../../../components/store/store-card'
+import StoreProducts from '../../../components/product/store-products'
 
 export default async function ProductPage({
   params,
@@ -109,13 +110,13 @@ export default async function ProductPage({
           <Separator className="mt-6" />
           <StoreCard store={storeData} />
           {/*
+           */}
           <div className="h-6"></div>
           <StoreProducts
             storeUrl={data.store.url}
             storeName={data.store.name}
             count={5}
           />
-        */}
           {/*    </div> */}
         </ProductPageContainer>
       </div>

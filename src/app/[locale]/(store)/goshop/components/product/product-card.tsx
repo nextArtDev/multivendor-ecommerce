@@ -18,6 +18,7 @@ import { ProductType, VariantSimplified } from '../../lib/queries/product'
 import ProductCardImageSwiper from './swiper'
 import Rating from '@/components/amazon/product/rating'
 import VariantSwitcher from './variant-switcher'
+import ProductPrice from './product-price'
 
 export default function ProductCard({ product }: { product: ProductType }) {
   const { name, slug, rating, sales, images, variants, id } = product
@@ -37,13 +38,13 @@ export default function ProductCard({ product }: { product: ProductType }) {
     <section>
       <div
         className={cn(
-          'group w-[190px] min-[480px]:w-[225px] relative transition-all duration-75 bg-secondary/30 backdrop-blur-sm ease-in-out p-4 rounded-t-3xl border border-transparent hover:shadow-xl hover:border-bg-secondary/30',
+          'group rounded-2xl w-[190px] min-[480px]:w-[225px] relative transition-all duration-75 bg-primary/30 backdrop-blur-md ease-in-out p-4  border border-transparent hover:shadow-xl ',
           {
             '': true,
           }
         )}
       >
-        <div className="relative w-full h-full">
+        <div className=" bg-transparent relative w-full h-full">
           <Link
             href={`/goshop/product/${slug}?variant=${variantSlug}`}
             className="w-full relative inline-block overflow-hidden"
@@ -71,10 +72,10 @@ export default function ProductCard({ product }: { product: ProductType }) {
               </div>
             )}
             {/* Price */}
-            {/* <ProductPrice sizes={sizes} isCard handleChange={() => {}} /> */}
+            <ProductPrice sizes={sizes} isCard handleChange={() => {}} />
           </Link>
         </div>
-        <div className="hidden group-hover:block absolute -left-[1px] bg-secondary/30 backdrop-blur-sm border border-t-0  w-[calc(100%+2px)] px-4 pb-4 rounded-b-3xl shadow-xl z-30 space-y-2">
+        <div className="hidden   group-hover:block absolute -left-[1px] bg-primary/30 backdrop-blur-md border border-t-0  w-[calc(100%+2px)] px-4 pb-4 rounded-b-3xl shadow-xl z-30 space-y-2">
           {/* Variant switcher */}
           <VariantSwitcher
             images={variantImages}
@@ -85,7 +86,9 @@ export default function ProductCard({ product }: { product: ProductType }) {
           {/* Action buttons */}
           <div className="flex flex-items gap-x-1">
             <Button className="rounded-full ">
-              <Link href={`/product/${slug}/${variantSlug}`}>Add to cart</Link>
+              <Link href={`/goshop/product/${slug}/${variantSlug}`}>
+                Add to cart
+              </Link>
             </Button>
             <Button
               className="rounded-full "

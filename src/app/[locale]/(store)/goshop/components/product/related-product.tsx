@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 // import { DotLoader } from 'react-spinners'
 import { getRelatedProducts, ProductType } from '../../lib/queries/product'
 import ProductList from './product-list'
-import RelatedProductSkeleton from './related-products-skeleton'
+import RelatedProductSkeleton from '../skeleton/related-products-skeleton'
 // import ProductPageRelatedSkeletonLoader from "../skeletons/product-page/related";
 
 export default function RelatedProducts({
