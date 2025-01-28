@@ -30,14 +30,14 @@ export default function Rating({
         <div className="relative">
           <Star
             className={`w-${size} h-${size} text-primary`}
-            style={{ fill: color }}
+            // style={{ fill: color }}
           />
           <div
             className="absolute top-0 left-0 overflow-hidden"
             style={{ width: `${partialStar * 100}%` }}
           >
             <Star
-              className="w-6 h-6 fill-primary text-primary"
+              className={`w-${size} h-${size} fill-primary text-primary`}
               style={{ fill: color }}
             />
           </div>

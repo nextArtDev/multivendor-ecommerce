@@ -24,6 +24,7 @@ import ProductSpecs from '../../../components/product/product-specs'
 import ProductQuestions from '../../../components/product/product-questions'
 import StoreCard from '../../../components/store/store-card'
 import StoreProducts from '../../../components/product/store-products'
+import ProductReviews from '../../../components/reviews/product-reviews'
 
 export default async function ProductPage({
   params,
@@ -79,45 +80,39 @@ export default async function ProductPage({
           variantSlug={searchParamsVariant}
           userCountry={userCountry}
         >
-          <>
-            <Separator />
-            {/* Related products */}
-            <RelatedProducts
-              productId={data.id}
-              categoryId={data.categoryId}
-              subCategoryId={data.subCategoryId}
-            />
-          </>
-          {/* Product reviews */}
-          {/* <Separator className="mt-6" />
+          <Separator />
+          <RelatedProducts
+            productId={data.id}
+            categoryId={data.categoryId}
+            subCategoryId={data.subCategoryId}
+          />
+          <Separator className="mt-6" />
           <ProductReviews
             productId={data.id}
             rating={data.rating}
             variantsInfo={data.variants}
             numReviews={data._count.reviews}
           />
-          <>
-            <Separator className="mt-6" /> */}
-          {/* Product description */}
+
+          <Separator className="mt-6" />
+
           <ProductDescription
             text={[data.description, variant?.variantDescription || '']}
           />
-          {/* </> */}
+
           <Separator className="mt-6" />
           {(specs.product || specs.variant) && <ProductSpecs specs={specs} />}
           <Separator className="mt-6" />
           {data.questions && <ProductQuestions questions={data.questions} />}
           <Separator className="mt-6" />
           <StoreCard store={storeData} />
-          {/*
-           */}
+
           <div className="h-6"></div>
           <StoreProducts
             storeUrl={data.store.url}
             storeName={data.store.name}
             count={5}
           />
-          {/*    </div> */}
         </ProductPageContainer>
       </div>
     </div>

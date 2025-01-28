@@ -53,7 +53,7 @@ export const SecurityPrivacyCard = () => {
           <span className="text-sm font-bold">Security & Privacy</span>
         </div>
       </div>
-      <p className="text-xs text-muted ml-5 flex  gap-x-1">
+      <p className="text-xs text-muted-foreground ml-5 flex  gap-x-1">
         Safe payments: We do not share your personal details with any third
         parties without your consent. Secure personal details: We protect your
         privacy and keep your personal details safe and secure.
