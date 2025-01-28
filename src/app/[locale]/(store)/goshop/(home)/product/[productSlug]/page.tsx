@@ -22,6 +22,7 @@ import RelatedProducts from '../../../components/product/related-product'
 import ProductDescription from '../../../components/product/product-description'
 import ProductSpecs from '../../../components/product/product-specs'
 import ProductQuestions from '../../../components/product/product-questions'
+import StoreCard from '../../../components/store/store-card'
 
 export default async function ProductPage({
   params,
@@ -58,14 +59,14 @@ export default async function ProductPage({
     userCountry = JSON.parse(userCountryCookie.value) as Country
   }
 
-  //   const storeData = {
-  //     id: data.store.id,
-  //     name: data.store.name,
-  //     url: data.store.url,
-  //     logo: data.store.logo,
-  //     followersCount: 0,
-  //     isUserFollowingStore: false,
-  //   }
+  const storeData = {
+    id: data.store.id,
+    name: data.store.name,
+    url: data.store.url,
+    logo: data.store.logo?.url,
+    followersCount: 0,
+    isUserFollowingStore: false,
+  }
 
   return (
     <div>
@@ -105,10 +106,10 @@ export default async function ProductPage({
           {(specs.product || specs.variant) && <ProductSpecs specs={specs} />}
           <Separator className="mt-6" />
           {data.questions && <ProductQuestions questions={data.questions} />}
-          {/*
           <Separator className="mt-6" />
-          <div className="h-6"></div>
           <StoreCard store={storeData} />
+          {/*
+          <div className="h-6"></div>
           <StoreProducts
             storeUrl={data.store.url}
             storeName={data.store.name}

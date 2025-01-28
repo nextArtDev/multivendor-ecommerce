@@ -1,13 +1,13 @@
-"use client";
-import DOMPurify from "dompurify";
+'use client'
+import DOMPurify from 'dompurify'
 
 export default function ProductDescription({
   text,
 }: {
-  text: [string, string];
+  text: [string, string]
 }) {
-  const sanitizedDescription1 = DOMPurify.sanitize(text[0]);
-  const sanitizedDescription2 = DOMPurify.sanitize(text[1]);
+  const sanitizedDescription1 = DOMPurify.sanitize(text[0])
+  const sanitizedDescription2 = DOMPurify.sanitize(text[1])
   return (
     <div className="pt-6">
       {/* Title */}
@@ -18,5 +18,5 @@ export default function ProductDescription({
       <div dangerouslySetInnerHTML={{ __html: sanitizedDescription1 }} />
       <div dangerouslySetInnerHTML={{ __html: sanitizedDescription2 }} />
     </div>
-  );
+  )
 }

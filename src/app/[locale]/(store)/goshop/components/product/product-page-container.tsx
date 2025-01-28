@@ -229,7 +229,7 @@ const ProductPageContainer: FC<Props> = ({
   return (
     <div className="relative">
       <div className="w-full xl:flex xl:gap-4">
-        <div className="w-full flex-1">
+        <div className="w-full flex-1 max-w-md mx-auto">
           <ProductSwiper
             // images={variant.variantImage}
             images={productData.images}

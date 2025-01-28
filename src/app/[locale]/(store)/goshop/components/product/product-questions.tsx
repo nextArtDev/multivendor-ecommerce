@@ -1,13 +1,13 @@
-import { MessageCircleMore, MessageCircleQuestion } from "lucide-react";
-import { FC } from "react";
+import { MessageCircleMore, MessageCircleQuestion } from 'lucide-react'
+import { FC } from 'react'
 
 interface Question {
-  question: string;
-  answer: string;
+  question: string
+  answer: string
 }
 
 interface Props {
-  questions: Question[];
+  questions: Question[]
 }
 
 const ProductQuestions: FC<Props> = ({ questions }) => {
@@ -15,7 +15,7 @@ const ProductQuestions: FC<Props> = ({ questions }) => {
     <div className="pt-6">
       {/* Title */}
       <div className="h-12">
-        <h2 className="text-main-primary text-2xl font-bold">
+        <h2 className="  text-2xl font-bold">
           Questions & Answers ({questions.length})
         </h2>
       </div>
@@ -41,7 +41,7 @@ const ProductQuestions: FC<Props> = ({ questions }) => {
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProductQuestions;
+export default ProductQuestions
