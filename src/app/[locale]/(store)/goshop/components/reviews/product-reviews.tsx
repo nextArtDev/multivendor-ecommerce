@@ -25,6 +25,8 @@ import ReviewsFilters from './review-filters'
 import ReviewsSort from './sort'
 import RatingStatisticsCard from './rating-statistics'
 import ReviewCard from './review-card'
+import { useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'next/navigation'
 
 interface Props {
   product: ProductDataType
@@ -50,95 +52,117 @@ const ProductReviews: FC<Props> = ({
   // variant,
   numReviews,
 }) => {
-  const [loading, setLoading] = useState<boolean>(true)
-  const [filterLoading, setFilterLoading] = useState<boolean>(true)
-  const [data, setData] = useState<ReviewWithImageType[]>([])
-  const [statistics, setStatistics] =
-    useState<RatingStatisticsType>(defaultData)
+  // const [loading, setLoading] = useState<boolean>(true)
+  // const [filterLoading, setFilterLoading] = useState<boolean>(true)
+  // const [data, setData] = useState<ReviewWithImageType[]>([])
+  // const [statistics, setStatistics] =
+  //   useState<RatingStatisticsType>(defaultData)
   const [averageRating, setAverageRating] = useState<number>(rating)
-
-  const half = Math.ceil(data.length / 2)
-
+  const searchParams = useSearchParams()
   // Filtering
-  const filtered_data = {
-    rating: undefined,
-    hasImages: undefined,
+  // const filtered_data = {
+  //   rating: undefined,
+  //   hasImages: undefined,
+  // }
+  // const [filters, setFilters] = useState<ReviewsFiltersType>(filtered_data)
+  const sorter = searchParams.get('sort')
+  const hasImages = searchParams.get('hasImages')
+  const page = Number(searchParams.get('page'))
+  console.log({ page })
+  const sort = { orderBy: sorter as 'latest' | 'oldest' | 'highest' }
+  const filters = {
+    rating: +rating,
+    hasImages: hasImages === 'true' ? true : false,
   }
-  const [filters, setFilters] = useState<ReviewsFiltersType>(filtered_data)
+  // // Sorting
+  // const [sort, setSort] = useState<ReviewsOrderType>()
 
-  // Sorting
-  const [sort, setSort] = useState<ReviewsOrderType>()
-
-  // Pagination
-  const [page, setPage] = useState<number>(1)
+  // // Pagination
+  // const [page, setPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(4)
 
-  useEffect(() => {
-    if (filters.rating || filters.hasImages || sort) {
-      setPage(1)
-      handleGetReviews()
-    }
-    if (page) {
-      handleGetReviews()
-    }
-  }, [filters, sort, page])
+  // useEffect(() => {
+  //   if (filters.rating || filters.hasImages || sort) {
+  //     setPage(1)
+  //     handleGetReviews()
+  //   }
+  //   if (page) {
+  //     handleGetReviews()
+  //   }
+  // }, [filters, sort, page])
 
-  const handleGetReviews = async () => {
-    try {
-      setFilterLoading(true)
-      const res = await getProductFilteredReviews(
-        product.id,
-        filters,
-        sort,
-        page,
-        pageSize
-      )
+  const { data, isFetching, isPending } = useQuery({
+    queryKey: ['product-review', hasImages, sorter, page],
+    queryFn: () =>
+      getProductFilteredReviews(product.id, filters, sort, page + 1, pageSize),
+  })
 
-      setData(res?.reviews)
-      setStatistics(res.statistics)
-      setLoading(false)
-      setFilterLoading(false)
-    } catch (error) {
-      setLoading(false)
-    }
-  }
+  console.log({ data })
+  const half = Math.ceil(data?.reviews?.length / 2)
+  // const { reviews, statistics } = data
+  // const handleGetReviews = async () => {
+  //   try {
+  //     setFilterLoading(true)
+  //     const res = await getProductFilteredReviews(
+  //       product.id,
+  //       filters,
+  //       sort,
+  //       page,
+  //       pageSize
+  //     )
+
+  //     setData(res?.reviews)
+  //     setStatistics(res.statistics)
+  //     setLoading(false)
+  //     setFilterLoading(false)
+  //   } catch (error) {
+  //     setLoading(false)
+  //   }
+  // }
 
   return (
     <div className="pt-6" id="reviews">
-      {loading ? (
+      {isPending ? (
         <ProductPageReviewsSkeletonLoader numReviews={numReviews} />
       ) : (
         <div>
           {/* Title */}
           <div className="h-12">
             <h2 className="text-primary text-2xl font-bold">
-              Custom Reviews ({statistics.totalReviews})
+              Custom Reviews ({data?.statistics.totalReviews})
             </h2>
           </div>
           {/* Statistics */}
           <div className="w-full">
             <div className="flex flex-col md:flex-row items-center gap-4">
               <RatingCard rating={averageRating} />
-              <RatingStatisticsCard statistics={statistics.ratingStatistics} />
+              {data?.statistics && (
+                <RatingStatisticsCard
+                  statistics={data.statistics.ratingStatistics}
+                />
+              )}
             </div>
           </div>
           <>
             <div className="space-y-6">
               <ReviewsFilters
-                filters={filters}
-                setFilters={setFilters}
-                setSort={setSort}
-                stats={statistics}
+                // filters={filters}
+                // setFilters={setFilters}
+                // setSort={setSort}
+                stats={data?.statistics}
               />
-              <ReviewsSort sort={sort} setSort={setSort} />
+              <ReviewsSort
+              //  sort={sort}
+              //  sort={sort} setSort={setSort}
+              />
             </div>
             {/* Reviews */}
-            {!filterLoading ? (
+            {!isFetching ? (
               <div className="mt-6  grid md:grid-cols-2 gap-4">
-                {data.length > 0 ? (
+                {!!data?.reviews?.length ? (
                   <>
                     <div className="flex flex-col gap-3">
-                      {data.slice(0, half).map((review) => (
+                      {data?.reviews.slice(0, half).map((review) => (
                         <ReviewCard
                           key={review.id}
                           review={review}
@@ -147,7 +171,7 @@ const ProductReviews: FC<Props> = ({
                       ))}
                     </div>
                     <div className="flex flex-col gap-3">
-                      {data.slice(half).map((review) => (
+                      {data?.reviews.slice(half).map((review) => (
                         <ReviewCard
                           key={review.id}
                           review={review}

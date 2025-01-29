@@ -10,6 +10,8 @@ import { notFound } from 'next/navigation'
 import AuthProvider from '@/providers/AuthProvider'
 import { Toaster } from 'sonner'
 import QueryProviders from '@/providers/query-provider'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -53,7 +55,7 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <NextIntlClientProvider messages={messages}>
-                {children}
+                <NuqsAdapter>{children}</NuqsAdapter>
                 <Toaster />
               </NextIntlClientProvider>
             </ThemeProvider>

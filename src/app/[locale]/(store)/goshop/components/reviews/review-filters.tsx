@@ -6,15 +6,46 @@ import {
   ReviewsOrderType,
 } from '../../lib/queries/review'
 import { Button } from '@/components/ui/button'
+import { usePathname, useRouter } from '@/navigation'
+import { useSearchParams } from 'next/navigation'
+import {
+  parseAsBoolean,
+  parseAsFloat,
+  parseAsString,
+  useQueryState,
+  useQueryStates,
+} from 'nuqs'
 
 interface Props {
-  filters: ReviewsFiltersType
-  setFilters: Dispatch<SetStateAction<ReviewsFiltersType>>
+  // filters: ReviewsFiltersType
+  // setFilters: Dispatch<SetStateAction<ReviewsFiltersType>>
+  // setSort: Dispatch<SetStateAction<ReviewsOrderType | undefined>>
   stats: RatingStatisticsType
-  setSort: Dispatch<SetStateAction<ReviewsOrderType | undefined>>
 }
 
-const ReviewsFilters: FC<Props> = ({ filters, setFilters, setSort, stats }) => {
+// const ReviewsFilters: FC<Props> = ({ filters, setFilters, setSort, stats }) => {
+const ReviewsFilters: FC<Props> = ({ stats }) => {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  // const sort = searchParams.get('sort')
+
+  // const rating = searchParams.get('rating')
+  // const hasImages = searchParams.get('hasImages')
+
+  const [sort, setSort] = useQueryState('sort')
+
+  const [filters, setFilters] = useQueryStates({
+    rating: parseAsFloat.withDefault(0),
+    hasImages: parseAsBoolean.withDefault(false),
+  })
+  // const [hasImagesFilter, setHasImagesFilter] = useQueryState('hasImagesFilter')
+
+  // const filters = {
+  //   ratingFilter,
+  //   hasImagesFilter,
+  // }
   const { rating, hasImages } = filters
   const { ratingStatistics, reviewsWithImagesCount, totalReviews } = stats
   return (
@@ -31,7 +62,7 @@ const ReviewsFilters: FC<Props> = ({ filters, setFilters, setSort, stats }) => {
           )}
           onClick={() => {
             setFilters({ rating: undefined, hasImages: undefined })
-            setSort(undefined)
+            setSort(null)
           }}
         >
           All ({totalReviews})
@@ -45,6 +76,7 @@ const ReviewsFilters: FC<Props> = ({ filters, setFilters, setSort, stats }) => {
               ' text-[#fd384f] border-[#fd384f]': hasImages,
             }
           )}
+          // onClick={() => setFilters({ ...filters, hasImages: true })}
           onClick={() => setFilters({ ...filters, hasImages: true })}
         >
           Include Pictures ({reviewsWithImagesCount})

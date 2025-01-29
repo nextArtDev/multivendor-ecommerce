@@ -49,25 +49,31 @@ export const getProductFilteredReviews = async (
   // Calculate pagination parameters
   const skip = (page - 1) * pageSize
   const take = pageSize
+  console.log(take)
+  console.log(skip)
 
-  const statistics = await getRatingStatistics(productId)
-  // Fetch reviews from the database
-  const reviews = await prisma.review.findMany({
-    where: reviewFilter,
-    include: {
-      images: true,
-      user: {
-        include: {
-          image: true,
+  try {
+    const statistics = await getRatingStatistics(productId)
+    // Fetch reviews from the database
+    const reviews = await prisma.review.findMany({
+      where: reviewFilter,
+      include: {
+        images: true,
+        user: {
+          include: {
+            image: true,
+          },
         },
       },
-    },
-    orderBy: sortOption,
-    skip, // Skip records for pagination
-    take, // Take records for pagination
-  })
-
-  return { reviews, statistics }
+      orderBy: sortOption,
+      skip, // Skip records for pagination
+      take, // Take records for pagination
+    })
+    console.log(reviews, statistics)
+    return { reviews, statistics }
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export const getRatingStatistics = async (productId: string) => {

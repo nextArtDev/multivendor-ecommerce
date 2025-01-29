@@ -4,9 +4,6 @@ const withNextIntl = createNextIntlPlugin()
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    dynamicIO: true,
-  },
   // i18n: {
   //   locales: ['en', 'fa'],
   //   defaultLocale: 'fa',

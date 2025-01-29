@@ -21,7 +21,9 @@ export default function ReviewCard({
     .map((color) => ({ name: color.trim() }))
 
   const { name } = user
-  const cesnoredName = `${name[0]}***${name[user.name.length - 1]}`
+  const cesnoredName = `${name[0]}${name[1]}***${name[user.name.length - 2]}${
+    name[user.name.length - 1]
+  }`
   return (
     <div className="border border-secondary bg-primary/40 backdrop-blur-md rounded-xl flex h-fit relative py-4 px-2.5">
       <div className="w-16 px- space-y-1">
@@ -39,7 +41,7 @@ export default function ReviewCard({
             size={35}
           />
         )}
-        <span className="text-xs  ">{cesnoredName.toUpperCase()}</span>
+        <span className="text-xs capitalize ">{cesnoredName}</span>
       </div>
       <div className="flex flex-1 flex-col justify-between leading-5 overflow-hidden px-1.5">
         <div className="space-y-2">
