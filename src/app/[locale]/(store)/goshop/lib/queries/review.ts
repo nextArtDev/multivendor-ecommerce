@@ -56,7 +56,11 @@ export const getProductFilteredReviews = async (
     where: reviewFilter,
     include: {
       images: true,
-      user: true,
+      user: {
+        include: {
+          image: true,
+        },
+      },
     },
     orderBy: sortOption,
     skip, // Skip records for pagination
@@ -109,7 +113,7 @@ export type RatingStatisticsType = Prisma.PromiseReturnType<
 >
 export type ReviewWithImageType = Review & {
   images: Image[]
-  user: User
+  user: User & { image: Image }
 }
 
 export type StatisticsCardType = Prisma.PromiseReturnType<

@@ -1,15 +1,19 @@
 'use client'
 
-import Image from 'next/image'
+import NextImage from 'next/image'
 import ReactStars from 'react-rating-stars-component'
 import Rating from '@/components/amazon/product/rating'
 import { ReviewWithImageType } from '../../lib/queries/review'
+import { User } from 'lucide-react'
+import { Image, ProductVariant } from '@prisma/client'
+import { ProductDataType, ProductVariantDataType } from '../../types'
 export default function ReviewCard({
   review,
+  product,
 }: {
   review: ReviewWithImageType
+  product: ProductDataType
 }) {
-  //   console.log(review)
   const { images, user } = review
   const colors = review.color
     .split(',')
@@ -21,13 +25,20 @@ export default function ReviewCard({
   return (
     <div className="border border-secondary bg-primary/40 backdrop-blur-md rounded-xl flex h-fit relative py-4 px-2.5">
       <div className="w-16 px- space-y-1">
-        {/* <Image
-          src={user.picture}
-          alt="Profile image"
-          width={100}
-          height={100}
-          className="w-11 h-11 rounded-full object-cover"
-        /> */}
+        {user?.image ? (
+          <NextImage
+            src={user?.image?.url}
+            alt="Profile image"
+            width={100}
+            height={100}
+            className="w-11 h-11 rounded-full object-cover"
+          />
+        ) : (
+          <User
+            className="border border-primary p-1 rounded-full text-primary "
+            size={35}
+          />
+        )}
         <span className="text-xs  ">{cesnoredName.toUpperCase()}</span>
       </div>
       <div className="flex flex-1 flex-col justify-between leading-5 overflow-hidden px-1.5">
@@ -43,17 +54,20 @@ export default function ReviewCard({
           />  */}
           <Rating rating={review.rating} color="#FFD804" size={6} />
           <div className="flex items-center gap-x-2">
-            <Image
-              src={review.variantImage}
+            <NextImage
+              src={product.images?.[1].url}
               alt=""
               width={40}
               height={40}
               className="object-cover w-9 h-9 rounded-full"
             />
-            <div className="text-secondary text-sm">{review.variant}</div>
+
+            <div className="text-secondary text-sm">{product?.name}</div>
             <span>.</span>
-            <div className="text-secondary text-sm">{review.size}</div>
-            <span>.</span>
+            {/* <div className="text-secondary text-sm">
+              {variant?.sizes?.[0].size}
+            </div>
+            <span>.</span> */}
             <div className="text-secondary text-sm">{review.quantity} PC</div>
           </div>
           <p className="text-sm">{review.review}</p>
@@ -64,9 +78,9 @@ export default function ReviewCard({
                   key={img.id}
                   className="w-20 h-20 rounded-xl overflow-hidden cursor-pointer"
                 >
-                  <Image
+                  <NextImage
                     src={img.url}
-                    alt={img.alt || ''}
+                    alt={product?.name || ''}
                     width={100}
                     height={100}
                     className="w-full h-full object-cover"

@@ -11,7 +11,7 @@ import { FC, useEffect, useState } from 'react'
 // import { getProductFilteredReviews } from "@/queries/product-optimized";
 // import ProductPageReviewsSkeletonLoader from "../../skeletons/product-page/reviews";
 import { DotLoader } from 'react-spinners'
-import { ProductVariantDataType } from '../../types'
+import { ProductDataType, ProductVariantDataType } from '../../types'
 import {
   getProductFilteredReviews,
   RatingStatisticsType,
@@ -27,9 +27,9 @@ import RatingStatisticsCard from './rating-statistics'
 import ReviewCard from './review-card'
 
 interface Props {
-  productId: string
+  product: ProductDataType
   rating: number
-  variantsInfo: ProductVariantDataType[]
+  // variant: Partial<ProductVariantDataType | undefined>
   numReviews: number
 }
 const defaultData = {
@@ -45,9 +45,9 @@ const defaultData = {
 }
 
 const ProductReviews: FC<Props> = ({
-  productId,
+  product,
   rating,
-  variantsInfo,
+  // variant,
   numReviews,
 }) => {
   const [loading, setLoading] = useState<boolean>(true)
@@ -87,13 +87,14 @@ const ProductReviews: FC<Props> = ({
     try {
       setFilterLoading(true)
       const res = await getProductFilteredReviews(
-        productId,
+        product.id,
         filters,
         sort,
         page,
         pageSize
       )
-      setData(res.reviews)
+
+      setData(res?.reviews)
       setStatistics(res.statistics)
       setLoading(false)
       setFilterLoading(false)
@@ -138,12 +139,20 @@ const ProductReviews: FC<Props> = ({
                   <>
                     <div className="flex flex-col gap-3">
                       {data.slice(0, half).map((review) => (
-                        <ReviewCard key={review.id} review={review} />
+                        <ReviewCard
+                          key={review.id}
+                          review={review}
+                          product={product}
+                        />
                       ))}
                     </div>
                     <div className="flex flex-col gap-3">
                       {data.slice(half).map((review) => (
-                        <ReviewCard key={review.id} review={review} />
+                        <ReviewCard
+                          key={review.id}
+                          review={review}
+                          product={product}
+                        />
                       ))}
                     </div>
                   </>
@@ -173,7 +182,7 @@ const ProductReviews: FC<Props> = ({
       {/* <div className="mt-10">
         <ReviewDetails
           productId={productId}
-          variantsInfo={variantsInfo}
+          variant={variant}
           setReviews={setData}
           reviews={data}
           setStatistics={setStatistics}

@@ -42,7 +42,7 @@ const ProductPrice: FC<Props> = ({
         }
       }
     }
-  }, [handleChange, sizeId, sizes])
+  }, [sizeId, sizes])
 
   // If no sizeId passed, calculate range of prices and total quantity
   if (!sizeId && sizes && sizes.length > 0) {

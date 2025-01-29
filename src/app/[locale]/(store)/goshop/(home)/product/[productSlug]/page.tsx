@@ -88,9 +88,9 @@ export default async function ProductPage({
           />
           <Separator className="mt-6" />
           <ProductReviews
-            productId={data.id}
+            product={data}
             rating={data.rating}
-            variantsInfo={data.variants}
+            // variant={variant}
             numReviews={data._count.reviews}
           />
 
