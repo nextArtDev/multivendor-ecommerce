@@ -73,12 +73,13 @@ const ProductReviews: FC<Props> = ({
   const hasImages = searchParams.get('hasImages')
   const page = Number(searchParams.get('page'))
   const FilterRating = Number(searchParams.get('rating'))
-  console.log(sorter, hasImages, page)
+
   const sort = { orderBy: sorter as 'latest' | 'oldest' | 'highest' }
   const filters = {
     rating: FilterRating ? +FilterRating : undefined,
     hasImages: hasImages === 'true' ? true : false,
   }
+  console.log({ sorter })
   // // Sorting
   // const [sort, setSort] = useState<ReviewsOrderType>()
 
@@ -108,7 +109,7 @@ const ProductReviews: FC<Props> = ({
       ),
   })
 
-  console.log({ data })
+  // console.log({ data })
   if (!data)
     return (
       <>

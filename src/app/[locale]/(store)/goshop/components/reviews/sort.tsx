@@ -16,12 +16,12 @@ interface Props {
 
 // const ReviewsSort: FC<Props> = ({ sort, setSort }) => {
 const ReviewsSort: FC<Props> = () => {
-  const sorts = ['latest', 'oldest', 'highest'] as const
+  const sorts = ['latest', 'oldest', 'highest', 'default'] as const
 
   const [sort, setSort] = useQueryState(
     'sort',
     parseAsStringLiteral(sorts) // pass a readonly list of allowed values
-      .withDefault('latest')
+      .withDefault('default')
   )
   return (
     <div className="group w-[120px]">

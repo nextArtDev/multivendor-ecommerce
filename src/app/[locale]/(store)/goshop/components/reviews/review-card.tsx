@@ -71,6 +71,9 @@ export default function ReviewCard({
             </div>
             <span>.</span> */}
             <div className="text-secondary text-sm">{review.quantity} PC</div>
+            <div className="text-secondary text-sm">
+              {review.createdAt.toLocaleString()}{' '}
+            </div>
           </div>
           <p className="text-sm">{review.review}</p>
           {images.length > 0 && (
