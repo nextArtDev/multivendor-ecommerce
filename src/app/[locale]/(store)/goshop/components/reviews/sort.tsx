@@ -1,60 +1,45 @@
-import { ChevronDown } from 'lucide-react'
-import { Dispatch, FC, SetStateAction } from 'react'
-import { ReviewsOrderType } from '../../lib/queries/review'
 import { Button } from '@/components/ui/button'
 import {
-  parseAsStringEnum,
-  parseAsStringLiteral,
-  useQueryState,
-  useQueryStates,
-} from 'nuqs'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { parseAsStringLiteral, useQueryState } from 'nuqs'
 
-interface Props {
-  // sort?: ReviewsOrderType | undefined
-  // setSort: Dispatch<SetStateAction<ReviewsOrderType | undefined>>
-}
-
-// const ReviewsSort: FC<Props> = ({ sort, setSort }) => {
-const ReviewsSort: FC<Props> = () => {
-  const sorts = ['latest', 'oldest', 'highest', 'default'] as const
+const ReviewsSort = () => {
+  const sorts = ['latest', 'oldest', 'highest'] as const
 
   const [sort, setSort] = useQueryState(
     'sort',
     parseAsStringLiteral(sorts) // pass a readonly list of allowed values
-      .withDefault('default')
+      .withDefault('highest')
   )
   return (
-    <div className="group w-[120px]">
-      {/* Trigger */}
-      <Button className="  hover:text-[#fd384f] text-sm py-0.5 text-center inline-flex items-center">
-        Sort by&nbsp;
-        {sort === 'latest'
-          ? 'latest'
-          : sort === 'highest'
-          ? 'highest'
-          : 'default'}
-        <ChevronDown className="w-3 ml-1" />
-      </Button>
-      <div className="z-10 hidden absolute bg-primary/60 backdrop-blur-md shadow w-[120px] group-hover:block">
-        <ul className="text-m  ">
-          <li onClick={() => setSort(null)}>
-            <span className="block p-2 text-sm cursor-pointer ">
-              Sort by default
-            </span>
-          </li>
-          <li onClick={() => setSort('highest')}>
-            <span className="block p-2 text-sm cursor-pointer ">
-              Sort by highest
-            </span>
-          </li>
-          <li onClick={() => setSort('latest')}>
-            <span className="block p-2 text-sm cursor-pointer ">
-              Sort by latest
-            </span>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="">
+          Sorting - {sort}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+        {/* <DropdownMenuLabel>Panel Position</DropdownMenuLabel> */}
+        <DropdownMenuSeparator />
+        <DropdownMenuRadioGroup
+          defaultValue={'highest'}
+          value={sort}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-expect-error
+          onValueChange={(value) => setSort(value)}
+        >
+          <DropdownMenuRadioItem value="latest">Latest</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="oldest">Oldest</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="highest">Highest</DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 

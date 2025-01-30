@@ -120,7 +120,7 @@ const ProductReviews: FC<Props> = ({
 
   return (
     <div className="pt-6" id="reviews">
-      {!data || isPending ? (
+      {!data ? (
         <ProductPageReviewsSkeletonLoader numReviews={numReviews} />
       ) : (
         <div>

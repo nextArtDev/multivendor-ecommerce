@@ -41,7 +41,7 @@ const ReviewsFilters: FC<Props> = ({ stats }) => {
   const { rating, hasImages } = filters
   const { ratingStatistics, reviewsWithImagesCount, totalReviews } = stats
   return (
-    <div className="mt-8 relative overflow-hidden">
+    <div className="mt-8 relative overflow-hidden flex flex-col">
       <div className="flex flex-wrap gap-3 m-1.5 ">
         {/* All */}
         <Toggle
@@ -78,6 +78,8 @@ const ReviewsFilters: FC<Props> = ({ stats }) => {
         >
           Include Pictures ({reviewsWithImagesCount})
         </Toggle>
+      </div>
+      <div className="flex flex-wrap gap-3 m-1.5">
         {/* Rating Filters */}
         {ratingStatistics.map((r) => (
           <Toggle
