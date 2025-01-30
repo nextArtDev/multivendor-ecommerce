@@ -31,10 +31,13 @@ export default async function ProductPage({
   searchParams,
 }: {
   params: Promise<{ productSlug: string }>
-  searchParams: Promise<{ variant: string }>
+  searchParams: Promise<{
+    variant: string
+  }>
 }) {
   const productSlug = (await params).productSlug
   const searchParamsVariant = (await searchParams).variant
+
   const data = await retrieveProductDetailsOptimized(productSlug)
   // console.log({ data })
   const variant = data.variants.find((v) => v.slug === searchParamsVariant)
@@ -91,6 +94,7 @@ export default async function ProductPage({
             product={data}
             rating={data.rating}
             // variant={variant}
+
             numReviews={data._count.reviews}
           />
 

@@ -27,13 +27,8 @@ import RatingStatisticsCard from './rating-statistics'
 import ReviewCard from './review-card'
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 
-interface Props {
-  product: ProductDataType
-  rating: number
-  // variant: Partial<ProductVariantDataType | undefined>
-  numReviews: number
-}
 const defaultData = {
   ratingStatistics: [
     { rating: 1, numReviews: 0, percentage: 0 },
@@ -44,6 +39,12 @@ const defaultData = {
   ],
   reviewsWithImagesCount: 0,
   totalReviews: 0,
+}
+interface Props {
+  product: ProductDataType
+  rating: number
+  // variant: Partial<ProductVariantDataType | undefined>
+  numReviews: number
 }
 
 const ProductReviews: FC<Props> = ({
@@ -64,14 +65,18 @@ const ProductReviews: FC<Props> = ({
   //   rating: undefined,
   //   hasImages: undefined,
   // }
+
+  // const filterRate = (await searchParams).rating
+  // console.log('ser', sorter, hasImages, page)
   // const [filters, setFilters] = useState<ReviewsFiltersType>(filtered_data)
   const sorter = searchParams.get('sort')
   const hasImages = searchParams.get('hasImages')
   const page = Number(searchParams.get('page'))
-  console.log({ page })
+  const FilterRating = Number(searchParams.get('rating'))
+  console.log(sorter, hasImages, page)
   const sort = { orderBy: sorter as 'latest' | 'oldest' | 'highest' }
   const filters = {
-    rating: +rating,
+    rating: FilterRating ? +FilterRating : undefined,
     hasImages: hasImages === 'true' ? true : false,
   }
   // // Sorting
@@ -92,12 +97,24 @@ const ProductReviews: FC<Props> = ({
   // }, [filters, sort, page])
 
   const { data, isFetching, isPending } = useQuery({
-    queryKey: ['product-review', hasImages, sorter, page],
+    queryKey: ['product-review', sorter, hasImages, page, FilterRating],
     queryFn: () =>
-      getProductFilteredReviews(product.id, filters, sort, page + 1, pageSize),
+      getProductFilteredReviews(
+        product.id,
+        filters,
+        sort,
+        Number(page ? +page + 1 : 1),
+        pageSize
+      ),
   })
 
   console.log({ data })
+  if (!data)
+    return (
+      <>
+        <DotLoader color="#f5f5f5" />
+      </>
+    )
   const half = Math.ceil(data?.reviews?.length / 2)
   // const { reviews, statistics } = data
   // const handleGetReviews = async () => {

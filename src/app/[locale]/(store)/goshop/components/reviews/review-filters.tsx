@@ -25,15 +25,6 @@ interface Props {
 
 // const ReviewsFilters: FC<Props> = ({ filters, setFilters, setSort, stats }) => {
 const ReviewsFilters: FC<Props> = ({ stats }) => {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-
-  // const sort = searchParams.get('sort')
-
-  // const rating = searchParams.get('rating')
-  // const hasImages = searchParams.get('hasImages')
-
   const [sort, setSort] = useQueryState('sort')
 
   const [filters, setFilters] = useQueryStates({
@@ -61,7 +52,7 @@ const ReviewsFilters: FC<Props> = ({ stats }) => {
             }
           )}
           onClick={() => {
-            setFilters({ rating: undefined, hasImages: undefined })
+            setFilters({ rating: null, hasImages: null })
             setSort(null)
           }}
         >
@@ -77,7 +68,11 @@ const ReviewsFilters: FC<Props> = ({ stats }) => {
             }
           )}
           // onClick={() => setFilters({ ...filters, hasImages: true })}
-          onClick={() => setFilters({ ...filters, hasImages: true })}
+          onClick={() =>
+            hasImages
+              ? setFilters({ ...filters, rating: null, hasImages: null })
+              : setFilters({ ...filters, rating: null, hasImages: true })
+          }
         >
           Include Pictures ({reviewsWithImagesCount})
         </Button>
@@ -92,7 +87,11 @@ const ReviewsFilters: FC<Props> = ({ stats }) => {
                 ' text-[#fd384f] border-[#fd384f]': r.rating === rating,
               }
             )}
-            onClick={() => setFilters({ ...filters, rating: r.rating })}
+            onClick={() =>
+              r.rating === rating
+                ? setFilters({ ...filters, rating: null })
+                : setFilters({ ...filters, rating: r.rating })
+            }
           >
             {r.rating} stars ({r.numReviews})
           </Button>
