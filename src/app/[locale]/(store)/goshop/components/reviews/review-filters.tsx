@@ -15,7 +15,8 @@ import {
   useQueryState,
   useQueryStates,
 } from 'nuqs'
-
+import { Toggle } from '@/components/ui/toggle'
+import { AnimatePresence, motion } from 'framer-motion'
 interface Props {
   // filters: ReviewsFiltersType
   // setFilters: Dispatch<SetStateAction<ReviewsFiltersType>>
@@ -41,14 +42,15 @@ const ReviewsFilters: FC<Props> = ({ stats }) => {
   const { ratingStatistics, reviewsWithImagesCount, totalReviews } = stats
   return (
     <div className="mt-8 relative overflow-hidden">
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-3 m-1.5 ">
         {/* All */}
-        <Button
-          variant={!rating && !hasImages ? 'ghost' : 'default'}
+        <Toggle
+          // variant={'outline'}
+          // variant={!rating && !hasImages ? 'ghost' : 'default'}
           className={cn(
-            '  border border-transparent rounded-full cursor-pointer py-1.5 px-4 xxx',
+            'outline outline-[1px]  rounded-full cursor-pointer py-1.5 px-4 xxx',
             {
-              ' text-[#fd384f] border-[#fd384f]': !rating && !hasImages,
+              ' text-[#fd384f] outline-[#fd384f]': !rating && !hasImages,
             }
           )}
           onClick={() => {
@@ -57,14 +59,14 @@ const ReviewsFilters: FC<Props> = ({ stats }) => {
           }}
         >
           All ({totalReviews})
-        </Button>
+        </Toggle>
         {/* Includes Pic */}
-        <Button
-          variant={hasImages ? 'ghost' : 'default'}
+        <Toggle
+          variant={'outline'}
           className={cn(
-            '  border border-transparent rounded-full cursor-pointer py-1.5 px-4',
+            ' outline outline-[1px]  rounded-full cursor-pointer py-1.5 px-4',
             {
-              ' text-[#fd384f] border-[#fd384f]': hasImages,
+              ' text-[#fd384f] outline-[#fd384f]': hasImages,
             }
           )}
           // onClick={() => setFilters({ ...filters, hasImages: true })}
@@ -75,16 +77,16 @@ const ReviewsFilters: FC<Props> = ({ stats }) => {
           }
         >
           Include Pictures ({reviewsWithImagesCount})
-        </Button>
+        </Toggle>
         {/* Rating Filters */}
         {ratingStatistics.map((r) => (
-          <Button
-            variant={r.rating === rating ? 'ghost' : 'default'}
+          <Toggle
+            variant={'outline'}
             key={r.rating}
             className={cn(
-              '  border border-transparent rounded-full cursor-pointer py-1.5 px-4',
+              'relative outline outline-[1px]  rounded-full cursor-pointer py-1.5 px-4',
               {
-                ' text-[#fd384f] border-[#fd384f]': r.rating === rating,
+                'neon   outline-[#fd384f]': r.rating === rating,
               }
             )}
             onClick={() =>
@@ -93,8 +95,16 @@ const ReviewsFilters: FC<Props> = ({ stats }) => {
                 : setFilters({ ...filters, rating: r.rating })
             }
           >
+            {r.rating === rating && (
+              <motion.div
+                className="absolute -inset-1 bg-[#fd384f] -z-10  rounded-full"
+                layoutId="arrow"
+              >
+                <span className="" />
+              </motion.div>
+            )}
             {r.rating} stars ({r.numReviews})
-          </Button>
+          </Toggle>
         ))}
       </div>
     </div>

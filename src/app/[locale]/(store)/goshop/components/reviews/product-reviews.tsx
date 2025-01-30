@@ -79,7 +79,7 @@ const ProductReviews: FC<Props> = ({
     rating: FilterRating ? +FilterRating : undefined,
     hasImages: hasImages === 'true' ? true : false,
   }
-  console.log({ sorter })
+  // console.log({ sorter })
   // // Sorting
   // const [sort, setSort] = useState<ReviewsOrderType>()
 
@@ -110,37 +110,17 @@ const ProductReviews: FC<Props> = ({
   })
 
   // console.log({ data })
-  if (!data)
-    return (
-      <>
-        <DotLoader color="#f5f5f5" />
-      </>
-    )
-  const half = Math.ceil(data?.reviews?.length / 2)
-  // const { reviews, statistics } = data
-  // const handleGetReviews = async () => {
-  //   try {
-  //     setFilterLoading(true)
-  //     const res = await getProductFilteredReviews(
-  //       product.id,
-  //       filters,
-  //       sort,
-  //       page,
-  //       pageSize
-  //     )
-
-  //     setData(res?.reviews)
-  //     setStatistics(res.statistics)
-  //     setLoading(false)
-  //     setFilterLoading(false)
-  //   } catch (error) {
-  //     setLoading(false)
-  //   }
-  // }
+  // if (!data)
+  //   return (
+  //     <>
+  //       <ProductPageReviewsSkeletonLoader numReviews={numReviews} />
+  //     </>
+  //   )
+  // const half = Math.ceil(data?.reviews?.length / 2)
 
   return (
     <div className="pt-6" id="reviews">
-      {isPending ? (
+      {!data || isPending ? (
         <ProductPageReviewsSkeletonLoader numReviews={numReviews} />
       ) : (
         <div>
@@ -180,22 +160,26 @@ const ProductReviews: FC<Props> = ({
                 {!!data?.reviews?.length ? (
                   <>
                     <div className="flex flex-col gap-3">
-                      {data?.reviews.slice(0, half).map((review) => (
-                        <ReviewCard
-                          key={review.id}
-                          review={review}
-                          product={product}
-                        />
-                      ))}
+                      {data?.reviews
+                        .slice(0, Math.ceil(data?.reviews?.length / 2))
+                        .map((review) => (
+                          <ReviewCard
+                            key={review.id}
+                            review={review}
+                            product={product}
+                          />
+                        ))}
                     </div>
                     <div className="flex flex-col gap-3">
-                      {data?.reviews.slice(half).map((review) => (
-                        <ReviewCard
-                          key={review.id}
-                          review={review}
-                          product={product}
-                        />
-                      ))}
+                      {data?.reviews
+                        .slice(Math.ceil(data?.reviews?.length / 2))
+                        .map((review) => (
+                          <ReviewCard
+                            key={review.id}
+                            review={review}
+                            product={product}
+                          />
+                        ))}
                     </div>
                   </>
                 ) : (

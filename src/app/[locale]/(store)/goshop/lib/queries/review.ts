@@ -49,7 +49,7 @@ export const getProductFilteredReviews = async (
   // Calculate pagination parameters
   const skip = (page - 1) * pageSize
   const take = pageSize
-  console.log(sort)
+  // console.log(sort)
 
   try {
     const statistics = await getRatingStatistics(productId)
