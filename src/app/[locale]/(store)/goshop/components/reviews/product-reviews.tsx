@@ -28,6 +28,7 @@ import ReviewCard from './review-card'
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import Pagination from '../pagination'
 
 const defaultData = {
   ratingStatistics: [
@@ -66,7 +67,6 @@ const ProductReviews: FC<Props> = ({
   //   hasImages: undefined,
   // }
 
-  // const filterRate = (await searchParams).rating
   // console.log('ser', sorter, hasImages, page)
   // const [filters, setFilters] = useState<ReviewsFiltersType>(filtered_data)
   const sorter = searchParams.get('sort')
@@ -85,7 +85,7 @@ const ProductReviews: FC<Props> = ({
 
   // // Pagination
   // const [page, setPage] = useState<number>(1)
-  const [pageSize, setPageSize] = useState<number>(4)
+  const [pageSize, setPageSize] = useState<number>(2)
 
   // useEffect(() => {
   //   if (filters.rating || filters.hasImages || sort) {
@@ -191,17 +191,17 @@ const ProductReviews: FC<Props> = ({
                 <DotLoader color="#f5f5f5" />
               </div>
             )}
-            {/* {data.length >= pageSize && (
-              <Paginaion
-                page={page}
+            {(data.reviews.length >= pageSize - 1 || page) && (
+              <Pagination
+                // page={page}
                 totalPages={
                   filters.rating || filters.hasImages
-                    ? data.length / pageSize
-                    : 1 / pageSize
+                    ? data.reviews.length / pageSize + 1
+                    : 1 / pageSize + 1
                 }
-                setPage={setPage}
+                // setPage={setPage}
               />
-            )} */}
+            )}
           </>
         </div>
       )}
