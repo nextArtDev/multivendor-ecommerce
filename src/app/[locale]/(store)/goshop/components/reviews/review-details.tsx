@@ -11,10 +11,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import ReactStars from 'react-rating-stars-component'
+// import ReactStars from 'react-rating-stars-component'
 import { z } from 'zod'
-import Select from '@/components/ui/select'
-import Input from '@/components/ui/input'
+// import Select from '@/components/ui/select'
+// import Input from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { PulseLoader } from 'react-spinners'
 
@@ -27,6 +27,11 @@ import {
 } from '../../lib/queries/review'
 import { ReviewDetailsType } from '../../lib/actions/review'
 import { AddReviewSchema } from '../../lib/schemas/review'
+import { Rating } from '@/components/shared/rating'
+import { Select } from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+import { toast } from 'sonner'
+import InputFileUpload from '@/components/shared/InputFileUpload'
 
 export default function ReviewDetails({
   productId,
@@ -50,9 +55,6 @@ export default function ReviewDetails({
     variantsInfo[0]
   )
 
-  // Temporary state for images
-  const [images, setImages] = useState<{ url: string }[]>([])
-
   // State for sizes
   const [sizes, setSizes] = useState<{ name: string; value: string }[]>([])
 
@@ -63,12 +65,17 @@ export default function ReviewDetails({
     defaultValues: {
       // Setting default form values from data (if available)
       variantName: data?.variant || activeVariant.variantName,
-      variantImage: data?.variantImage || activeVariant.variantImage,
+      // variantImage: data?.variantImage || activeVariant.variantImage,
+      // variantImage: activeVariant?.variantImage
+      //   ? activeVariant.variantImage.map((image) => ({ url: image.url }))
+      //   : [],
       rating: data?.rating || 0,
       size: data?.size || '',
       review: data?.review || '',
       quantity: data?.quantity || undefined,
-      images: data?.images || [],
+      images: data?.images
+        ? data.images.map((image) => ({ url: image.url }))
+        : [],
       color: data?.color,
     },
   })
@@ -82,24 +89,24 @@ export default function ReviewDetails({
   // Submit handler for form submission
   const handleSubmit = async (values: z.infer<typeof AddReviewSchema>) => {
     try {
-      const response = await upsertReview(productId, {
-        id: data?.id || v4(),
-        variant: values.variantName,
-        variantImage: values.variantImage,
-        images: values.images,
-        quantity: values.quantity,
-        rating: values.rating,
-        review: values.review,
-        size: values.size,
-        color: values.color,
-      })
-      if (response.review.id) {
-        const rev = reviews.filter((rev) => rev.id !== response.review.id)
-        setReviews([...rev, response.review])
-        setStatistics(response.statistics)
-        setAverageRating(response.rating)
-        toast.success(response.message)
-      }
+      // const response = await upsertReview(productId, {
+      //   id: data?.id || v4(),
+      //   variant: values.variantName,
+      //   variantImage: values.variantImage,
+      //   images: values.images,
+      //   quantity: values.quantity,
+      //   rating: values.rating,
+      //   review: values.review,
+      //   size: values.size,
+      //   color: values.color,
+      // })
+      // if (response.review.id) {
+      //   const rev = reviews.filter((rev) => rev.id !== response.review.id)
+      //   setReviews([...rev, response.review])
+      //   setStatistics(response.statistics)
+      //   setAverageRating(response.rating)
+      //   toast.success(response.message)
+      // }
     } catch (error: any) {
       // Handling form submission errors
       toast.error(error.toString())
@@ -125,7 +132,7 @@ export default function ReviewDetails({
       setActiveVariant(variant)
       if (sizes) setSizes(sizes_data)
       form.setValue('color', variant.colors.map((c) => c.name).join(','))
-      form.setValue('variantImage', variant.variantImage)
+      // form.setValue('variantImage', variant.variantImage)
     }
   }, [form.getValues().variantName])
 
@@ -152,7 +159,7 @@ export default function ReviewDetails({
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center gap-x-2">
-                          <ReactStars
+                          {/* <ReactStars
                             count={5}
                             size={40}
                             color="#e2dfdf"
@@ -161,6 +168,19 @@ export default function ReviewDetails({
                             onChange={field.onChange}
                             isHalf
                             edit={true}
+                          /> */}
+                          <Rating
+                            value={field.value}
+                            onChange={field.onChange}
+                            allowHalf
+                            //  disabled={loading}
+                            tooltips={[
+                              'Poor',
+                              'Fair',
+                              'Good',
+                              'Very Good',
+                              'Excellent',
+                            ]}
                           />
                           <span>
                             ( {form.getValues().rating.toFixed(1)} out of 5.0)
@@ -243,12 +263,13 @@ export default function ReviewDetails({
                     </FormItem>
                   )}
                 />
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="images"
                   render={({ field }) => (
                     <FormItem className="w-full xl:border-r">
                       <FormControl>
+                      
                         <ImageUploadStore
                           value={field.value.map((image) => image.url)}
                           disabled={isLoading}
@@ -275,6 +296,12 @@ export default function ReviewDetails({
                       </FormControl>
                     </FormItem>
                   )}
+                /> */}
+                <InputFileUpload
+                  className="w-full"
+                  initialDataImages={data?.images || []}
+                  name="images"
+                  label="Images"
                 />
               </div>
               <div className="space-y-2 text-destructive">

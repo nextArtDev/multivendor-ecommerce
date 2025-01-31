@@ -29,6 +29,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import Pagination from '../pagination'
+import ReviewDetails from './review-details'
 
 const defaultData = {
   ratingStatistics: [
@@ -44,14 +45,14 @@ const defaultData = {
 interface Props {
   product: ProductDataType
   rating: number
-  // variant: Partial<ProductVariantDataType | undefined>
+  variant: Partial<ProductVariantDataType | undefined>
   numReviews: number
 }
 
 const ProductReviews: FC<Props> = ({
   product,
   rating,
-  // variant,
+  variant,
   numReviews,
 }) => {
   // const [loading, setLoading] = useState<boolean>(true)
@@ -206,16 +207,16 @@ const ProductReviews: FC<Props> = ({
           </>
         </div>
       )}
-      {/* <div className="mt-10">
+      <div className="mt-10">
         <ReviewDetails
-          productId={productId}
+          productId={product.id}
           variant={variant}
           setReviews={setData}
-          reviews={data}
+          reviews={data?.reviews}
           setStatistics={setStatistics}
           setAverageRating={setAverageRating}
         />
-      </div> */}
+      </div>
     </div>
   )
 }
