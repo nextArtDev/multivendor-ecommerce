@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Dispatch, FC, SetStateAction } from 'react'
 import { CartProductType, ProductVariantDataType } from '../../types'
+import { useQueryState } from 'nuqs'
 
 interface Props {
   variants: ProductVariantDataType[]
@@ -23,6 +24,7 @@ const ProductVariantSelector: FC<Props> = ({
   setSizeId,
   setVariant,
 }) => {
+  const [variantSlug, setVariantSlug] = useQueryState('variant')
   const pathname = usePathname()
   const { replace } = useRouter()
   const searchParams = useSearchParams()
@@ -30,7 +32,8 @@ const ProductVariantSelector: FC<Props> = ({
 
   const handleSelectVariant = (variant: ProductVariantDataType) => {
     if (variants.length === 1) return
-    setVariant(variant)
+    // setVariant(variant)
+    setVariantSlug(variant.slug)
     setActiveImage(variant.variantImage[0])
     if (variant.sizes.length === 1) {
       setSizeId(variant.sizes[0].id)
@@ -61,7 +64,9 @@ const ProductVariantSelector: FC<Props> = ({
             className={cn(
               'w-12 h-12 max-h-12 rounded-full grid place-items-center overflow-hidden outline-[1px] outline-transparent outline-dashed outline-offset-2 cursor-pointer transition-all duration-75 ease-in',
               {
-                'outline-main-primary': slug ? slug === variant.slug : i == 0,
+                'outline-main-primary': variantSlug
+                  ? variantSlug === variant.slug
+                  : i == 0,
               }
             )}
           >

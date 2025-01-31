@@ -17,6 +17,7 @@ import ProductSwiper from './product-swiper'
 import ProductInfo from './product-info'
 import ProductPageActions from './product-actions'
 import { isProductValidToAdd } from '../../lib/utils'
+import { useSearchParams } from 'next/navigation'
 
 // import { useCartStore } from '@/cart-store/useCartStore'
 // import useFromStore from '@/hooks/useFromStore'
@@ -36,6 +37,9 @@ const ProductPageContainer: FC<Props> = ({
   children,
   userCountry,
 }) => {
+  const searchParams = useSearchParams()
+  const variantSlugParam = searchParams.get('variant')
+
   const { id, slug, variants, images } = productData
 
   const [variant, setVariant] = useState<ProductVariantDataType>(
@@ -232,7 +236,12 @@ const ProductPageContainer: FC<Props> = ({
         <div className="w-full flex-1 max-w-md mx-auto">
           <ProductSwiper
             // images={variant.variantImage}
-            images={productData.images}
+            // images={productData.images}
+            images={
+              variant.variantImage.length > 0
+                ? variant.variantImage
+                : productData.images
+            }
             activeImage={activeImage || variant.variantImage[0]}
             setActiveImage={setActiveImage}
           />

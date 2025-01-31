@@ -85,7 +85,7 @@ const ProductReviews: FC<Props> = ({
 
   // // Pagination
   // const [page, setPage] = useState<number>(1)
-  const [pageSize, setPageSize] = useState<number>(2)
+  const [pageSize, setPageSize] = useState<number>(4)
 
   // useEffect(() => {
   //   if (filters.rating || filters.hasImages || sort) {
@@ -194,6 +194,7 @@ const ProductReviews: FC<Props> = ({
             {(data.reviews.length >= pageSize - 1 || page) && (
               <Pagination
                 // page={page}
+
                 totalPages={
                   filters.rating || filters.hasImages
                     ? data.reviews.length / pageSize + 1
