@@ -18,6 +18,7 @@ import ProductInfo from './product-info'
 import ProductPageActions from './product-actions'
 import { isProductValidToAdd } from '../../lib/utils'
 import { useSearchParams } from 'next/navigation'
+import { Rating } from '@/components/shared/rating'
 
 // import { useCartStore } from '@/cart-store/useCartStore'
 // import useFromStore from '@/hooks/useFromStore'

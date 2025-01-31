@@ -25,6 +25,7 @@ import ProductQuestions from '../../../components/product/product-questions'
 import StoreCard from '../../../components/store/store-card'
 import StoreProducts from '../../../components/product/store-products'
 import ProductReviews from '../../../components/reviews/product-reviews'
+import { Rating } from '@/components/shared/rating'
 
 export default async function ProductPage({
   params,

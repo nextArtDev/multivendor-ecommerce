@@ -18,13 +18,15 @@ import Input from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { PulseLoader } from 'react-spinners'
 
-import { upsertReview } from '@/queries/review'
+// import { upsertReview } from '@/queries/review'
 import { v4 } from 'uuid'
 import { ProductVariantDataType } from '../../types'
 import {
   RatingStatisticsType,
   ReviewWithImageType,
 } from '../../lib/queries/review'
+import { ReviewDetailsType } from '../../lib/actions/review'
+import { AddReviewSchema } from '../../lib/schemas/review'
 
 export default function ReviewDetails({
   productId,
