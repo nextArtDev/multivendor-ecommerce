@@ -437,15 +437,15 @@ model FreeShippingCity {
 }
 
 model Review {
-  id           String @id @default(uuid())
+  id           String  @id @default(uuid())
   variant      String
-  variantImage String
+  variantImage String?
   review       String
   rating       Float
   color        String
   size         String
   quantity     String
-  likes        Int    @default(0)
+  likes        Int     @default(0)
 
   images Image[]
 
