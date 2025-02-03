@@ -15,11 +15,11 @@ export type ReviewDetailsType = {
   id: string
   review: string
   rating: number
-  images: { url: string }[]
+  images: Image[]
   size: string
   quantity: string
   variant: string
-  variantImage: string
+  variantImage: Image[]
   color: string
 }
 

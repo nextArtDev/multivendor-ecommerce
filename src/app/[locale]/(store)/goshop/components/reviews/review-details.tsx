@@ -19,7 +19,6 @@ import { Button } from '@/components/ui/button'
 import { PulseLoader } from 'react-spinners'
 
 // import { upsertReview } from '@/queries/review'
-import { v4 } from 'uuid'
 import { ProductVariantDataType } from '../../types'
 import {
   RatingStatisticsType,
@@ -28,10 +27,10 @@ import {
 import { ReviewDetailsType } from '../../lib/actions/review'
 import { AddReviewSchema } from '../../lib/schemas/review'
 import { Rating } from '@/components/shared/rating'
-import { Select } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import InputFileUpload from '@/components/shared/InputFileUpload'
+import Select from '../select'
 
 export default function ReviewDetails({
   productId,
@@ -52,8 +51,9 @@ export default function ReviewDetails({
 }) {
   // State for selected Variant
   const [activeVariant, setActiveVariant] = useState<ProductVariantDataType>(
-    variantsInfo[0]
+    variantsInfo?.[0]
   )
+  // console.log({ variantsInfo })
 
   // State for sizes
   const [sizes, setSizes] = useState<{ name: string; value: string }[]>([])
@@ -64,9 +64,10 @@ export default function ReviewDetails({
     resolver: zodResolver(AddReviewSchema), // Resolver for form validation
     defaultValues: {
       // Setting default form values from data (if available)
-      variantName: data?.variant || activeVariant.variantName,
-      // variantImage: data?.variantImage || activeVariant.variantImage,
-      // variantImage: activeVariant?.variantImage
+      variantName: data?.variant || activeVariant?.variantName,
+      variantImage:
+        data?.variantImage?.[0]?.url || activeVariant?.variantImage?.[0].url,
+      // variantImage: activeVariant?.variantImage,
       //   ? activeVariant.variantImage.map((image) => ({ url: image.url }))
       //   : [],
       rating: data?.rating || 0,
@@ -88,6 +89,7 @@ export default function ReviewDetails({
 
   // Submit handler for form submission
   const handleSubmit = async (values: z.infer<typeof AddReviewSchema>) => {
+    // console.log({ values })
     try {
       // const response = await upsertReview(productId, {
       //   id: data?.id || v4(),
@@ -113,17 +115,17 @@ export default function ReviewDetails({
     }
   }
 
-  const variants = variantsInfo.map((v) => ({
+  const variants = variantsInfo?.map((v) => ({
     name: v.variantName,
     value: v.variantName,
-    image: v.variantImage,
+    image: v.variantImage[0],
     colors: v.colors.map((c) => c.name).join(','),
   }))
 
   useEffect(() => {
     form.setValue('size', '')
     const name = form.getValues().variantName
-    const variant = variantsInfo.find((v) => v.variantName === name)
+    const variant = variantsInfo?.find((v) => v.variantName === name)
     if (variant) {
       const sizes_data = variant.sizes.map((s) => ({
         name: s.size,
@@ -132,7 +134,7 @@ export default function ReviewDetails({
       setActiveVariant(variant)
       if (sizes) setSizes(sizes_data)
       form.setValue('color', variant.colors.map((c) => c.name).join(','))
-      // form.setValue('variantImage', variant.variantImage)
+      form.setValue('variantImage', variant.variantImage?.[0].url)
     }
   }, [form.getValues().variantName])
 
@@ -159,16 +161,6 @@ export default function ReviewDetails({
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center gap-x-2">
-                          {/* <ReactStars
-                            count={5}
-                            size={40}
-                            color="#e2dfdf"
-                            activeColor="#FFD804"
-                            value={field.value}
-                            onChange={field.onChange}
-                            isHalf
-                            edit={true}
-                          /> */}
                           <Rating
                             value={field.value}
                             onChange={field.onChange}

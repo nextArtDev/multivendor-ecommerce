@@ -33,7 +33,7 @@ const imageSchema = z
 
 export const AddReviewSchema = z.object({
   variantName: z.string().min(1, 'Variant is required.'),
-  //   variantImage: z.string().min(1, 'Variant image is required.'),
+  variantImage: z.string().min(1, 'Variant image is required.'),
   rating: z.number().min(1, 'Please rate this product.'),
   size: z.string().min(1, 'Please select a size.'), // Ensures size cannot be empty
   review: z

@@ -210,10 +210,10 @@ const ProductReviews: FC<Props> = ({
       <div className="mt-10">
         <ReviewDetails
           productId={product.id}
-          variant={variant}
-          setReviews={setData}
+          variantsInfo={variant}
+          // setStatistics={setStatistics}
+          // setReviews={setData}
           reviews={data?.reviews}
-          setStatistics={setStatistics}
           setAverageRating={setAverageRating}
         />
       </div>
