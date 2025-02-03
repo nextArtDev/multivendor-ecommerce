@@ -45,7 +45,7 @@ const defaultData = {
 interface Props {
   product: ProductDataType
   rating: number
-  variant: Partial<ProductVariantDataType | undefined>
+  variant: ProductVariantDataType[]
   numReviews: number
 }
 
@@ -110,8 +110,7 @@ const ProductReviews: FC<Props> = ({
       ),
   })
 
-  // console.log({ data })
-  // if (!data)
+  // console.log({ variant })
   //   return (
   //     <>
   //       <ProductPageReviewsSkeletonLoader numReviews={numReviews} />

@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
-import Image from 'next/image'
+import { Image } from '@prisma/client'
+import NextImage from 'next/image'
 import { FC, useState } from 'react'
 
 interface Props {
@@ -8,7 +9,7 @@ interface Props {
   placeholder?: string
   subPlaceholder?: string
   onChange: (value: string) => void
-  options: { name: string; value: string; image?: string; colors?: string }[]
+  options: { name: string; value: string; image?: Image; colors?: string }[]
 }
 
 const Select: FC<Props> = ({
@@ -40,8 +41,8 @@ const Select: FC<Props> = ({
       <div>
         <div className="relative">
           {activeVariant?.image && (
-            <Image
-              src={activeVariant.image}
+            <NextImage
+              src={activeVariant.image.url}
               alt=""
               height={50}
               width={50}
@@ -78,8 +79,8 @@ const Select: FC<Props> = ({
                 onMouseDown={() => handleOptionClick(option.value)}
               >
                 {option.image && (
-                  <Image
-                    src={option.image}
+                  <NextImage
+                    src={option.image.url}
                     alt=""
                     width={100}
                     height={100}

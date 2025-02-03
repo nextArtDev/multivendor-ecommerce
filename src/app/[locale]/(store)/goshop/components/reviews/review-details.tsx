@@ -89,7 +89,7 @@ export default function ReviewDetails({
 
   // Submit handler for form submission
   const handleSubmit = async (values: z.infer<typeof AddReviewSchema>) => {
-    // console.log({ values })
+    console.log({ values })
     try {
       // const response = await upsertReview(productId, {
       //   id: data?.id || v4(),
