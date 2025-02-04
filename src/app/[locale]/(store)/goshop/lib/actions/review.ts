@@ -49,7 +49,9 @@ export async function createReview(
 
   const result = AddReviewSchema.safeParse({
     review: formData.get('review'),
-    rating: formData.get('rating'),
+    variantName: formData.get('variantName'),
+    variantImage: formData.get('variantImage'),
+    rating: Number(formData.get('rating')),
     variant: formData.get('variant'),
     color: formData.get('color'),
     size: formData.get('size'),
@@ -63,7 +65,7 @@ export async function createReview(
       errors: result.error.flatten().fieldErrors,
     }
   }
-
+  console.log(result.data)
   if (!productId) {
     return {
       errors: {
@@ -147,7 +149,7 @@ export async function createReview(
     }
   }
   revalidatePath(path)
-  redirect(`/${locale}/goshop/product/${productId}`)
+  redirect(`/${locale}/${path}`)
 }
 interface EditReviewFormState {
   errors: {

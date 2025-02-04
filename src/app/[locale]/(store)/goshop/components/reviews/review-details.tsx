@@ -8,7 +8,13 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 //   ReviewWithImageType,
 // } from "@/lib/types";
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  startTransition,
+  useEffect,
+  useState,
+} from 'react'
 import { useForm } from 'react-hook-form'
 
 // import ReactStars from 'react-rating-stars-component'
@@ -24,13 +30,14 @@ import {
   RatingStatisticsType,
   ReviewWithImageType,
 } from '../../lib/queries/review'
-import { ReviewDetailsType } from '../../lib/actions/review'
+import { createReview, ReviewDetailsType } from '../../lib/actions/review'
 import { AddReviewSchema } from '../../lib/schemas/review'
 import { Rating } from '@/components/shared/rating'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import InputFileUpload from '@/components/shared/InputFileUpload'
 import Select from '../select'
+import { usePathname } from '@/navigation'
 
 export default function ReviewDetails({
   productId,
@@ -53,6 +60,7 @@ export default function ReviewDetails({
   const [activeVariant, setActiveVariant] = useState<ProductVariantDataType>(
     variantsInfo?.[0]
   )
+  const path = usePathname()
   // console.log({ variantsInfo })
 
   // State for sizes
@@ -88,33 +96,186 @@ export default function ReviewDetails({
   const errors = form.formState.errors
 
   // Submit handler for form submission
-  const handleSubmit = async (values: z.infer<typeof AddReviewSchema>) => {
-    console.log({ values })
+  const handleSubmit = async (data: z.infer<typeof AddReviewSchema>) => {
+    console.log({ data })
+    const formData = new FormData()
+
+    formData.append('variant', data.variantName)
+    formData.append('variantName', data.variantName)
+    formData.append('variantImage', data.variantImage)
+    formData.append('quantity', data.quantity)
+    formData.append('rating', data.rating.toString())
+    formData.append('review', data.review)
+    formData.append('size', data.size)
+    formData.append('color', data.color)
+    if (data.images && data.images.length > 0) {
+      for (let i = 0; i < data.images.length; i++) {
+        formData.append('images', data.images[i] as string | Blob)
+      }
+    }
+    // console.log({ values })
+
     try {
-      // const response = await upsertReview(productId, {
-      //   id: data?.id || v4(),
-      //   variant: values.variantName,
-      //   variantImage: values.variantImage,
-      //   images: values.images,
-      //   quantity: values.quantity,
-      //   rating: values.rating,
-      //   review: values.review,
-      //   size: values.size,
-      //   color: values.color,
-      // })
-      // if (response.review.id) {
-      //   const rev = reviews.filter((rev) => rev.id !== response.review.id)
-      //   setReviews([...rev, response.review])
-      //   setStatistics(response.statistics)
-      //   setAverageRating(response.rating)
-      //   toast.success(response.message)
+      // if (data) {
+      //   // startTransition(async () => {
+      //   //   try {
+      //   //     const res = await createReview(
+      //   //       formData,
+      //   //       data.id as string,
+      //   //       path
+      //   //     )
+      //   //     if (res?.errors?.name) {
+      //   //       form.setError('name', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.name?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?.name_fa) {
+      //   //       form.setError('name_fa', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.name_fa?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?.description) {
+      //   //       form.setError('description', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.description?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?.description_fa) {
+      //   //       form.setError('description_fa', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.description_fa?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?.email) {
+      //   //       form.setError('email', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.email?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?.phone) {
+      //   //       form.setError('phone', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.phone?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?.url) {
+      //   //       form.setError('url', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.url?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?.status) {
+      //   //       form.setError('status', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.status?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?.featured) {
+      //   //       form.setError('featured', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.featured?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?.cover) {
+      //   //       form.setError('cover', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.cover?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?.logo) {
+      //   //       form.setError('logo', {
+      //   //         type: 'custom',
+      //   //         message: res?.errors.logo?.join(' و '),
+      //   //       })
+      //   //     } else if (res?.errors?._form) {
+      //   //       toast.error(res?.errors._form?.join(' و '))
+      //   //     }
+      //   //   } catch (error) {
+      //   //     // This will catch the NEXT_REDIRECT error, which is expected
+      //   //     // when the redirect happens
+      //   //     if (
+      //   //       !(
+      //   //         error instanceof Error &&
+      //   //         error.message.includes('NEXT_REDIRECT')
+      //   //       )
+      //   //     ) {
+      //   //       toast.error('مشکلی پیش آمده.')
+      //   //     }
+      //   //   }
+      //   // })
+      // } else {
+      startTransition(async () => {
+        try {
+          const res = await createReview(formData, productId, path)
+          if (res?.errors?.variantImage) {
+            form.setError('variantImage', {
+              type: 'custom',
+              message: res?.errors.variantImage?.join(' و '),
+            })
+          } else if (res?.errors?.quantity) {
+            form.setError('quantity', {
+              type: 'custom',
+              message: res?.errors.quantity?.join(' و '),
+            })
+          } else if (res?.errors?.rating) {
+            form.setError('rating', {
+              type: 'custom',
+              message: res?.errors.rating?.join(' و '),
+            })
+          } else if (res?.errors?.review) {
+            form.setError('review', {
+              type: 'custom',
+              message: res?.errors.review?.join(' و '),
+            })
+          } else if (res?.errors?.size) {
+            form.setError('size', {
+              type: 'custom',
+              message: res?.errors.size?.join(' و '),
+            })
+          } else if (res?.errors?.color) {
+            form.setError('color', {
+              type: 'custom',
+              message: res?.errors.color?.join(' و '),
+            })
+          } else if (res?.errors?.images) {
+            form.setError('images', {
+              type: 'custom',
+              message: res?.errors.images?.join(' و '),
+            })
+          } else if (res?.errors?._form) {
+            toast.error(res?.errors._form?.join(' و '))
+          }
+        } catch (error) {
+          // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
+          if (
+            !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
+          ) {
+            toast.error('مشکلی پیش آمده.')
+          }
+        }
+      })
       // }
-    } catch (error: any) {
-      // Handling form submission errors
-      toast.error(error.toString())
+    } catch {
+      toast.error('مشکلی پیش آمده، لطفا دوباره امتحان کنید!')
     }
   }
 
+  // const response = await upsertReview(productId, {
+  //   id: data?.id || v4(),
+  //   variant: values.variantName,
+  //   variantImage: values.variantImage,
+  //   images: values.images,
+  //   quantity: values.quantity,
+  //   rating: values.rating,
+  //   review: values.review,
+  //   size: values.size,
+  //   color: values.color,
+  // })
+  // if (response.review.id) {
+  //   const rev = reviews.filter((rev) => rev.id !== response.review.id)
+  //   setReviews([...rev, response.review])
+  //   setStatistics(response.statistics)
+  //   setAverageRating(response.rating)
+  //   toast.success(response.message)
+  // }
+
+  // } catch (error: any) {
+  //   // Handling form submission errors
+  //   toast.error(error.toString())
+  // }
+  // }
   const variants = variantsInfo?.map((v) => ({
     name: v.variantName,
     value: v.variantName,
