@@ -1,6 +1,6 @@
 // React,Next.js
 import { ReactNode } from 'react'
-import { redirect } from 'next/navigation'
+import { redirect } from '@/navigation'
 
 import Sidebar from '@/components/dashboard/sidebar/sidebar'
 import { currentUser } from '@/lib/auth'

@@ -50,10 +50,12 @@
 // import { retrieveProductDetailsOptimized } from "@/queries/product-optimized";
 
 import {
+  Color,
   Image,
   Prisma,
   Question,
   ShippingFeeMethod,
+  Size,
   Spec,
 } from '@prisma/client'
 import { getAllStoreProducts } from './queries/dashboard/products'
@@ -91,14 +93,16 @@ export type ProductWithVariantType = {
   brand: string
   sku: string
   weight: number
-  colors: { id?: string; color: string }[]
-  sizes: {
-    id?: string
-    size: string
-    quantity: number
-    price: number
-    discount: number
-  }[]
+  // colors: { id?: string; color: string }[]
+  // sizes: {
+  //   id?: string
+  //   size: string
+  //   quantity: number
+  //   price: number
+  //   discount: number
+  // }[]
+  colors: Partial<Color[]>
+  sizes: Partial<Size[]>
   product_specs: Partial<Spec[]>
   variant_specs: Partial<Spec[]>
   keywords: string[]

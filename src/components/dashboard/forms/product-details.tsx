@@ -119,8 +119,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
   countries,
   // subCategories,
 }) => {
-  // console.log(data.cover.flatMap((cover) => cover.url))
-  // console.log(data.logo.url)
+  // console.log(data?.colors)
 
   const path = usePathname()
 
@@ -143,8 +142,17 @@ const ProductDetails: FC<ProductDetailProps> = ({
   )
 
   // State for colors
-  const [colors, setColors] = useState<{ color: string }[]>(
-    data?.colors || [{ color: '' }]
+  // const [colors, setColors] = useState<{ color: string }[]>(
+  //   data?.colors || [{ color: '' }]
+  // )
+  const [colors, setColors] = useState<{ name: string }[]>(
+    data?.colors
+      ? data.colors
+          .filter(
+            (color): color is NonNullable<typeof color> => color !== undefined
+          )
+          .map(({ name }) => ({ name }))
+      : [{ name: '' }]
   )
 
   // Temporary state for images
@@ -153,22 +161,79 @@ const ProductDetails: FC<ProductDetailProps> = ({
   // State for sizes
   const [sizes, setSizes] = useState<
     { size: string; price: number; quantity: number; discount: number }[]
-  >(data?.sizes || [{ size: '', quantity: 1, price: 0.01, discount: 0 }])
+  >(
+    data?.sizes
+      ? data.sizes
+          .filter(
+            (size): size is NonNullable<typeof size> => size !== undefined
+          )
+          .map(({ size, price, quantity, discount }) => ({
+            size,
+            price,
+            quantity,
+            discount,
+          }))
+      : [{ size: '', quantity: 1, price: 0.01, discount: 0 }]
+  )
 
   // State for product specs
+  // const [productSpecs, setProductSpecs] = useState<
+  //   { name: string; value: string }[]
+  // >(data?.product_specs || [{ name: '', value: '' }])
   const [productSpecs, setProductSpecs] = useState<
     { name: string; value: string }[]
-  >(data?.product_specs || [{ name: '', value: '' }])
+  >(
+    data?.product_specs
+      ? data?.product_specs
+          .filter(
+            (
+              product_specs
+            ): product_specs is NonNullable<typeof product_specs> =>
+              product_specs !== undefined
+          )
+          .map(({ name, value }) => ({ name, value }))
+      : [{ name: '', value: '' }]
+  )
 
   // State for product variant specs
+  // const [variantSpecs, setVariantSpecs] = useState<
+  //   { name: string; value: string }[]
+  // >(data?.variantSpecs, setVariantSpecs || [{ name: '', value: '' }])
   const [variantSpecs, setVariantSpecs] = useState<
     { name: string; value: string }[]
-  >(data?.variant_specs || [{ name: '', value: '' }])
+  >(
+    data?.variant_specs
+      ? data?.variant_specs
+          .filter(
+            (
+              variant_specs
+            ): variant_specs is NonNullable<typeof variant_specs> =>
+              variant_specs !== undefined
+          )
+          .map(({ name, value }) => ({ name, value }))
+      : [{ name: '', value: '' }]
+  )
 
   // State for product variant specs
+  // const [questions, setQuestions] = useState<
+  //   { question: string; answer: string }[]
+  // >(data?.questions || [{ question: '', answer: '' }])
+
   const [questions, setQuestions] = useState<
     { question: string; answer: string }[]
-  >(data?.questions || [{ question: '', answer: '' }])
+  >(
+    data?.questions
+      ? data.questions
+          .filter(
+            (questions): questions is NonNullable<typeof questions> =>
+              questions !== undefined
+          )
+          .map(({ question, answer }) => ({
+            question,
+            answer,
+          }))
+      : [{ question: '', answer: '' }]
+  )
 
   const form = useForm<z.infer<typeof ProductFormSchema>>({
     resolver: zodResolver(ProductFormSchema),
@@ -263,7 +328,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
   const handleSubmit = async (data: z.infer<typeof ProductFormSchema>) => {
     const formData = new FormData()
 
-    console.log({ data })
+    // console.log({ data })
     formData.append('name', data.name)
     formData.append('description', data.description)
     formData.append('variantName', data.variantName)
@@ -280,10 +345,17 @@ const ProductDetails: FC<ProductDetailProps> = ({
     if (data.isSale) {
       formData.append('isSale', 'true')
     }
-    formData.append(
-      'saleEndDate',
+    const saleEndDate =
       data?.saleEndDate || new Date(new Date().setHours(0, 0, 0, 0))
-    )
+
+    const saleEndDateString =
+      saleEndDate instanceof Date ? saleEndDate.toISOString() : saleEndDate
+    // formData.append(
+    //   'saleEndDate',
+    //   data?.saleEndDate || new Date(new Date().setHours(0, 0, 0, 0))
+    // )
+    formData.append('saleEndDate', saleEndDateString)
+
     formData.append('brand', data.brand || '')
     formData.append('sku', data.sku || '')
 
