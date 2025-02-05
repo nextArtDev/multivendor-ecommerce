@@ -811,7 +811,15 @@ const ProductDetails: FC<ProductDetailProps> = ({
                 />
                 <div className="w-full flex flex-col gap-y-3 xl:pl-5">
                   <ClickToAddInputs
-                    details={data?.colors || colors}
+                    details={
+                      // data?.colors?.map((color) => {
+                      //   return { color: color?.name }
+                      // }) || colors
+                      data?.colors
+                        ?.map((color) => color?.name)
+                        .filter((name): name is string => !!name)
+                        .map((name) => ({ color: name })) || colors
+                    }
                     setDetails={setColors}
                     initialDetail={{ color: '' }}
                     header="Colors"

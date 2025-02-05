@@ -343,8 +343,8 @@ export async function createProduct(
       }
     }
   }
-  // revalidatePath(path)
-  // redirect(`/${locale}/dashboard/seller/products`)
+  revalidatePath(path)
+  redirect(`/${locale}/dashboard/seller/products`)
 }
 interface EditProductFormState {
   errors: {
