@@ -145,14 +145,14 @@ const ProductDetails: FC<ProductDetailProps> = ({
   // const [colors, setColors] = useState<{ color: string }[]>(
   //   data?.colors || [{ color: '' }]
   // )
-  const [colors, setColors] = useState<{ name: string }[]>(
+  const [colors, setColors] = useState<{ color: string }[]>(
     data?.colors
       ? data.colors
           .filter(
             (color): color is NonNullable<typeof color> => color !== undefined
           )
-          .map(({ name }) => ({ name }))
-      : [{ name: '' }]
+          .map(({ name }) => ({ color: name }))
+      : [{ color: '' }]
   )
 
   // Temporary state for images
@@ -173,7 +173,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
             quantity,
             discount,
           }))
-      : [{ size: '', quantity: 1, price: 0.01, discount: 0 }]
+      : [{ size: '', quantity: 1, price: 1000, discount: 0 }]
   )
 
   // State for product specs
@@ -253,7 +253,12 @@ const ProductDetails: FC<ProductDetailProps> = ({
       subCategoryId: data?.subCategoryId,
       brand: data?.brand,
       sku: data?.sku,
-      colors: data?.colors,
+      // colors: data?.colors,
+      colors: data?.colors?.map((clr) => {
+        return {
+          color: clr?.name,
+        }
+      }),
       sizes: data?.sizes,
       product_specs: data?.product_specs,
       variant_specs: data?.variant_specs,
@@ -309,7 +314,11 @@ const ProductDetails: FC<ProductDetailProps> = ({
         subCategoryId: data?.subCategoryId,
         brand: data?.brand,
         sku: data?.sku,
-        colors: data?.colors,
+        colors: data?.colors?.map((clr) => {
+          return {
+            color: clr?.name,
+          }
+        }),
         sizes: data?.sizes,
         product_specs: data?.product_specs,
         variant_specs: data?.variant_specs,
@@ -416,6 +425,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
         formData.append('sizes', JSON.stringify(size))
       })
     }
+
     if (data.colors && data.colors.length > 0) {
       data.colors.forEach((color) => {
         formData.append('colors', JSON.stringify(color))
@@ -749,7 +759,10 @@ const ProductDetails: FC<ProductDetailProps> = ({
   // console.log(form.watch().keywords)
   // console.log('form sizes', form.watch().sizes)
   // console.log('form colors', form.watch().colors)
-  // console.log('form images', form.watch().images)
+  // console.log(
+  //   'form colors',
+  //   form.watch().colors?.map((clr) => clr.color)
+  // )
   // console.log('saleEndDate', form.watch().saleEndDate)
   // console.log('form description', form.watch().product_specs)
   // console.log('form description', form.watch().variant_specs)
