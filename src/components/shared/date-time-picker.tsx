@@ -1,11 +1,12 @@
 'use client'
 //https://time.openstatus.dev/
 import { CalendarIcon } from '@radix-ui/react-icons'
-import { format } from 'date-fns'
+// import { format } from 'date-fns'
+import { format } from 'date-fns-jalali'
 import { useFormContext } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { Calendar } from '@/components/ui/calendar-fa'
 import {
   FormControl,
   FormField,
