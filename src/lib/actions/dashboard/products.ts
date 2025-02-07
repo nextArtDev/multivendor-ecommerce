@@ -11,6 +11,7 @@ import {
   Question,
   Size,
   Spec,
+  Wishlist,
 } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -384,20 +385,42 @@ export async function editProduct(
 ): Promise<EditProductFormState> {
   const result = ProductFormSchema.safeParse({
     name: formData.get('name'),
-    name_fa: formData.get('name_fa'),
     description: formData.get('description'),
+    variantName: formData.get('variantName'),
+    variantDescription: formData.get('variantDescription'),
+    name_fa: formData.get('name_fa'),
     description_fa: formData.get('description_fa'),
-    phone: formData.get('phone'),
-    email: formData.get('email'),
-    url: formData.get('url'),
-    featured: Boolean(formData.get('featured')),
-
-    logo: formData.getAll('logo'),
-    cover: formData.getAll('cover'),
+    variantName_fa: formData.get('variantName_fa'),
+    variantDescription_fa: formData.get('variantDescription_fa'),
+    categoryId: formData.get('categoryId'),
+    subCategoryId: formData.get('subCategoryId'),
+    offerTagId: formData.get('offerTagId'),
+    isSale: Boolean(formData.get('isSale')),
+    saleEndDate: formData.get('saleEndDate'),
+    brand: formData.get('brand'),
+    sku: formData.get('sku'),
+    weight: Number(formData.get('weight')),
+    keywords: formData.getAll('keywords'),
+    product_specs: formData
+      .getAll('product_specs')
+      .map((product_spec) => JSON.parse(product_spec.toString())),
+    variant_specs: formData
+      .getAll('variant_specs')
+      .map((variant_spec) => JSON.parse(variant_spec.toString())),
+    questions: formData
+      .getAll('questions')
+      .map((question) => JSON.parse(question.toString())),
+    sizes: formData.getAll('sizes').map((size) => JSON.parse(size.toString())),
+    colors: formData
+      .getAll('colors')
+      .map((size) => JSON.parse(size.toString())),
+    shippingFeeMethod: formData.get('shippingFeeMethod'),
+    freeShippingForAllCountries: Boolean(
+      formData.get('freeShippingForAllCountries')
+    ),
+    images: formData.getAll('images'),
+    variantImage: formData.getAll('variantImage'),
   })
-
-  // console.log(result)
-  // console.log(formData.getAll('images'))
 
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
@@ -922,6 +945,195 @@ export const createVariant = async ({
       await prisma.size.createMany({
         data: newSizes,
       })
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const editVariant = async ({
+  variantId,
+  productId,
+  name,
+  description,
+  name_fa,
+  description_fa,
+  saleEndDate,
+  sku,
+  keywords,
+  keywords_fa,
+  weight,
+  isSale,
+  specs,
+  images,
+  sizes,
+  colors,
+}: CreateVariantProps) => {
+  if (!variantId || productId) {
+    return {
+      errors: {
+        _form: ['محصول حذف شده است!'],
+      },
+    }
+  }
+
+  const isExistingVariant:
+    | (ProductVariant & { variantImage: Image[] | null } & {
+        sizes: Size[] | null
+      } & { colors: Color[] | null } & { specs: Spec[] | null } & {
+        wishlist: Wishlist[] | null
+      })
+    | null = await prisma.productVariant.findFirst({
+    where: {
+      id: variantId,
+    },
+    include: {
+      colors: true,
+      sizes: true,
+      specs: true,
+      variantImage: true,
+      wishlist: true,
+    },
+  })
+  try {
+    // const variantImageIds: string[] = []
+    // for (const img of images || []) {
+    //   if (img instanceof File) {
+    //     const buffer = Buffer.from(await img.arrayBuffer())
+    //     const res = await uploadFileToS3(buffer, img.name)
+
+    //     if (res?.imageId && typeof res.imageId === 'string') {
+    //       variantImageIds.push(res.imageId)
+    //     }
+    //   }
+    // }
+    if (typeof images?.[0] === 'object' && images[0] instanceof File) {
+      const imageIds: string[] = []
+      for (const img of images) {
+        if (img instanceof File) {
+          const buffer = Buffer.from(await img.arrayBuffer())
+          const res = await uploadFileToS3(buffer, img.name)
+
+          if (res?.imageId && typeof res.imageId === 'string') {
+            imageIds.push(res.imageId)
+          }
+        }
+      }
+      // console.log(res)
+      await prisma.productVariant.update({
+        where: {
+          id: variantId,
+        },
+        data: {
+          variantImage: {
+            disconnect: isExistingVariant.variantImage?.map(
+              (image: { id: string }) => ({
+                id: image.id,
+              })
+            ),
+          },
+        },
+      })
+      await prisma.productVariant.update({
+        where: {
+          id: variantId,
+        },
+        data: {
+          variantImage: {
+            connect: imageIds.map((id) => ({
+              id: id,
+            })),
+          },
+        },
+      })
+    } else {
+      const imagesIds: string[] = []
+      for (const img of images || []) {
+        if (img instanceof File) {
+          const buffer = Buffer.from(await img.arrayBuffer())
+          const res = await uploadFileToS3(buffer, img.name)
+
+          if (res?.imageId && typeof res.imageId === 'string') {
+            imagesIds.push(res.imageId)
+          }
+        }
+      }
+      const variantSlug = await generateUniqueSlug(
+        slugify(name, {
+          replacement: '-',
+          lower: true,
+          trim: true,
+        }),
+        'productVariant'
+      )
+
+      const variant = await prisma.productVariant.update({
+        where: { id: variantId, productId },
+        data: {
+          productId,
+          slug: variantSlug,
+          variantName: name,
+          variantDescription: description,
+          variantName_fa: name_fa,
+          variantDescription_fa: description_fa,
+          saleEndDate: String(saleEndDate),
+          sku: sku ? sku : '',
+          keywords: keywords?.length ? keywords?.join(',') : '',
+          keywords_fa: keywords_fa?.length ? keywords_fa?.join(',') : '',
+          weight: weight ? +weight : 0,
+          isSale,
+          variantImage: {
+            connect: imagesIds.map((id) => ({
+              id: id,
+            })),
+          },
+        },
+      })
+
+      let newVariantSpecs
+      if (specs) {
+        newVariantSpecs = specs.map((spec) => ({
+          name: spec.name,
+          value: spec.value,
+          variantId: variant.id,
+        }))
+      }
+
+      if (newVariantSpecs) {
+        await prisma.spec.createMany({
+          data: newVariantSpecs,
+        })
+      }
+
+      let newColors
+      if (colors) {
+        newColors = colors.map((color) => ({
+          name: color.color,
+          productVariantId: variant.id,
+        }))
+      }
+
+      if (newColors) {
+        await prisma.color.createMany({
+          data: newColors,
+        })
+      }
+      //  new Size
+      let newSizes
+      if (sizes) {
+        newSizes = sizes.map((size) => ({
+          size: size.size,
+          quantity: size.quantity,
+          price: size.price,
+          discount: size.discount,
+          productVariantId: variant.id,
+        }))
+      }
+
+      if (newSizes) {
+        await prisma.size.createMany({
+          data: newSizes,
+        })
+      }
     }
   } catch (error) {
     console.log(error)
