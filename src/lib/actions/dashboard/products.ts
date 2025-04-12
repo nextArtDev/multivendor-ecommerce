@@ -320,8 +320,8 @@ export async function createProduct(
     //         id: id,
     //       }))[0],
     //     },
-    //     cover: {
-    //       connect: coverIds.map((id) => ({
+    //     images: {
+    //       connect: imagesIds.map((id) => ({
     //         id: id,
     //       })),
     //     },
@@ -383,6 +383,8 @@ export async function editProduct(
   productId: string,
   path: string
 ): Promise<EditProductFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
   const result = ProductFormSchema.safeParse({
     name: formData.get('name'),
     description: formData.get('description'),
@@ -444,7 +446,7 @@ export async function editProduct(
   if (!productId) {
     return {
       errors: {
-        _form: ['فروشگاه در دسترس نیست!'],
+        _form: ['محصول موجود نیست!'],
       },
     }
   }
@@ -453,35 +455,27 @@ export async function editProduct(
   try {
     const isExisting:
       | (Product & {
-          cover: { id: string; key: string }[] | null
-          logo: Image | null
+          images: { id: string; key: string }[] | null
         })
       | null = await prisma.product.findFirst({
       where: { id: productId },
       include: {
-        cover: { select: { id: true, key: true } },
-        logo: true,
+        images: { select: { id: true, key: true } },
       },
     })
     if (!isExisting) {
       return {
         errors: {
-          _form: ['فروشگاه حذف شده است!'],
+          _form: ['محصول حذف شده است!'],
         },
       }
     }
-    const featured = result.data.featured == true ? true : false
+
     const isNameExisting = await prisma.product.findFirst({
       where: {
         AND: [
           {
-            OR: [
-              { name: result.data.name },
-              { name_fa: result.data?.name_fa },
-              { email: result.data.email },
-              { phone: result.data.phone },
-              { url: result.data.url },
-            ],
+            OR: [{ name: result.data.name }],
           },
           {
             NOT: {
@@ -492,27 +486,10 @@ export async function editProduct(
       },
     })
 
-    // if (isNameExisting) {
-    //   return {
-    //     errors: {
-    //       _form: ['فروشگاه با این نام موجود است!'],
-    //     },
-    //   }
-    // }
     if (isNameExisting) {
-      let errorMessage = ''
-      if (isNameExisting.name === result.data.name) {
-        errorMessage = 'A product with the same name already exists'
-      } else if (isNameExisting.email === result.data.email) {
-        errorMessage = 'A product with the same email already exists'
-      } else if (isNameExisting.phone === result.data.phone) {
-        errorMessage = 'A product with the same phone number already exists'
-      } else if (isNameExisting.url === result.data.url) {
-        errorMessage = 'A product with the same URL already exists'
-      }
       return {
         errors: {
-          _form: [errorMessage],
+          _form: ['محصول با این نام موجود است!'],
         },
       }
     }
@@ -520,11 +497,11 @@ export async function editProduct(
     // console.log(isExisting)
     // console.log(billboard)
     if (
-      typeof result.data.cover?.[0] === 'object' &&
-      result.data?.cover[0] instanceof File
+      typeof result.data.images?.[0] === 'object' &&
+      result.data?.images[0] instanceof File
     ) {
       const imageIds: string[] = []
-      for (const img of result.data?.cover) {
+      for (const img of result.data?.images) {
         if (img instanceof File) {
           const buffer = Buffer.from(await img.arrayBuffer())
           const res = await uploadFileToS3(buffer, img.name)
@@ -540,8 +517,8 @@ export async function editProduct(
           id: productId,
         },
         data: {
-          cover: {
-            disconnect: isExisting.cover?.map((image: { id: string }) => ({
+          images: {
+            disconnect: isExisting.images?.map((image: { id: string }) => ({
               id: image.id,
             })),
           },
@@ -552,7 +529,7 @@ export async function editProduct(
           id: productId,
         },
         data: {
-          cover: {
+          images: {
             connect: imageIds.map((id) => ({
               id: id,
             })),
@@ -560,61 +537,23 @@ export async function editProduct(
         },
       })
     }
-    if (
-      typeof result.data.logo?.[0] === 'object' &&
-      result.data?.logo[0] instanceof File
-    ) {
-      const imageIds: string[] = []
-      for (const img of result.data?.logo) {
-        if (img instanceof File) {
-          const buffer = Buffer.from(await img.arrayBuffer())
-          const res = await uploadFileToS3(buffer, img.name)
 
-          if (res?.imageId && typeof res.imageId === 'string') {
-            imageIds.push(res.imageId)
-          }
-        }
-      }
-      await prisma.product.update({
-        where: {
-          id: productId,
-        },
-        data: {
-          logo: {
-            disconnect: isExisting.cover?.map((image: { id: string }) => ({
-              id: image.id,
-            }))[0],
-          },
-        },
-      })
-
-      await prisma.product.update({
-        where: {
-          id: productId,
-        },
-        data: {
-          logo: {
-            connect: imageIds.map((id) => ({
-              id: id,
-            }))[0],
-          },
-        },
-      })
-    }
     await prisma.product.update({
       where: {
         id: productId,
       },
       data: {
+        categoryId: result.data.categoryId,
+        subCategoryId: result.data.subCategoryId,
         name: result.data.name,
-        userId: session.user.id,
-        name_fa: result.data?.name_fa,
         description: result.data.description,
+        name_fa: result.data?.name_fa,
         description_fa: result.data?.description_fa,
-        url: result.data.url,
-        featured,
-        phone: result.data.phone,
-        email: result.data.email,
+
+        brand: result.data?.brand || '',
+        shippingFeeMethod: result.data.shippingFeeMethod,
+        // freeShipping:result.data.freeShippingCountriesIds?true:false,
+        freeShippingForAllCountries: result.data.freeShippingForAllCountries,
       },
     })
   } catch (err: unknown) {
@@ -633,7 +572,7 @@ export async function editProduct(
     }
   }
   revalidatePath(path)
-  redirect(`/dashboard/seller/products/${result.data.url}/settings`)
+  redirect(`/${locale}/dashboard/seller/products`)
 }
 
 //////////////////////
@@ -678,14 +617,17 @@ export async function deleteProduct(
   try {
     const isExisting:
       | (Product & {
-          variants: (ProductVariant & { images: Image[] })[] | null
+          variants: (ProductVariant & { variantImage: Image[] })[] | null
+        } & {
+          images: Image[] | null
         })
       | null = await prisma.product.findFirst({
       where: { id: productId },
       include: {
+        images: true,
         variants: {
           include: {
-            images: true,
+            variantImage: true,
           },
         },
       },
@@ -697,8 +639,18 @@ export async function deleteProduct(
         },
       }
     }
+
+    if (isExisting.images) {
+      for (const image of isExisting.images) {
+        if (image.key) {
+          await deleteFileFromS3(image.key)
+        }
+      }
+    }
     // console.log(isExisting.variants?.flatMap((variant) => variant.images))
-    const images = isExisting.variants?.flatMap((variant) => variant.images)
+    const images = isExisting.variants?.flatMap(
+      (variant) => variant.variantImage
+    )
     if (images) {
       for (const image of images) {
         if (image.key) {

@@ -520,7 +520,7 @@ export const ProductFormSchema = z.object({
       (ids) => ids?.every((item) => item.label && item.value),
       'Each country must have a valid name and ID.'
     )
-    .default([]),
+    .default([]), // use it when an array is optional
   // .object({
   //   id: z.string().optional(),
   //   label: z.string(),

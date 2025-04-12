@@ -1147,8 +1147,16 @@ const ProductDetails: FC<ProductDetailProps> = ({
                 <div className="w-60 h-60">
                   <InputFileUpload
                     className="w-full"
+                    // initialDataImages={
+                    //   data?.variantImage ? data?.variantImage : []
+                    // }
                     initialDataImages={
-                      data?.variantImage ? data?.variantImage : []
+                      data?.variantImage
+                        ? data.variantImage.filter(
+                            (image): image is NonNullable<typeof image> =>
+                              image !== undefined
+                          )
+                        : []
                     }
                     name="variantImage"
                     multiple={false}
