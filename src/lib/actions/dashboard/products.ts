@@ -10,7 +10,6 @@ import {
   ProductVariant,
   Size,
   Spec,
-  Wishlist,
 } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -940,6 +939,28 @@ export async function editVariant(
     },
   })
   try {
+    const isVariantNameExisting = await prisma.productVariant.findFirst({
+      where: {
+        AND: [
+          {
+            OR: [{ variantName: result.data.variantName }],
+          },
+          {
+            NOT: {
+              id: variantId,
+            },
+          },
+        ],
+      },
+    })
+
+    if (isVariantNameExisting) {
+      return {
+        errors: {
+          _form: ['نوع محصول با این نام موجود است!'],
+        },
+      }
+    }
     // const variantImageIds: string[] = []
     // for (const img of images || []) {
     //   if (img instanceof File) {
@@ -952,11 +973,11 @@ export async function editVariant(
     //   }
     // }
     if (
-      typeof variantImage?.[0] === 'object' &&
-      variantImage[0] instanceof File
+      typeof result.data.variantImage?.[0] === 'object' &&
+      result.data.variantImage[0] instanceof File
     ) {
       const imageIds: string[] = []
-      for (const img of variantImage) {
+      for (const img of result.data.variantImage) {
         if (img instanceof File) {
           const buffer = Buffer.from(await img.arrayBuffer())
           const res = await uploadFileToS3(buffer, img.name)
@@ -993,53 +1014,31 @@ export async function editVariant(
           },
         },
       })
-    } else {
-      const imagesIds: string[] = []
-      for (const img of images || []) {
-        if (img instanceof File) {
-          const buffer = Buffer.from(await img.arrayBuffer())
-          const res = await uploadFileToS3(buffer, img.name)
-
-          if (res?.imageId && typeof res.imageId === 'string') {
-            imagesIds.push(res.imageId)
-          }
-        }
-      }
-      const variantSlug = await generateUniqueSlug(
-        slugify(name, {
-          replacement: '-',
-          lower: true,
-          trim: true,
-        }),
-        'productVariant'
-      )
 
       const variant = await prisma.productVariant.update({
         where: { id: variantId, productId },
         data: {
           productId,
-          slug: variantSlug,
-          variantName: name,
-          variantDescription: description,
-          variantName_fa: name_fa,
-          variantDescription_fa: description_fa,
-          saleEndDate: String(saleEndDate),
-          sku: sku ? sku : '',
-          keywords: keywords?.length ? keywords?.join(',') : '',
-          keywords_fa: keywords_fa?.length ? keywords_fa?.join(',') : '',
-          weight: weight ? +weight : 0,
-          isSale,
-          variantImage: {
-            connect: imagesIds.map((id) => ({
-              id: id,
-            })),
-          },
+          slug: isExistingVariant?.slug,
+          variantName: result.data.variantName,
+          variantDescription: result.data?.variantDescription || '',
+          variantDescription_fa: result.data?.variantDescription_fa || '',
+          saleEndDate: String(result.data.saleEndDate),
+          sku: result.data.sku ? result.data.sku : '',
+          keywords: result.data.keywords?.length
+            ? result.data.keywords?.join(',')
+            : '',
+          keywords_fa: result.data.keywords_fa?.length
+            ? result.data.keywords_fa?.join(',')
+            : '',
+          weight: result.data.weight ? +result.data.weight : 0,
+          isSale: result.data.isSale,
         },
       })
 
       let newVariantSpecs
-      if (specs) {
-        newVariantSpecs = specs.map((spec) => ({
+      if (result.data.specs) {
+        newVariantSpecs = result.data.specs.map((spec) => ({
           name: spec.name,
           value: spec.value,
           variantId: variant.id,
@@ -1053,8 +1052,8 @@ export async function editVariant(
       }
 
       let newColors
-      if (colors) {
-        newColors = colors.map((color) => ({
+      if (result.data.colors) {
+        newColors = result.data.colors.map((color) => ({
           name: color.color,
           productVariantId: variant.id,
         }))
@@ -1067,8 +1066,8 @@ export async function editVariant(
       }
       //  new Size
       let newSizes
-      if (sizes) {
-        newSizes = sizes.map((size) => ({
+      if (result.data.sizes) {
+        newSizes = result.data.sizes.map((size) => ({
           size: size.size,
           quantity: size.quantity,
           price: size.price,
@@ -1083,7 +1082,21 @@ export async function editVariant(
         })
       }
     }
-  } catch (error) {
-    console.log(error)
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return {
+        errors: {
+          _form: [err.message],
+        },
+      }
+    } else {
+      return {
+        errors: {
+          _form: ['مشکلی پیش آمده، لطفا دوباره امتحان کنید!'],
+        },
+      }
+    }
   }
+  revalidatePath(path)
+  redirect(`/${locale}/dashboard/seller/products`)
 }
