@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma'
+import { Color, Image, ProductVariant, Size, Spec } from '@prisma/client'
+import { cache } from 'react'
 // Function: getAllStoreProducts
 // Description: Retrieves all products from a specific store based on the store URL.
 // Access Level: Public
@@ -78,3 +80,28 @@ export const getProductMainInfo = async (productId: string) => {
     })),
   }
 }
+
+export const getVariantById = cache(
+  (
+    id: string
+  ): Promise<
+    | (ProductVariant & { variantImage: Image[] | null } & {
+        colors: Color[] | null
+      } & { sizes: Size[] | null } & { specs: Spec[] | null })
+    | null
+  > => {
+    const variant = prisma.productVariant.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        variantImage: true,
+        colors: true,
+        sizes: true,
+        specs: true,
+      },
+    })
+
+    return variant
+  }
+)

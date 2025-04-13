@@ -8,7 +8,6 @@ import {
   Image,
   Product,
   ProductVariant,
-  Question,
   Size,
   Spec,
   Wishlist,
@@ -18,7 +17,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '../../prisma'
 
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
-import { ProductFormSchema } from '@/lib/schemas/dashboard'
+import { ProductFormSchema, VariantFormSchema } from '@/lib/schemas/dashboard'
 import { headers } from 'next/headers'
 import { generateUniqueSlug } from '@/lib/slug-util'
 
@@ -156,22 +155,6 @@ export async function createProduct(
         },
       }
     }
-    // const isExistingVariant = await prisma.product.findFirst({
-    //   where: {
-    //     // OR: [{ name: result.data.name }, { url: result.data.url }],
-    //     AND: [
-    //       {
-    //         OR: [
-    //           { name: result.data.name },
-    //           { name_fa: result.data?.name_fa },
-    //           { email: result.data.email },
-    //           { phone: result.data.phone },
-    //           { url: result.data.url },
-    //         ],
-    //       },
-    //     ],
-    //   },
-    // })
 
     const productSlug = await generateUniqueSlug(
       slugify(result.data.name, {
@@ -181,17 +164,6 @@ export async function createProduct(
       }),
       'product'
     )
-    // console.log({ productSlug })
-    // const variantSlug = await generateUniqueSlug(
-    //   slugify(result.data.variantName, {
-    //     replacement: '-',
-    //     lower: true,
-    //     trim: true,
-    //   }),
-    //   'productVariant'
-    // )
-
-    // // Product Specs
 
     const imagesIds: string[] = []
     for (const img of result.data?.images || []) {
@@ -204,18 +176,6 @@ export async function createProduct(
         }
       }
     }
-
-    // const variantImageIds: string[] = []
-    // for (const img of result.data?.variantImage || []) {
-    //   if (img instanceof File) {
-    //     const buffer = Buffer.from(await img.arrayBuffer())
-    //     const res = await uploadFileToS3(buffer, img.name)
-
-    //     if (res?.imageId && typeof res.imageId === 'string') {
-    //       variantImageIds.push(res.imageId)
-    //     }
-    //   }
-    // }
 
     const product = await prisma.product.create({
       data: {
@@ -271,7 +231,7 @@ export async function createProduct(
       })
     }
 
-    const variants = await createVariant({
+    await createVariant({
       name: result.data.variantName,
       name_fa: result.data.variantName_fa,
       description: result.data.description,
@@ -288,47 +248,6 @@ export async function createProduct(
       colors: result.data.colors,
       specs: result.data.variant_specs,
     })
-    // console.log({ variants })
-    // if (newVariantSpecs) {
-    //   await prisma.spec.createMany({
-    //     data: { ...newVariantSpecs, productId: product.id },
-    //   })
-    // }
-    // if (newColors) {
-    //   await prisma.color.createMany({
-    //     data: { ...newColors },
-    //   })
-    // }
-    // if (newSizes) {
-    //   await prisma.size.createMany({
-    //     data: newSizes,
-    //   })
-    // }
-    // await prisma.product.create({
-    //   data: {
-    //     name: result.data.name,
-    //     userId: session.user.id,
-    //     name_fa: result.data?.name_fa,
-    //     description: result.data.description,
-    //     description_fa: result.data?.description_fa,
-    //     url: result.data.url,
-    //     featured,
-    //     phone: result.data.phone,
-    //     email: result.data.email,
-    //     logo: {
-    //       connect: logoIds.map((id) => ({
-    //         id: id,
-    //       }))[0],
-    //     },
-    //     images: {
-    //       connect: imagesIds.map((id) => ({
-    //         id: id,
-    //       })),
-    //     },
-    //   },
-    // })
-    // // console.log(res?.imageUrl)
-    // // console.log(product)
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
@@ -745,6 +664,7 @@ export async function deleteProduct(
 interface CreateVariantProps {
   productId: string
   name: string
+  variantId?: string
   description: string
   name_fa: string | undefined
   description_fa: string | undefined
@@ -902,25 +822,100 @@ export const createVariant = async ({
     console.log(error)
   }
 }
-export const editVariant = async ({
-  variantId,
-  productId,
-  name,
-  description,
-  name_fa,
-  description_fa,
-  saleEndDate,
-  sku,
-  keywords,
-  keywords_fa,
-  weight,
-  isSale,
-  specs,
-  images,
-  sizes,
-  colors,
-}: CreateVariantProps) => {
+
+interface EditVariantFormState {
+  success?: string
+  errors: {
+    name?: string[]
+    description?: string[]
+    variantName?: string[]
+    variantDescription?: string[]
+
+    variantName_fa?: string[]
+    variantDescription_fa?: string[]
+
+    variantImage?: string[]
+
+    isSale?: string[]
+    saleEndDate?: string[]
+
+    sku?: string[]
+    weight?: string[]
+    colors?: string[]
+    sizes?: string[]
+    specs?: string[]
+    keywords?: string[]
+    keywords_fa?: string[]
+
+    _form?: string[]
+  }
+}
+export async function editVariant(
+  formData: FormData,
+  variantId: string,
+  productId: string,
+  path: string
+): Promise<EditVariantFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
+
+  const result = VariantFormSchema.safeParse({
+    variantName: formData.get('variantName'),
+    variantDescription: formData.get('variantDescription'),
+
+    variantName_fa: formData.get('variantName_fa'),
+    variantDescription_fa: formData.get('variantDescription_fa'),
+
+    isSale: Boolean(formData.get('isSale')),
+    saleEndDate: formData.get('saleEndDate'),
+
+    sku: formData.get('sku'),
+    weight: Number(formData.get('weight')),
+    keywords: formData.getAll('keywords'),
+    keywords_fa: formData.getAll('keywords_fa'),
+    specs: formData.getAll('specs').map((spec) => JSON.parse(spec.toString())),
+
+    sizes: formData.getAll('sizes').map((size) => JSON.parse(size.toString())),
+    colors: formData
+      .getAll('colors')
+      .map((size) => JSON.parse(size.toString())),
+
+    variantImage: formData.getAll('variantImage'),
+  })
+
+  if (!result.success) {
+    console.log(result.error.flatten().fieldErrors)
+    return {
+      errors: result.error.flatten().fieldErrors,
+    }
+  }
   if (!variantId || productId) {
+    return {
+      errors: {
+        _form: ['محصول حذف شده است!'],
+      },
+    }
+  }
+  const session = await auth()
+  if (
+    !session ||
+    !session.user ||
+    !session.user.id ||
+    session.user.role !== 'SELLER'
+  ) {
+    return {
+      errors: {
+        _form: ['شما اجازه دسترسی ندارید!'],
+      },
+    }
+  }
+
+  const product = await prisma.product.findUnique({
+    where: {
+      id: productId,
+    },
+  })
+  if (!product) {
     return {
       errors: {
         _form: ['محصول حذف شده است!'],
@@ -931,9 +926,7 @@ export const editVariant = async ({
   const isExistingVariant:
     | (ProductVariant & { variantImage: Image[] | null } & {
         sizes: Size[] | null
-      } & { colors: Color[] | null } & { specs: Spec[] | null } & {
-        wishlist: Wishlist[] | null
-      })
+      } & { colors: Color[] | null } & { specs: Spec[] | null })
     | null = await prisma.productVariant.findFirst({
     where: {
       id: variantId,
@@ -958,9 +951,12 @@ export const editVariant = async ({
     //     }
     //   }
     // }
-    if (typeof images?.[0] === 'object' && images[0] instanceof File) {
+    if (
+      typeof variantImage?.[0] === 'object' &&
+      variantImage[0] instanceof File
+    ) {
       const imageIds: string[] = []
-      for (const img of images) {
+      for (const img of variantImage) {
         if (img instanceof File) {
           const buffer = Buffer.from(await img.arrayBuffer())
           const res = await uploadFileToS3(buffer, img.name)
@@ -977,7 +973,7 @@ export const editVariant = async ({
         },
         data: {
           variantImage: {
-            disconnect: isExistingVariant.variantImage?.map(
+            disconnect: isExistingVariant?.variantImage?.map(
               (image: { id: string }) => ({
                 id: image.id,
               })

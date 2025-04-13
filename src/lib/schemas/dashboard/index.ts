@@ -535,3 +535,129 @@ export const ProductFormSchema = z.object({
   // .default([]),
   shippingFeeMethod: z.nativeEnum(ShippingFeeMethod),
 })
+
+export const VariantFormSchema = z.object({
+  variantName: z
+    .string({
+      required_error: 'Variant variant name is mandatory.',
+      invalid_type_error: 'Variant variant name must be a valid string.',
+    })
+    .min(2, {
+      message: 'Variant variant name should be at least 2 characters long.',
+    })
+    .max(100, {
+      message: 'Variant variant name cannot exceed 100 characters.',
+    }),
+  variantName_fa: z
+    .string({
+      required_error: 'Variant variant name is mandatory.',
+      invalid_type_error: 'Variant variant name must be a valid string.',
+    })
+    // .min(2, {
+    //   message: 'Variant variant name should be at least 2 characters long.',
+    // })
+    .max(100, {
+      message: 'Variant variant name cannot exceed 100 characters.',
+    })
+    .optional(),
+  /*
+    .regex(/^(?!.*(?:[-_ ]){2,})[a-zA-Z0-9_ -]+$/, {
+      message:
+        "Variant variant name may only contain letters, numbers, spaces, hyphens, and underscores, without consecutive special characters.",
+    })
+     
+       */
+  variantDescription: z
+    .string({
+      required_error: 'Variant variant description is mandatory.',
+      invalid_type_error: 'Variant variant description must be a valid string.',
+    })
+    .optional(),
+  variantDescription_fa: z
+    .string({
+      required_error: 'Variant variant description is mandatory.',
+      invalid_type_error: 'Variant variant description must be a valid string.',
+    })
+    .optional(),
+
+  variantImage: imageSchema,
+
+  sku: z
+    .string({
+      required_error: 'Variant SKU is mandatory.',
+      invalid_type_error: 'Variant SKU must be a valid string.',
+    })
+    .min(6, {
+      message: 'Variant SKU should be at least 6 characters long.',
+    })
+    .max(50, {
+      message: 'Variant SKU cannot exceed 50 characters.',
+    })
+    .optional(),
+  weight: z
+    .number()
+    .min(0.01, {
+      message: 'Please provide a valid variant weight.',
+    })
+    .optional(),
+
+  colors: z
+    .object({ color: z.string() })
+    .array()
+    .min(1, 'Please provide at least one color.')
+    .refine((colors) => colors.every((c) => c.color.length > 0), {
+      message: 'All color inputs must be filled.',
+    })
+    .optional(),
+  sizes: z
+    .object({
+      size: z.string(),
+      quantity: z
+        .number()
+        .min(1, { message: 'Quantity must be greater than 0.' }),
+      price: z.number().min(0.01, { message: 'Price must be greater than 0.' }),
+      discount: z.number().min(0).default(0),
+    })
+    .array()
+    .min(1, 'Please provide at least one size.')
+    .refine(
+      (sizes) =>
+        sizes.every((s) => s.size.length > 0 && s.price > 0 && s.quantity > 0),
+      {
+        message: 'All size inputs must be filled correctly.',
+      }
+    ),
+  specs: z
+    .object({
+      name: z.string(),
+      value: z.string(),
+      // name_fa: z.string(),
+    })
+    .array()
+    // .min(1, 'Please provide at least one variant spec.')
+    .refine(
+      (specs) => specs.every((s) => s.name.length > 0 && s.value.length > 0),
+      {
+        message: 'All variant specs inputs must be filled correctly.',
+      }
+    )
+    .optional(),
+
+  isSale: z.boolean().default(false),
+  // saleEndDate: z.string().optional(),
+  keywords: z
+    .array(z.string())
+    .nonempty('Please at least one item')
+    .max(10, {
+      message: 'You can provide up to 10 keywords.',
+    })
+    .optional(),
+  keywords_fa: z
+    .array(z.string())
+    .nonempty('Please at least one item')
+    .max(10, {
+      message: 'You can provide up to 10 keywords.',
+    })
+    .optional(),
+  saleEndDate: z.union([z.date(), z.string()]).optional(),
+})
