@@ -1,5 +1,12 @@
 import { prisma } from '@/lib/prisma'
-import { Color, Image, ProductVariant, Size, Spec } from '@prisma/client'
+import {
+  Color,
+  Image,
+  Product,
+  ProductVariant,
+  Size,
+  Spec,
+} from '@prisma/client'
 import { cache } from 'react'
 // Function: getAllStoreProducts
 // Description: Retrieves all products from a specific store based on the store URL.
@@ -103,5 +110,38 @@ export const getVariantById = cache(
     })
 
     return variant
+  }
+)
+export const getProductById = cache(
+  (
+    id: string
+  ): Promise<
+    | (Product & {
+        variants: (ProductVariant & {
+          variantImage: Image[] | null
+          colors: Color[] | null
+          sizes: Size[] | null
+          specs: Spec[] | null
+        })[]
+      })
+    | null
+  > => {
+    const product = prisma.product.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        variants: {
+          include: {
+            variantImage: true,
+            colors: true,
+            sizes: true,
+            specs: true,
+          },
+        },
+      },
+    })
+
+    return product
   }
 )

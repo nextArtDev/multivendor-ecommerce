@@ -40,6 +40,7 @@ interface DataTableProps<TData, TValue> {
   actionButtonText?: React.ReactNode
   modalChildren?: React.ReactNode
   newTabLink?: string
+  editTabLink?: string
   searchPlaceholder: string
   heading?: string
   subheading?: string
@@ -57,6 +58,7 @@ export default function DataTable<TData, TValue>({
   subheading,
   noHeader,
   newTabLink,
+  editTabLink,
 }: DataTableProps<TData, TValue>) {
   // Modal state
   const { setOpen } = useModal()
@@ -154,10 +156,16 @@ export default function DataTable<TData, TValue>({
                         key={cell.id}
                         className="max-w-[400px] break-words"
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
+                        <Link
+                          href={`${editTabLink}/${
+                            cell.getContext().row.original.id
+                          }`}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </Link>
                       </TableCell>
                     ))}
                   </TableRow>
