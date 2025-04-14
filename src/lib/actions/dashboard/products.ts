@@ -1190,14 +1190,15 @@ export async function createNewVariant(
       },
     }
   }
-
+  let existingVariantProducts
   try {
-    const existingVariantProducts = await prisma.product.findUnique({
+    existingVariantProducts = await prisma.product.findUnique({
       where: {
         id: productId,
       },
       include: {
         variants: true,
+        store: true,
       },
     })
     if (!existingVariantProducts) {
@@ -1233,7 +1234,7 @@ export async function createNewVariant(
         }
       }
     }
-    console.log({ variantImageIds })
+    // console.log({ variantImageIds })
     const variantSlug = await generateUniqueSlug(
       slugify(result.data.variantName, {
         replacement: '-',
@@ -1329,5 +1330,7 @@ export async function createNewVariant(
     }
   }
   revalidatePath(path)
-  redirect(`/${locale}/dashboard/seller/products/${productId}/variants`)
+  redirect(
+    `/${locale}/dashboard/seller/stores/${existingVariantProducts.store.url}/products/${productId}/variants`
+  )
 }

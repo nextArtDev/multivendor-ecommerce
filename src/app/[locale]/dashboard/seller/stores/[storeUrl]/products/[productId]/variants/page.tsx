@@ -19,7 +19,7 @@ export default async function SellerProductsPage({
 }) {
   const storeUrl = (await params).storeUrl
   const productId = (await params).productId
-  console.log({ storeUrl, productId })
+
   // Fetching products data from the database for the active store
   const product = await getProductById(productId)
   if (!product || !storeUrl) return notFound()
