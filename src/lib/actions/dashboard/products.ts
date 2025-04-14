@@ -888,7 +888,7 @@ export async function editVariant(
       errors: result.error.flatten().fieldErrors,
     }
   }
-  if (!variantId || productId) {
+  if (!variantId || !productId) {
     return {
       errors: {
         _form: ['محصول حذف شده است!'],
@@ -1081,6 +1081,236 @@ export async function editVariant(
           data: newSizes,
         })
       }
+    }
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return {
+        errors: {
+          _form: [err.message],
+        },
+      }
+    } else {
+      return {
+        errors: {
+          _form: ['مشکلی پیش آمده، لطفا دوباره امتحان کنید!'],
+        },
+      }
+    }
+  }
+  revalidatePath(path)
+  redirect(`/${locale}/dashboard/seller/products`)
+}
+
+// Product Variant
+
+interface CreateNewVariantProps {
+  success?: string
+  errors: {
+    name?: string[]
+    description?: string[]
+    variantName?: string[]
+    variantDescription?: string[]
+
+    variantName_fa?: string[]
+    variantDescription_fa?: string[]
+
+    variantImage?: string[]
+
+    isSale?: string[]
+    saleEndDate?: string[]
+
+    sku?: string[]
+    weight?: string[]
+    colors?: string[]
+    sizes?: string[]
+    specs?: string[]
+    keywords?: string[]
+    keywords_fa?: string[]
+
+    _form?: string[]
+  }
+}
+
+export async function createNewVariant(
+  formData: FormData,
+  productId: string,
+  path: string
+): Promise<CreateNewVariantProps> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
+
+  const result = VariantFormSchema.safeParse({
+    variantName: formData.get('variantName'),
+    variantDescription: formData.get('variantDescription'),
+
+    variantName_fa: formData.get('variantName_fa'),
+    variantDescription_fa: formData.get('variantDescription_fa'),
+
+    isSale: Boolean(formData.get('isSale')),
+    saleEndDate: formData.get('saleEndDate'),
+
+    sku: formData.get('sku'),
+    weight: Number(formData.get('weight')),
+    keywords: formData.getAll('keywords'),
+    keywords_fa: formData.getAll('keywords_fa'),
+    specs: formData.getAll('specs').map((spec) => JSON.parse(spec.toString())),
+
+    sizes: formData.getAll('sizes').map((size) => JSON.parse(size.toString())),
+    colors: formData
+      .getAll('colors')
+      .map((size) => JSON.parse(size.toString())),
+
+    variantImage: formData.getAll('variantImage'),
+  })
+
+  if (!result.success) {
+    console.log(result.error.flatten().fieldErrors)
+    return {
+      errors: result.error.flatten().fieldErrors,
+    }
+  }
+  if (!productId) {
+    return {
+      errors: {
+        _form: ['محصول حذف شده است!'],
+      },
+    }
+  }
+  const session = await auth()
+  if (
+    !session ||
+    !session.user ||
+    !session.user.id ||
+    session.user.role !== 'SELLER'
+  ) {
+    return {
+      errors: {
+        _form: ['شما اجازه دسترسی ندارید!'],
+      },
+    }
+  }
+
+  try {
+    const existingVariantProducts = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+      include: {
+        variants: true,
+      },
+    })
+    if (!existingVariantProducts) {
+      return {
+        errors: {
+          _form: ['محصول حذف شده است!'],
+        },
+      }
+    }
+
+    // Check for duplicate variant name (case-sensitive)
+    const hasDuplicate = existingVariantProducts.variants.some(
+      (variant) =>
+        variant.variantName.toLowerCase() ===
+        result.data.variantName.toLowerCase()
+    )
+
+    if (hasDuplicate) {
+      return {
+        errors: {
+          _form: ['این نام واریانت از قبل موجود است!'],
+        },
+      }
+    }
+    const variantImageIds: string[] = []
+    for (const img of result.data?.variantImage || []) {
+      if (img instanceof File) {
+        const buffer = Buffer.from(await img.arrayBuffer())
+        const res = await uploadFileToS3(buffer, img.name)
+
+        if (res?.imageId && typeof res.imageId === 'string') {
+          variantImageIds.push(res.imageId)
+        }
+      }
+    }
+
+    const variantSlug = await generateUniqueSlug(
+      slugify(result.data.variantName, {
+        replacement: '-',
+        lower: true,
+        trim: true,
+      }),
+      'productVariant'
+    )
+
+    const variant = await prisma.productVariant.create({
+      data: {
+        productId,
+        slug: variantSlug,
+        variantName: result.data.variantName,
+        variantDescription: result.data?.variantDescription || '',
+        variantDescription_fa: result.data?.variantDescription_fa || '',
+        saleEndDate: String(result.data.saleEndDate),
+        sku: result.data.sku ? result.data.sku : '',
+        keywords: result.data.keywords?.length
+          ? result.data.keywords?.join(',')
+          : '',
+        keywords_fa: result.data.keywords_fa?.length
+          ? result.data.keywords_fa?.join(',')
+          : '',
+        weight: result.data.weight ? +result.data.weight : 0,
+        isSale: result.data.isSale,
+        variantImage: {
+          connect: variantImageIds.map((id) => ({
+            id: id,
+          })),
+        },
+      },
+    })
+
+    let newVariantSpecs
+    if (result.data.specs) {
+      newVariantSpecs = result.data.specs.map((spec) => ({
+        name: spec.name,
+        value: spec.value,
+        variantId: variant.id,
+      }))
+    }
+
+    if (newVariantSpecs) {
+      await prisma.spec.createMany({
+        data: newVariantSpecs,
+      })
+    }
+
+    let newColors
+    if (result.data.colors) {
+      newColors = result.data.colors.map((color) => ({
+        name: color.color,
+        productVariantId: variant.id,
+      }))
+    }
+
+    if (newColors) {
+      await prisma.color.createMany({
+        data: newColors,
+      })
+    }
+    //  new Size
+    let newSizes
+    if (result.data.sizes) {
+      newSizes = result.data.sizes.map((size) => ({
+        size: size.size,
+        quantity: size.quantity,
+        price: size.price,
+        discount: size.discount,
+        productVariantId: variant.id,
+      }))
+    }
+
+    if (newSizes) {
+      await prisma.size.createMany({
+        data: newSizes,
+      })
     }
   } catch (err: unknown) {
     if (err instanceof Error) {

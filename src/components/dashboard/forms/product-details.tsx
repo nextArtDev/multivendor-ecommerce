@@ -1,11 +1,8 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import JoditEditor from 'jodit-react'
-import { Button, buttonVariants } from '@/components/ui/button'
+import InputFileUpload from '@/components/shared/InputFileUpload'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -15,26 +12,12 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { PhoneInput } from '@/components/ui/phone-input'
-import InputFileUpload from '@/components/shared/InputFileUpload'
+import JoditEditor from 'jodit-react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import * as z from 'zod'
 
-import { Switch } from '@/components/ui/switch'
-import { ProductFormSchema } from '@/lib/schemas/dashboard'
-import { Link, usePathname } from '@/navigation'
-import { FC, useEffect, useMemo, useRef, useState, useTransition } from 'react'
-import {
-  Category,
-  Color,
-  Country,
-  Image,
-  OfferTag,
-  Product,
-  ProductVariant,
-  ShippingFeeMethod,
-  Size,
-  Spec,
-  SubCategory,
-} from '@prisma/client'
+import { TagsInput } from '@/components/shared/tag-input'
 import { AlertDialog } from '@/components/ui/alert-dialog'
 import {
   Card,
@@ -43,19 +26,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Textarea } from '@/components/ui/textarea'
-import { ProductWithVariantType } from '@/lib/types'
-import { getAllCategoriesForCategory } from '@/lib/queries/dashboard'
-import { format } from 'date-fns'
-import { createProduct, editProduct } from '@/lib/actions/dashboard/products'
-import { cn } from '@/lib/utils'
-import ImagesPreviewGrid from '../images-preview-grid_'
-import { useTheme } from 'next-themes'
-import { ImageInput } from '../image-input'
-import ClickToAddInputs from '../click-to-add'
-import InputFieldset from '../input-fieldset'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowRight, Dot } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
@@ -64,21 +34,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  MultiSelector,
-  MultiSelectorContent,
-  MultiSelectorInput,
-  MultiSelectorItem,
-  MultiSelectorList,
-  MultiSelectorTrigger,
-} from '@/components/ui/multi-selector'
+import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { createProduct } from '@/lib/actions/dashboard/products'
+import { ProductFormSchema } from '@/lib/schemas/dashboard'
+import { ProductWithVariantType } from '@/lib/types'
+import { usePathname } from '@/navigation'
+import { Category, Country, OfferTag, ShippingFeeMethod } from '@prisma/client'
 import { NumberInput } from '@tremor/react'
-import { TagsInput } from '@/components/shared/tag-input'
+import { Dot } from 'lucide-react'
+import { useTheme } from 'next-themes'
+import { FC, useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import ClickToAddInputs from '../click-to-add'
+import { ImageInput } from '../image-input'
+import InputFieldset from '../input-fieldset'
 // import { useQueryState } from 'nuqs'
+import { DateTimePicker } from '@/components/shared/date-time-picker'
+import MultipleSelector, { Option } from '@/components/shared/multiple-selector'
 import { getSubCategoryByCategoryId } from '@/lib/actions/dashboard/categories'
 import { useQuery } from '@tanstack/react-query'
-import MultipleSelector, { Option } from '@/components/shared/multiple-selector'
-import { DateTimePicker } from '@/components/shared/date-time-picker'
 
 const shippingFeeMethods = [
   {
