@@ -9,7 +9,7 @@ import {
   getProductById,
 } from '@/lib/queries/dashboard/products'
 import { notFound } from 'next/navigation'
-import { columns } from './variants/components/columns'
+import { columns } from './components/columns'
 import VariantDetails from '@/components/dashboard/forms/variant-details'
 
 export default async function SellerProductsPage({
@@ -19,7 +19,7 @@ export default async function SellerProductsPage({
 }) {
   const storeUrl = (await params).storeUrl
   const productId = (await params).productId
-
+  console.log({ storeUrl, productId })
   // Fetching products data from the database for the active store
   const product = await getProductById(productId)
   if (!product || !storeUrl) return notFound()

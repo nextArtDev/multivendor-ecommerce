@@ -765,7 +765,8 @@ export const createVariant = async ({
         weight: weight ? +weight : 0,
         isSale,
         variantImage: {
-          connect: imagesIds.map((id) => ({
+          // connect: imagesIds.map((id) => ({
+          connect: variantImageIds.map((id) => ({
             id: id,
           })),
         },
@@ -1232,7 +1233,7 @@ export async function createNewVariant(
         }
       }
     }
-
+    console.log({ variantImageIds })
     const variantSlug = await generateUniqueSlug(
       slugify(result.data.variantName, {
         replacement: '-',
@@ -1328,5 +1329,5 @@ export async function createNewVariant(
     }
   }
   revalidatePath(path)
-  redirect(`/${locale}/dashboard/seller/products`)
+  redirect(`/${locale}/dashboard/seller/products/${productId}/variants`)
 }

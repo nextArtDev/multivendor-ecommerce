@@ -158,7 +158,8 @@ export default function DataTable<TData, TValue>({
                       >
                         <Link
                           href={`${editTabLink}/${
-                            cell.getContext().row.original.id
+                            (cell.getContext().row.original as { id: string })
+                              .id
                           }`}
                         >
                           {flexRender(

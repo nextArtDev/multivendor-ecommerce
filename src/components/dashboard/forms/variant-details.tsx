@@ -8,6 +8,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -25,7 +26,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
-import { editVariant } from '@/lib/actions/dashboard/products'
+import { createNewVariant, editVariant } from '@/lib/actions/dashboard/products'
 import { VariantFormSchema } from '@/lib/schemas/dashboard'
 import { usePathname } from '@/navigation'
 import { Color, Image, ProductVariant, Size, Spec } from '@prisma/client'
@@ -37,6 +38,7 @@ import { ImageInput } from '../image-input'
 import InputFieldset from '../input-fieldset'
 // import { useQueryState } from 'nuqs'
 import { DateTimePicker } from '@/components/shared/date-time-picker'
+import { TagsInput } from '@/components/shared/tag-input'
 
 interface VariantDetailsProps {
   // data?: Product & {
@@ -46,7 +48,7 @@ interface VariantDetailsProps {
   // } & { category: { id: string } } & { store: { id: string } } & {
   //   cover: Image[] | null
   // }
-  data:
+  data?:
     | ProductVariant & { variantImage: Image[] | null } & {
         colors: Color[] | null
       } & { sizes: Size[] | null } & { specs: Spec[] | null }
@@ -56,7 +58,7 @@ interface VariantDetailsProps {
 
 const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
   // console.log(data?.colors)
-  const variantId = data.id
+  const variantId = data?.id
   const path = usePathname()
 
   const [isPending, startTransition] = useTransition()
@@ -266,77 +268,153 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
     }
 
     startTransition(async () => {
-      try {
-        const res = await editVariant(formData, variantId, productId, path)
-        if (res?.errors?.variantName) {
-          form.setError('variantName', {
-            type: 'custom',
-            message: res?.errors.variantName?.join(' و '),
-          })
-        } else if (res?.errors?.variantDescription) {
-          form.setError('variantDescription', {
-            type: 'custom',
-            message: res?.errors.variantDescription?.join(' و '),
-          })
-        } else if (res?.errors?.variantName_fa) {
-          form.setError('variantName_fa', {
-            type: 'custom',
-            message: res?.errors.variantName_fa?.join(' و '),
-          })
-        } else if (res?.errors?.variantDescription_fa) {
-          form.setError('variantDescription_fa', {
-            type: 'custom',
-            message: res?.errors.variantDescription_fa?.join(' و '),
-          })
-        } else if (res?.errors?.variantImage) {
-          form.setError('variantImage', {
-            type: 'custom',
-            message: res?.errors.variantImage?.join(' و '),
-          })
-        } else if (res?.errors?.sku) {
-          form.setError('sku', {
-            type: 'custom',
-            message: res?.errors.sku?.join(' و '),
-          })
-        } else if (res?.errors?.colors) {
-          form.setError('colors', {
-            type: 'custom',
-            message: res?.errors.colors?.join(' و '),
-          })
-        } else if (res?.errors?.sizes) {
-          form.setError('sizes', {
-            type: 'custom',
-            message: res?.errors.sizes?.join(' و '),
-          })
-        } else if (res?.errors?.specs) {
-          form.setError('specs', {
-            type: 'custom',
-            message: res?.errors.specs?.join(' و '),
-          })
-        } else if (res?.errors?.isSale) {
-          form.setError('isSale', {
-            type: 'custom',
-            message: res?.errors.isSale?.join(' و '),
-          })
-        } else if (res?.errors?.weight) {
-          form.setError('weight', {
-            type: 'custom',
-            message: res?.errors.weight?.join(' و '),
-          })
-        } else if (res?.errors?.saleEndDate) {
-          form.setError('saleEndDate', {
-            type: 'custom',
-            message: res?.errors.saleEndDate?.join(' و '),
-          })
-        } else if (res?.errors?._form) {
-          toast.error(res?.errors._form?.join(' و '))
+      if (variantId) {
+        try {
+          const res = await editVariant(formData, variantId, productId, path)
+          if (res?.errors?.variantName) {
+            form.setError('variantName', {
+              type: 'custom',
+              message: res?.errors.variantName?.join(' و '),
+            })
+          } else if (res?.errors?.variantDescription) {
+            form.setError('variantDescription', {
+              type: 'custom',
+              message: res?.errors.variantDescription?.join(' و '),
+            })
+          } else if (res?.errors?.variantName_fa) {
+            form.setError('variantName_fa', {
+              type: 'custom',
+              message: res?.errors.variantName_fa?.join(' و '),
+            })
+          } else if (res?.errors?.variantDescription_fa) {
+            form.setError('variantDescription_fa', {
+              type: 'custom',
+              message: res?.errors.variantDescription_fa?.join(' و '),
+            })
+          } else if (res?.errors?.variantImage) {
+            form.setError('variantImage', {
+              type: 'custom',
+              message: res?.errors.variantImage?.join(' و '),
+            })
+          } else if (res?.errors?.sku) {
+            form.setError('sku', {
+              type: 'custom',
+              message: res?.errors.sku?.join(' و '),
+            })
+          } else if (res?.errors?.colors) {
+            form.setError('colors', {
+              type: 'custom',
+              message: res?.errors.colors?.join(' و '),
+            })
+          } else if (res?.errors?.sizes) {
+            form.setError('sizes', {
+              type: 'custom',
+              message: res?.errors.sizes?.join(' و '),
+            })
+          } else if (res?.errors?.specs) {
+            form.setError('specs', {
+              type: 'custom',
+              message: res?.errors.specs?.join(' و '),
+            })
+          } else if (res?.errors?.isSale) {
+            form.setError('isSale', {
+              type: 'custom',
+              message: res?.errors.isSale?.join(' و '),
+            })
+          } else if (res?.errors?.weight) {
+            form.setError('weight', {
+              type: 'custom',
+              message: res?.errors.weight?.join(' و '),
+            })
+          } else if (res?.errors?.saleEndDate) {
+            form.setError('saleEndDate', {
+              type: 'custom',
+              message: res?.errors.saleEndDate?.join(' و '),
+            })
+          } else if (res?.errors?._form) {
+            toast.error(res?.errors._form?.join(' و '))
+          }
+        } catch (error) {
+          // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
+          if (
+            !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
+          ) {
+            toast.error('مشکلی پیش آمده.')
+          }
         }
-      } catch (error) {
-        // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
-        if (
-          !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
-        ) {
-          toast.error('مشکلی پیش آمده.')
+      } else {
+        try {
+          const res = await createNewVariant(formData, productId, path)
+          if (res?.errors?.variantName) {
+            form.setError('variantName', {
+              type: 'custom',
+              message: res?.errors.variantName?.join(' و '),
+            })
+          } else if (res?.errors?.variantDescription) {
+            form.setError('variantDescription', {
+              type: 'custom',
+              message: res?.errors.variantDescription?.join(' و '),
+            })
+          } else if (res?.errors?.variantName_fa) {
+            form.setError('variantName_fa', {
+              type: 'custom',
+              message: res?.errors.variantName_fa?.join(' و '),
+            })
+          } else if (res?.errors?.variantDescription_fa) {
+            form.setError('variantDescription_fa', {
+              type: 'custom',
+              message: res?.errors.variantDescription_fa?.join(' و '),
+            })
+          } else if (res?.errors?.variantImage) {
+            form.setError('variantImage', {
+              type: 'custom',
+              message: res?.errors.variantImage?.join(' و '),
+            })
+          } else if (res?.errors?.sku) {
+            form.setError('sku', {
+              type: 'custom',
+              message: res?.errors.sku?.join(' و '),
+            })
+          } else if (res?.errors?.colors) {
+            form.setError('colors', {
+              type: 'custom',
+              message: res?.errors.colors?.join(' و '),
+            })
+          } else if (res?.errors?.sizes) {
+            form.setError('sizes', {
+              type: 'custom',
+              message: res?.errors.sizes?.join(' و '),
+            })
+          } else if (res?.errors?.specs) {
+            form.setError('specs', {
+              type: 'custom',
+              message: res?.errors.specs?.join(' و '),
+            })
+          } else if (res?.errors?.isSale) {
+            form.setError('isSale', {
+              type: 'custom',
+              message: res?.errors.isSale?.join(' و '),
+            })
+          } else if (res?.errors?.weight) {
+            form.setError('weight', {
+              type: 'custom',
+              message: res?.errors.weight?.join(' و '),
+            })
+          } else if (res?.errors?.saleEndDate) {
+            form.setError('saleEndDate', {
+              type: 'custom',
+              message: res?.errors.saleEndDate?.join(' و '),
+            })
+          } else if (res?.errors?._form) {
+            toast.error(res?.errors._form?.join(' و '))
+          }
+        } catch (error) {
+          // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
+          if (
+            !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
+          ) {
+            toast.error('مشکلی پیش آمده.')
+          }
         }
       }
     })
@@ -547,6 +625,25 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                     name="variantImage"
                     multiple={false}
                     label="VariantImage"
+                  />
+                </div>
+                <div className="w-full flex-1 space-y-3">
+                  <FormField
+                    control={form.control}
+                    name="keywords"
+                    render={({ field }) => (
+                      <FormItem className="relative flex-1">
+                        <FormLabel>variant Keywords</FormLabel>
+                        <FormControl>
+                          <TagsInput
+                            maxItems={10}
+                            value={field?.value || []}
+                            onValueChange={field.onChange}
+                            placeholder="Enter your tags"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
                   />
                 </div>
               </div>

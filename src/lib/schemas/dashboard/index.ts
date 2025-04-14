@@ -654,7 +654,7 @@ export const VariantFormSchema = z.object({
     .optional(),
   keywords_fa: z
     .array(z.string())
-    .nonempty('Please at least one item')
+    // .nonempty('Please at least one item')
     .max(10, {
       message: 'You can provide up to 10 keywords.',
     })
