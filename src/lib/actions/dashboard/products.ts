@@ -515,6 +515,8 @@ export async function deleteProduct(
   formData: FormData
 ): Promise<DeleteProductFormState> {
   // console.log({ path, productId })
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
   const session = await auth()
   if (!session || !session.user || session.user.role !== 'SELLER') {
     return {
@@ -654,7 +656,10 @@ export async function deleteProduct(
     }
   } finally {
     revalidatePath(path)
-    redirect(`/dashboard/seller/products`)
+    redirect(
+      // `/${locale}/dashboard/seller/stores/${isExisting.store.url}/products/`
+      `/${locale}/dashboard/seller/stores/`
+    )
   }
 }
 
@@ -914,6 +919,9 @@ export async function editVariant(
     where: {
       id: productId,
     },
+    include: {
+      store: true,
+    },
   })
   if (!product) {
     return {
@@ -1099,7 +1107,9 @@ export async function editVariant(
     }
   }
   revalidatePath(path)
-  redirect(`/${locale}/dashboard/seller/products`)
+  redirect(
+    `/${locale}/dashboard/seller/stores/${product.store.url}/products/${productId}/variants`
+  )
 }
 
 // Product Variant

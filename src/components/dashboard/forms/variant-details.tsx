@@ -472,12 +472,13 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
               className="space-y-4"
             >
               <div className="flex flex-col gap-y-6 xl:flex-row">
-                {/* <ImageInput
-                  name="variantImage"
-                  label="variantImage"
+                <ImageInput
+                  name="images"
+                  label="images"
                   colors={colors}
+                  accept="undefined"
                   setColors={setColors}
-                /> */}
+                />
                 <div className="w-full flex flex-col gap-y-3 xl:pl-5">
                   <ClickToAddInputs
                     details={

@@ -20,8 +20,10 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
@@ -30,7 +32,13 @@ import {
 import { useModal } from '@/providers/modal-provider'
 
 // Lucide icons
-import { CopyPlus, FilePenLine, MoreHorizontal, Trash } from 'lucide-react'
+import {
+  CopyPlus,
+  FilePenLine,
+  MoreHorizontal,
+  SquareStack,
+  Trash,
+} from 'lucide-react'
 
 // Queries
 
@@ -171,7 +179,12 @@ export const columns: ColumnDef<StoreProductType>[] = [
     cell: ({ row }) => {
       const rowData = row.original
 
-      return <CellActions productId={rowData.id} />
+      return (
+        <CellActions
+          productId={rowData.id}
+          href={`/dashboard/seller/stores/${row.original.store.url}/products/${row.original.id}/variants`}
+        />
+      )
     },
   },
 ]
@@ -179,10 +192,11 @@ export const columns: ColumnDef<StoreProductType>[] = [
 // Define props interface for CellActions component
 interface CellActionsProps {
   productId: string
+  href: string
 }
 
 // CellActions component definition
-const CellActions: React.FC<CellActionsProps> = ({ productId }) => {
+const CellActions: React.FC<CellActionsProps> = ({ productId, href }) => {
   // Hooks
   const { setClose } = useModal()
   // const [loading, setLoading] = useState(false)
@@ -211,11 +225,19 @@ const CellActions: React.FC<CellActionsProps> = ({ productId }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <AlertDialogTrigger asChild>
-            <DropdownMenuItem className="flex gap-2" onClick={() => {}}>
-              <Trash size={15} /> Delete product
-            </DropdownMenuItem>
-          </AlertDialogTrigger>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <Link href={href}>
+              <DropdownMenuItem className="flex gap-2">
+                <SquareStack size={15} /> Variants
+              </DropdownMenuItem>
+            </Link>
+            <AlertDialogTrigger asChild>
+              <DropdownMenuItem className="flex gap-2" onClick={() => {}}>
+                <Trash size={15} /> Delete product
+              </DropdownMenuItem>
+            </AlertDialogTrigger>
+          </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
       <AlertDialogContent className="max-w-lg">
