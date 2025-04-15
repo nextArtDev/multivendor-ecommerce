@@ -19,6 +19,8 @@ import ProductPageActions from './product-actions'
 import { isProductValidToAdd } from '../../lib/utils'
 import { useSearchParams } from 'next/navigation'
 import { Rating } from '@/components/shared/rating'
+import { useCartStore } from '@/cart-store/useCartStore'
+import useFromStore from '@/hooks/useFromStore'
 
 // import { useCartStore } from '@/cart-store/useCartStore'
 // import useFromStore from '@/hooks/useFromStore'
@@ -144,9 +146,9 @@ const ProductPageContainer: FC<Props> = ({
   }, [productToBeAddedToCart])
 
   // Get the set Cart action to update items in cart
-  //   const setCart = useCartStore((state) => state.setCart)
+  const setCart = useCartStore((state) => state.setCart)
 
-  //   const cartItems = useFromStore(useCartStore, (state) => state.cart)
+  const cartItems = useFromStore(useCartStore, (state) => state.cart)
 
   // Keeping cart state updated
   useEffect(() => {
@@ -162,7 +164,7 @@ const ProductPageContainer: FC<Props> = ({
             parsedValue.state &&
             Array.isArray(parsedValue.state.cart)
           ) {
-            // setCart(parsedValue.state.cart)
+            setCart(parsedValue.state.cart)
           }
         } catch (error) {
           console.log({ error })
@@ -182,21 +184,21 @@ const ProductPageContainer: FC<Props> = ({
   // Add product to history
   // updateProductHistory(variantId)
 
-  // const maxQty = useMemo(() => {
-  //   const search_product = cartItems?.find(
-  //     (p) =>
-  //       p.productId === id && p.variantId === variantId && p.sizeId === sizeId
-  //   )
-  //   return search_product
-  //     ? search_product.stock - search_product.quantity
-  //     : stock
-  // }, [cartItems, id, variantId, sizeId, stock])
+  const maxQty = useMemo(() => {
+    const search_product = cartItems?.find(
+      (p) =>
+        p.productId === id && p.variantId === variantId && p.sizeId === sizeId
+    )
+    return search_product
+      ? search_product.stock - search_product.quantity
+      : stock
+  }, [cartItems, id, variantId, sizeId, stock])
 
   // // Set view cookie
-  //   setCookie(`viewedProduct_${id}`, 'true', {
-  //     maxAge: 3600,
-  //     path: '/',
-  //   })
+  // setCookie(`viewedProduct_${id}`, 'true', {
+  //   maxAge: 3600,
+  //   path: '/',
+  // })
 
   const [isFixed, setIsFixed] = useState(false)
   const [offsetLeft, setOffsetLeft] = useState(0) // Holds the calculated left offset
@@ -237,12 +239,12 @@ const ProductPageContainer: FC<Props> = ({
         <div className="w-full flex-1 max-w-md mx-auto">
           <ProductSwiper
             // images={variant.variantImage}
-            // images={productData.images}
-            images={
-              variant.variantImage.length > 0
-                ? variant.variantImage
-                : productData.images
-            }
+            images={productData.images}
+            // images={
+            //   variant.variantImage.length > 0
+            //     ? variant.variantImage
+            //     : productData.images
+            // }
             activeImage={activeImage || variant.variantImage[0]}
             setActiveImage={setActiveImage}
           />
@@ -284,8 +286,8 @@ const ProductPageContainer: FC<Props> = ({
               productToBeAddedToCart={productToBeAddedToCart}
               isProductValid={isProductValid}
               handleChange={handleChange}
-              // maxQty={maxQty}
-              maxQty={10}
+              maxQty={maxQty}
+              // maxQty={10}
               sizeId={sizeId}
               sizes={sizes}
             />

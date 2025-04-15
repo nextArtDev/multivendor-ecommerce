@@ -25,6 +25,7 @@ import ShippingDetails from '../shipping/shipping-details'
 import ReturnPrivacySecurityCard from '../shipping/returns-security-privacy-card'
 import QuantitySelector from './quantity-selector'
 import SocialShare from '../social-share'
+import { useCartStore } from '@/cart-store/useCartStore'
 type HandleChangeType = <T extends keyof CartProductType>(
   property: T,
   value: CartProductType[T]
@@ -58,7 +59,7 @@ export default function ProductPageActions({
 }) {
   const { push } = useRouter()
   // Get the store action to add items to cart
-  //   const addToCart = useCartStore((state) => state.addToCart)
+  const addToCart = useCartStore((state) => state.addToCart)
   const [loading, setLoading] = useState(true)
   const [shippingDetails, setShippingDetails] =
     useState<ShippingDetailsType | null>(null)
@@ -86,8 +87,8 @@ export default function ProductPageActions({
   //   }, [userCountry])
 
   const handleAddToCart = () => {
-    if (maxQty <= 0) return
-    // addToCart(productToBeAddedToCart)
+    // if (maxQty <= 0) return
+    addToCart(productToBeAddedToCart)
     toast.success('Product added to cart successfully.')
   }
 
@@ -146,10 +147,10 @@ export default function ProductPageActions({
         <button
           disabled={!isProductValid}
           className={cn(
-            'relative w-full py-2.5 min-w-20   hover:bg-muted text-hover h-11 rounded-3xl leading-6 inline-block font-bold whitespace-nowrap border border-border cursor-pointer transition-all duration-300 ease-bezier-1 select-none',
-            {
-              'cursor-not-allowed': !isProductValid || maxQty <= 0,
-            }
+            'relative w-full py-2.5 min-w-20   hover:bg-muted text-hover h-11 rounded-3xl leading-6 inline-block font-bold whitespace-nowrap border border-border cursor-pointer transition-all duration-300 ease-bezier-1 select-none'
+            // {
+            //   'cursor-not-allowed': !isProductValid || maxQty <= 0,
+            // }
           )}
           onClick={() => handleAddToCart()}
         >

@@ -1,16 +1,19 @@
-import { useEffect, useState } from "react";
+'use client'
+import { useEffect, useState } from 'react'
 
 export default function useFromStore<T, F>(
   store: (callback: (state: T) => unknown) => unknown,
   storeCallback: (state: T) => F
 ) {
-  const [state, setState] = useState<F>();
+  const [state, setState] = useState<F>()
 
-  const stateOfStore = store(storeCallback) as F;
+  const stateOfStore = store(storeCallback) as F
 
   useEffect(() => {
-    setState(stateOfStore);
-  }, [stateOfStore]);
+    setState(stateOfStore)
+  }, [stateOfStore])
 
-  return state;
+  return state
 }
+
+// how we call it: const cart = useFromStore(useCartStore,(state)=>state.cart)

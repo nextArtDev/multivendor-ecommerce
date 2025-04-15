@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
+import { useCartStore } from '@/cart-store/useCartStore'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -27,7 +28,7 @@ export default function AddToCart({
   const router = useRouter()
   const { toast } = useToast()
 
-  // const { addItem } = useCartStore()
+  const { addItem } = useCartStore()
 
   //PROMPT: add quantity state
   const [quantity, setQuantity] = useState(1)
@@ -39,7 +40,7 @@ export default function AddToCart({
       className="rounded-full w-auto"
       onClick={() => {
         try {
-          // addItem(item, 1)
+          addItem(item, 1)
           toast({
             description: t('Product.Added to Cart'),
             action: (
@@ -87,8 +88,8 @@ export default function AddToCart({
         type="button"
         onClick={async () => {
           try {
-            // const itemId = await addItem(item, quantity)
-            // router.push(`/cart/${itemId}`)
+            const itemId = await addItem(item, quantity)
+            router.push(`/cart/${itemId}`)
           } catch (error: any) {
             toast({
               variant: 'destructive',
@@ -103,7 +104,7 @@ export default function AddToCart({
         variant="secondary"
         onClick={() => {
           try {
-            // addItem(item, quantity)
+            addItem(item, quantity)
             router.push(`/checkout`)
           } catch (error: any) {
             toast({
