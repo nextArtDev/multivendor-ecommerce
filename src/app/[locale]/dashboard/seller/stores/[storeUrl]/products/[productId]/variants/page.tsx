@@ -4,10 +4,7 @@ import DataTable from '@/components/ui/data-table'
 
 import { Plus } from 'lucide-react'
 
-import {
-  getAllStoreProducts,
-  getProductById,
-} from '@/lib/queries/dashboard/products'
+import { getProductById } from '@/lib/queries/dashboard/products'
 import { notFound } from 'next/navigation'
 import { columns } from './components/columns'
 import VariantDetails from '@/components/dashboard/forms/variant-details'
@@ -33,7 +30,7 @@ export default async function SellerProductsPage({
         </>
       }
       modalChildren={
-        <VariantDetails data={product.variants} storeUrl={storeUrl} />
+        <VariantDetails data={product.variants[0]} productId={productId} />
       }
       newTabLink={`/dashboard/seller/stores/${storeUrl}/products/${product.id}/variants/new`}
       editTabLink={`/dashboard/seller/stores/${storeUrl}/products/${product.id}/variants`}

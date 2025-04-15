@@ -1,7 +1,7 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import InputFileUpload from '@/components/shared/InputFileUpload'
+// import InputFileUpload from '@/components/shared/InputFileUpload'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -198,8 +198,8 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
             }))
           : undefined,
         specs: data?.specs ? data.specs.map((spec) => spec) : undefined,
-        keywords: [data?.keywords],
-        keywords_fa: [data?.keywords_fa || ''],
+        keywords: data?.keywords.split(','),
+        keywords_fa: data?.keywords_fa?.split(',') || [],
         isSale: data?.isSale || false,
         weight: data?.weight,
         saleEndDate:
@@ -473,10 +473,9 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
             >
               <div className="flex flex-col gap-y-6 xl:flex-row">
                 <ImageInput
-                  name="images"
-                  label="images"
+                  name="variantImage"
+                  label="Variant Image"
                   colors={colors}
-                  accept="undefined"
                   setColors={setColors}
                 />
                 <div className="w-full flex flex-col gap-y-3 xl:pl-5">
@@ -609,7 +608,7 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
               {/* Variant image - Keywords*/}
               <div className="flex items-center gap-10 py-14">
                 {/* Variant image */}
-                <div className="w-60 h-60">
+                {/* <div className="w-60 h-60">
                   <InputFileUpload
                     className="w-full"
                     // initialDataImages={
@@ -627,7 +626,7 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                     multiple={false}
                     label="VariantImage"
                   />
-                </div>
+                </div> */}
                 <div className="w-full flex-1 space-y-3">
                   <FormField
                     control={form.control}
