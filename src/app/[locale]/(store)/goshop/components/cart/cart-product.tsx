@@ -12,7 +12,7 @@ import {
   Truck,
 } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/navigation'
 import {
   Dispatch,
   FC,
@@ -48,7 +48,7 @@ const CartProduct: FC<Props> = ({
     name,
     variantName,
     sizeId,
-    image,
+    images,
     price,
     quantity,
     stock,
@@ -215,10 +215,12 @@ const CartProduct: FC<Props> = ({
                 />
               </label>
             )}
-            <Link href={`/product/${productSlug}?variant=${variantSlug}`}>
+            <Link
+              href={`/goshop/product/${productSlug}?variant=${variantSlug}`}
+            >
               <div className="m-0 mr-4 ml-2 w-28 h-28 bg-gray-200 relative rounded-lg">
                 <Image
-                  src={image}
+                  src={images.map((image) => image.url)[0]}
                   alt={name}
                   height={200}
                   width={200}
@@ -232,7 +234,7 @@ const CartProduct: FC<Props> = ({
             {/* Title - Actions */}
             <div className="w-[calc(100%-48px)] flex items-start overflow-hidden whitespace-nowrap">
               <Link
-                href={`/product/${productSlug}?variant=${variantSlug}`}
+                href={`/goshop/product/${productSlug}?variant=${variantSlug}`}
                 className="inline-block overflow-hidden text-sm whitespace-nowrap overflow-ellipsis"
               >
                 {name} · {variantName}

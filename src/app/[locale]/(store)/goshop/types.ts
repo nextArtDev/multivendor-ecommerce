@@ -1,5 +1,5 @@
 import { retrieveProductDetailsOptimized } from '@/components/amazon/lib/queries/product'
-import { Prisma, Size, Spec } from '@prisma/client'
+import { Image, Prisma, Size, Spec } from '@prisma/client'
 
 export type ProductDataType = Prisma.PromiseReturnType<
   typeof retrieveProductDetailsOptimized
@@ -31,7 +31,7 @@ export type CartProductType = {
   variantSlug: string
   name: string
   variantName: string
-  images: string[]
+  images: Image[]
   variantImage: string
   sizeId: string
   size: string

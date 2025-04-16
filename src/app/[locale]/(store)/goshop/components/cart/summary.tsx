@@ -30,8 +30,12 @@ const CartSummary: FC<Props> = ({ cartItems, shippingFees }) => {
       // const res = await saveUserCart(cartItems);
       // if (res) router.push("/checkout");
       setLoading(false)
-    } catch (error: any) {
-      toast.error(error.toString())
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error('An unexpected error occurred')
+      }
     }
   }
   return (
