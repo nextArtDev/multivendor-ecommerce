@@ -1,11 +1,12 @@
 import { FC, useState } from 'react'
 
 import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
 
 import { PulseLoader } from 'react-spinners'
 import { Button } from '@/components/ui/button'
 import { CartProductType } from '../../types'
+import { saveUserCart } from '../../lib/queries/user'
 
 interface Props {
   cartItems: CartProductType[]
@@ -27,8 +28,8 @@ const CartSummary: FC<Props> = ({ cartItems, shippingFees }) => {
   const handleSaveCart = async () => {
     try {
       setLoading(true)
-      // const res = await saveUserCart(cartItems);
-      // if (res) router.push("/checkout");
+      const res = await saveUserCart(cartItems)
+      if (res) router.push('/goshop/checkout')
       setLoading(false)
     } catch (error: unknown) {
       if (error instanceof Error) {
