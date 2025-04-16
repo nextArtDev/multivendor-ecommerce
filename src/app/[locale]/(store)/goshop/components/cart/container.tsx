@@ -10,6 +10,7 @@ import { Country } from '../header/header'
 import { CartProductType } from '../../types'
 import { SecurityPrivacyCard } from '../shipping/returns-security-privacy-card'
 import CartProduct from './cart-product'
+import FastDelivery from './fast-delivery'
 // import CartProduct from "../cards/cart-product";
 // import FastDelivery from "../cards/fast-delivery";
 // import { SecurityPrivacyCard } from "../product-page/returns-security-privacy-card";
@@ -95,9 +96,9 @@ export default function CartContainer({
                   cartItems={cartItems}
                   shippingFees={totalShipping}
                 />
-                {/* <div className="mt-2 p-4 bg-white px-6">
+                <div className="mt-2 p-4 bg-white px-6">
                   <FastDelivery />
-                </div> */}
+                </div>
                 <div className="mt-2 p-4 bg-white px-6">
                   <SecurityPrivacyCard />
                 </div>

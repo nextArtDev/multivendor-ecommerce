@@ -1,11 +1,12 @@
 'use client'
 
 import { ShoppingCartIcon } from 'lucide-react'
-import Link from 'next/link'
+
 import { cn, getDirection } from '@/lib/utils'
 import { useLocale, useTranslations } from 'next-intl'
 import { useMounted } from '@/hooks/use-mounted'
 import { getTranslations } from 'next-intl/server'
+import { Link } from '@/navigation'
 // import useIsMounted from '@/hooks/use-is-mounted'
 // import useShowSidebar from '@/hooks/use-cart-sidebar'
 // import useCartStore from '@/hooks/use-cart-store'
@@ -23,7 +24,7 @@ export default function CartButton() {
 
   const locale = useLocale()
   return (
-    <Link href="/cart" className="px-1 header-button">
+    <Link href="/goshop/cart" className="px-1 header-button">
       <div className="flex items-end text-xs relative">
         <ShoppingCartIcon className="h-8 w-8" />
 

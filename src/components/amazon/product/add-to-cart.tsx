@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast'
 // import { OrderItem } from '@/types'
 // import useCartStore from '@/hooks/use-cart-store'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
 import { useState } from 'react'
 
 export default function AddToCart({
@@ -46,7 +46,7 @@ export default function AddToCart({
             action: (
               <Button
                 onClick={() => {
-                  router.push('/cart')
+                  router.push('/goshop/cart')
                 }}
               >
                 {t('Product.Go to Cart')}
@@ -89,7 +89,7 @@ export default function AddToCart({
         onClick={async () => {
           try {
             const itemId = await addItem(item, quantity)
-            router.push(`/cart/${itemId}`)
+            router.push(`/goshop/cart/${itemId}`)
           } catch (error: any) {
             toast({
               variant: 'destructive',
@@ -105,7 +105,7 @@ export default function AddToCart({
         onClick={() => {
           try {
             addItem(item, quantity)
-            router.push(`/checkout`)
+            router.push(`/goshop/checkout`)
           } catch (error: any) {
             toast({
               variant: 'destructive',
