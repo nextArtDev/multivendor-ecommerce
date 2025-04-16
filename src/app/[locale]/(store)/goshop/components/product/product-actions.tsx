@@ -16,9 +16,12 @@ import { cn } from '@/lib/utils'
 // import SocialShare from '../shared/social-share'
 // import { useCartStore } from '@/cart-store/useCartStore'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
 import { CartProductType, ShippingDetailsType } from '../../types'
-import { FreeShippingWithCountriesAndCitiesType } from '@/components/amazon/lib/queries/product'
+import {
+  FreeShippingWithCountriesAndCitiesType,
+  getShippingDetails,
+} from '@/components/amazon/lib/queries/product'
 import { toast } from 'sonner'
 import ShipTo from '../shipping/ship-to'
 import ShippingDetails from '../shipping/shipping-details'
@@ -64,30 +67,30 @@ export default function ProductPageActions({
   const [shippingDetails, setShippingDetails] =
     useState<ShippingDetailsType | null>(null)
 
-  //   useEffect(() => {
-  //     const getShippingDetailsHandler = async () => {
-  //       const data = await getShippingDetails(
-  //         shippingFeeMethod,
-  //         userCountry,
-  //         store,
-  //         freeShipping,
-  //         freeShippingForAllCountries
-  //       )
-  //       setShippingDetails(data)
-  //       setLoading(false)
-  //       handleChange('shippingMethod', data.shippingFeeMethod)
-  //       handleChange('deliveryTimeMax', data.deliveryTimeMax)
-  //       handleChange('deliveryTimeMin', data.deliveryTimeMin)
-  //       handleChange('shippingFee', data.shippingFee)
-  //       handleChange('extraShippingFee', data.extraShippingFee)
-  //       handleChange('isFreeShipping', data.isFreeShipping)
-  //       handleChange('shippingService', data.shippingService)
-  //     }
-  //     getShippingDetailsHandler()
-  //   }, [userCountry])
+  useEffect(() => {
+    const getShippingDetailsHandler = async () => {
+      const data = await getShippingDetails(
+        shippingFeeMethod,
+        userCountry,
+        store,
+        freeShipping,
+        freeShippingForAllCountries
+      )
+      setShippingDetails(data)
+      setLoading(false)
+      handleChange('shippingMethod', data.shippingFeeMethod)
+      handleChange('deliveryTimeMax', data.deliveryTimeMax)
+      handleChange('deliveryTimeMin', data.deliveryTimeMin)
+      handleChange('shippingFee', data.shippingFee)
+      handleChange('extraShippingFee', data.extraShippingFee)
+      handleChange('isFreeShipping', data.isFreeShipping)
+      handleChange('shippingService', data.shippingService)
+    }
+    getShippingDetailsHandler()
+  }, [userCountry])
 
   const handleAddToCart = () => {
-    // if (maxQty <= 0) return
+    if (maxQty <= 0) return
     addToCart(productToBeAddedToCart)
     toast.success('Product added to cart successfully.')
   }
@@ -147,10 +150,10 @@ export default function ProductPageActions({
         <button
           disabled={!isProductValid}
           className={cn(
-            'relative w-full py-2.5 min-w-20   hover:bg-muted text-hover h-11 rounded-3xl leading-6 inline-block font-bold whitespace-nowrap border border-border cursor-pointer transition-all duration-300 ease-bezier-1 select-none'
-            // {
-            //   'cursor-not-allowed': !isProductValid || maxQty <= 0,
-            // }
+            'relative w-full py-2.5 min-w-20   hover:bg-muted text-hover h-11 rounded-3xl leading-6 inline-block font-bold whitespace-nowrap border border-border cursor-pointer transition-all duration-300 ease-bezier-1 select-none',
+            {
+              'cursor-not-allowed': !isProductValid || maxQty <= 0,
+            }
           )}
           onClick={() => handleAddToCart()}
         >

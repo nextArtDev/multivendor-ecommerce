@@ -11,6 +11,7 @@ import { CartProductType } from '../../types'
 import { SecurityPrivacyCard } from '../shipping/returns-security-privacy-card'
 import CartProduct from './cart-product'
 import FastDelivery from './fast-delivery'
+import { updateCartWithLatest } from '../../lib/queries/user'
 // import CartProduct from "../cards/cart-product";
 // import FastDelivery from "../cards/fast-delivery";
 // import { SecurityPrivacyCard } from "../product-page/returns-security-privacy-card";
@@ -43,8 +44,8 @@ export default function CartContainer({
     const loadAndSyncCart = async () => {
       try {
         setLoading(true)
-        // const updatedCart = await updateCartWithLatest(cartItems);
-        // setCart(updatedCart);
+        const updatedCart = await updateCartWithLatest(cartItems)
+        setCart(updatedCart)
         setLoading(false)
       } catch (error) {
         setLoading(false)
@@ -63,7 +64,7 @@ export default function CartContainer({
     <div>
       {cartItems && cartItems.length > 0 ? (
         <>
-          <div className=" min-h-[calc(100vh-65px)] px-2">
+          <div className="text-black min-h-[calc(100vh-65px)] px-2">
             <div className="max-w-[1200px] mx-auto py-4 flex flex-col gap-y-4 lg:flex-row">
               <div className="min-w-0 flex-1">
                 {/* Cart header */}

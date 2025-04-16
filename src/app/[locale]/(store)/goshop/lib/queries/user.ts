@@ -2,6 +2,8 @@
 import { prisma } from '@/lib/prisma'
 import { CartProductType } from '../../types'
 import { currentUser } from '@/lib/auth'
+import { getShippingDetails } from '@/components/amazon/lib/queries/product'
+import { getCookie } from 'cookies-next'
 
 export const saveUserCart = async (
   cartProducts: CartProductType[]
@@ -179,4 +181,116 @@ export const saveUserCart = async (
   })
   if (cart) return true
   return false
+}
+
+export const updateCartWithLatest = async (
+  cartProducts: CartProductType[]
+): Promise<CartProductType[]> => {
+  // Fetch product, variant, and size data from the database for validation
+  const validatedCartItems = await Promise.all(
+    cartProducts.map(async (cartProduct) => {
+      const { productId, variantId, sizeId, quantity } = cartProduct
+
+      // Fetch the product, variant, and size from the database
+      const product = await prisma.product.findUnique({
+        where: {
+          id: productId,
+        },
+        include: {
+          store: true,
+          freeShipping: {
+            include: {
+              eligibaleCountries: true,
+            },
+          },
+          variants: {
+            where: {
+              id: variantId,
+            },
+            include: {
+              sizes: {
+                where: {
+                  id: sizeId,
+                },
+              },
+              variantImage: true,
+            },
+          },
+          images: true,
+        },
+      })
+
+      if (
+        !product ||
+        product.variants.length === 0 ||
+        product.variants[0].sizes.length === 0
+      ) {
+        throw new Error(
+          `Invalid product, variant, or size combination for productId ${productId}, variantId ${variantId}, sizeId ${sizeId}`
+        )
+      }
+
+      const variant = product.variants[0]
+      const size = variant.sizes[0]
+
+      // Calculate Shipping details
+      const countryCookie = getCookie('userCountry', { cookies })
+
+      let details = {
+        shippingService: product.store.defaultShippingService,
+        shippingFee: 0,
+        extraShippingFee: 0,
+        isFreeShipping: false,
+        deliveryTimeMin: 0,
+        deliveryTimeMax: 0,
+      }
+
+      if (countryCookie) {
+        const country = JSON.parse(countryCookie)
+        const temp_details = await getShippingDetails(
+          product.shippingFeeMethod,
+          country,
+          product.store,
+          product.freeShipping,
+          !!product.freeShipping
+        )
+
+        if (typeof temp_details !== 'boolean') {
+          details = temp_details
+        }
+      }
+
+      const price = size.discount
+        ? size.price - (size.price * size.discount) / 100
+        : size.price
+
+      const validated_qty = Math.min(quantity, size.quantity)
+
+      return {
+        productId,
+        variantId,
+        productSlug: product.slug,
+        variantSlug: variant.slug,
+        sizeId,
+        sku: variant.sku,
+        name: product.name,
+        variantName: variant.variantName,
+        image: variant.variantImage[0].url,
+        variantImage: variant.variantImage,
+        stock: size.quantity,
+        weight: variant.weight,
+        shippingMethod: product.shippingFeeMethod,
+        size: size.size,
+        quantity: validated_qty,
+        price,
+        shippingService: details.shippingService,
+        shippingFee: details.shippingFee,
+        extraShippingFee: details.extraShippingFee,
+        deliveryTimeMin: details.deliveryTimeMin,
+        deliveryTimeMax: details.deliveryTimeMax,
+        isFreeShipping: details.isFreeShipping,
+      }
+    })
+  )
+  return validatedCartItems
 }

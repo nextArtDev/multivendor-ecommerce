@@ -75,7 +75,7 @@ const ProductPageContainer: FC<Props> = ({
     variantSlug: variant.slug,
     name: productData.name,
     variantName: variantName,
-    images: images.map((img) => img.url),
+    images: images,
     variantImage: variantImage[0].url,
     quantity: 1,
     price: 0,
@@ -119,7 +119,7 @@ const ProductPageContainer: FC<Props> = ({
       variantSlug: variant.slug,
       name: productData.name,
       variantName: variantName,
-      images: images.map((img) => img.url),
+      images: images,
       variantImage: variantImage[0].url,
       stock: variant.sizes.find((s) => s.id === sizeId)?.quantity || 1,
       weight: weight,
@@ -179,7 +179,7 @@ const ProductPageContainer: FC<Props> = ({
     return () => {
       window.removeEventListener('storage', handleStorageChange)
     }
-  }, [])
+  }, [setCart])
 
   // Add product to history
   // updateProductHistory(variantId)
