@@ -1,11 +1,15 @@
 import { retrieveProductDetailsOptimized } from '@/components/amazon/lib/queries/product'
 import {
+  Cart,
+  CartItem,
   Country,
+  Coupon,
   Image,
   Prisma,
   ShippingAddress,
   Size,
   Spec,
+  Store,
   User,
 } from '@prisma/client'
 
@@ -73,4 +77,8 @@ export type ShippingDetailsType = {
 export type UserShippingAddressType = ShippingAddress & {
   country: Country
   user: User
+}
+export type CartWithCartItemsType = Cart & {
+  cartItems: CartItem[]
+  coupon: (Coupon & { store: Store }) | null
 }

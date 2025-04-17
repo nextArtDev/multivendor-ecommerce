@@ -2,6 +2,10 @@
 
 import { Country, ShippingAddress } from '@prisma/client'
 import { FC, useEffect, useState } from 'react'
+import UserShippingAddresses from '../shipping/shipping-addresses/shipping-addresses'
+import CountryNote from '../country-note'
+import CheckoutProductCard from './checkout-product'
+import PlaceOrderCard from './place-order'
 
 interface Props {
   cart: CartWithCartItemsType
