@@ -4,10 +4,11 @@ import { prisma } from '@/lib/prisma'
 import { cookies } from 'next/headers'
 import { redirect } from '@/navigation'
 import Header, { Country } from '../components/header/header'
+import CheckoutContainer from '../components/chekout/container'
 
 export default async function CheckoutPage() {
   const user = await currentUser()
-  if (!user) redirect('/cart')
+  if (!user) redirect('/goshop/cart')
 
   // Get user cart
   const cart = await prisma.cart.findFirst({
@@ -27,7 +28,7 @@ export default async function CheckoutPage() {
   if (!cart) redirect('/cart')
 
   // Get user shipping address
-  const addresses = await getUserShippingAddresses()
+  // const addresses = await getUserShippingAddresses()
 
   // Get list of countries
   const countries = await prisma.country.findMany({
@@ -35,7 +36,7 @@ export default async function CheckoutPage() {
   })
 
   // Get cookies from the store
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const userCountryCookie = cookieStore.get('userCountry')
 
   // Set default country if cookie is missing
@@ -59,7 +60,8 @@ export default async function CheckoutPage() {
           <CheckoutContainer
             cart={cart}
             countries={countries}
-            addresses={addresses}
+            // addresses={addresses}
+            addresses={''}
             userCountry={userCountry}
           />
         </div>

@@ -2,9 +2,9 @@ import { cookies } from 'next/headers'
 import Header, { Country } from '../components/header/header'
 import CartContainer from '../components/cart/container'
 
-export default function CartPage() {
+export default async function CartPage() {
   // Get cookies from the store
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const userCountryCookie = cookieStore.get('userCountry')
 
   // Set default country if cookie is missing

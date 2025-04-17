@@ -6,12 +6,14 @@ import UserShippingAddresses from '../shipping/shipping-addresses/shipping-addre
 import CountryNote from '../country-note'
 import CheckoutProductCard from './checkout-product'
 import PlaceOrderCard from './place-order'
+import { CartWithCartItemsType, UserShippingAddressType } from '../../types'
+import { updateCheckoutProductstWithLatest } from '../../lib/queries/user'
 
 interface Props {
   cart: CartWithCartItemsType
   countries: Country[]
   addresses: UserShippingAddressType[]
-  userCountry: CountryType
+  userCountry: Country
 }
 
 const CheckoutContainer: FC<Props> = ({
@@ -25,9 +27,10 @@ const CheckoutContainer: FC<Props> = ({
   const [selectedAddress, setSelectedAddress] =
     useState<ShippingAddress | null>(null)
 
-  const activeCountry = addresses.find(
-    (add) => add.countryId === selectedAddress?.countryId
-  )?.country
+  const activeCountry = userCountry
+  // const activeCountry = addresses.find(
+  //   (add) => add.countryId === selectedAddress?.countryId
+  // )?.country
 
   const { cartItems } = cart
 
@@ -45,7 +48,7 @@ const CheckoutContainer: FC<Props> = ({
     }
   }, [activeCountry])
   return (
-    <div className="w-full flex flex-col gap-y-2 lg:flex-row">
+    <div className="text-black w-full flex flex-col gap-y-2 lg:flex-row">
       <div className="space-y-2 lg:flex-1">
         <UserShippingAddresses
           addresses={addresses}
