@@ -1,5 +1,13 @@
 import { retrieveProductDetailsOptimized } from '@/components/amazon/lib/queries/product'
-import { Image, Prisma, Size, Spec } from '@prisma/client'
+import {
+  Country,
+  Image,
+  Prisma,
+  ShippingAddress,
+  Size,
+  Spec,
+  User,
+} from '@prisma/client'
 
 export type ProductDataType = Prisma.PromiseReturnType<
   typeof retrieveProductDetailsOptimized
@@ -60,4 +68,9 @@ export type ShippingDetailsType = {
   isFreeShipping: boolean
   shippingService: string
   returnPolicy: string
+}
+
+export type UserShippingAddressType = ShippingAddress & {
+  country: Country
+  user: User
 }
