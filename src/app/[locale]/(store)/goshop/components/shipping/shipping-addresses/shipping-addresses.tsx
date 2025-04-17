@@ -34,7 +34,7 @@ const UserShippingAddresses: FC<Props> = ({
           />
         )}
         <div
-          className="mt-4 ml-8 text-orange-background cursor-pointer"
+          className="mt-4 ml-8  cursor-pointer"
           onClick={() => setShow(true)}
         >
           <Plus className="inline-block mr-1 w-3" />

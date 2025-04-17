@@ -2,10 +2,12 @@ import { retrieveProductDetailsOptimized } from '@/components/amazon/lib/queries
 import {
   Cart,
   CartItem,
+  City,
   Country,
   Coupon,
   Image,
   Prisma,
+  Province,
   ShippingAddress,
   Size,
   Spec,
@@ -76,6 +78,8 @@ export type ShippingDetailsType = {
 
 export type UserShippingAddressType = ShippingAddress & {
   country: Country
+  city: City
+  province: Province
   user: User
 }
 export type CartWithCartItemsType = Cart & {

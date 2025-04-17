@@ -27,10 +27,10 @@ const CheckoutContainer: FC<Props> = ({
   const [selectedAddress, setSelectedAddress] =
     useState<ShippingAddress | null>(null)
 
-  const activeCountry = userCountry
-  // const activeCountry = addresses.find(
-  //   (add) => add.countryId === selectedAddress?.countryId
-  // )?.country
+  // const activeCountry = userCountry
+  const activeCountry = addresses.find(
+    (add) => add.countryId === selectedAddress?.countryId
+  )?.country
 
   const { cartItems } = cart
 

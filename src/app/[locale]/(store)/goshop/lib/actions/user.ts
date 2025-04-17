@@ -126,8 +126,8 @@ export async function followStore(
 
 export const upsertShippingAddress = async (address: ShippingAddress) => {
   try {
-    const headerResponse = await headers()
-    const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
+    // const headerResponse = await headers()
+    // const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
     // Get current user
     const user = await currentUser()
 

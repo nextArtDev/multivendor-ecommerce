@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import { redirect } from '@/navigation'
 import Header, { Country } from '../components/header/header'
 import CheckoutContainer from '../components/chekout/container'
+import { getUserShippingAddresses } from '../lib/queries/user'
 
 export default async function CheckoutPage() {
   const user = await currentUser()
@@ -28,7 +29,7 @@ export default async function CheckoutPage() {
   if (!cart) redirect('/cart')
 
   // Get user shipping address
-  // const addresses = await getUserShippingAddresses()
+  const addresses = await getUserShippingAddresses()
 
   // Get list of countries
   const countries = await prisma.country.findMany({
@@ -60,8 +61,8 @@ export default async function CheckoutPage() {
           <CheckoutContainer
             cart={cart}
             countries={countries}
-            // addresses={addresses}
-            addresses={''}
+            addresses={addresses}
+            // addresses={[]}
             userCountry={userCountry}
           />
         </div>

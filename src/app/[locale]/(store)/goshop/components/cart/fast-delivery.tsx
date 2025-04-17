@@ -2,7 +2,7 @@ import { Check, ChevronRight, Package } from 'lucide-react'
 
 const FastDelivery = () => {
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 text-foreground">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-1">
           <Package className="w-4" />

@@ -46,11 +46,11 @@ export const Returns = ({
 
 export const SecurityPrivacyCard = () => {
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 text-foreground">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-1">
           <ShieldCheck className="w-4" />
-          <span className="text-sm font-bold">Security & Privacy</span>
+          <span className="text-sm  font-bold">Security & Privacy</span>
         </div>
       </div>
       <p className="text-xs text-muted-foreground ml-5 flex  gap-x-1">

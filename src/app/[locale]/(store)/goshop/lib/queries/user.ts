@@ -555,3 +555,31 @@ export const getProductShippingFee = async (
   // Return 0 if the country is not found
   return 0
 }
+
+export const getUserShippingAddresses = async () => {
+  try {
+    // Get current user
+    const user = await currentUser()
+
+    // Ensure user is authenticated
+    if (!user) throw new Error('Unauthenticated.')
+
+    // Retrieve all shipping addresses for the specified user
+    const shippingAddresses = await prisma.shippingAddress.findMany({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        country: true,
+        user: true,
+        province: true,
+        city: true,
+      },
+    })
+
+    return shippingAddresses
+  } catch (error) {
+    // Log and re-throw any errors
+    throw error
+  }
+}

@@ -62,9 +62,9 @@ const ShippingDetails: FC<Props> = ({
   } = shippingDetails || {} // Default to placeholders if shippingDetails is null
 
   // Calculate delivery dates only if shippingDetails is available
-  // const { minDate, maxDate } = shippingDetails
-  //   ? getShippingDatesRange(deliveryTimeMin, deliveryTimeMax)
-  //   : { minDate: 'Loading...', maxDate: 'Loading...' }
+  const { minDate, maxDate } = shippingDetails
+    ? getShippingDatesRange(deliveryTimeMin, deliveryTimeMax)
+    : { minDate: 'Loading...', maxDate: 'Loading...' }
 
   return (
     <div>
@@ -109,13 +109,13 @@ const ShippingDetails: FC<Props> = ({
         </span>
         <span className="flex items-center text-sm ml-5">
           Delivery:&nbsp;
-          {/* <strong className="text-sm">
+          <strong className="text-sm">
             {loading ? (
               <BarLoader width={180} color="#e5e5e5" className="rounded-full" />
             ) : (
               `${minDate.slice(4)} - ${maxDate.slice(4)}`
             )}
-          </strong> */}
+          </strong>
         </span>
         {!isFreeShipping && toggle && shippingDetails && (
           <ProductShippingFee

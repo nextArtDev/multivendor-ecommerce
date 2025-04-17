@@ -23,7 +23,7 @@ const AddressList: FC<Props> = ({
     }
   }, [addresses])
 
-  const haneldeAddressSelect = (address: ShippingAddress) => {
+  const handleAddressSelect = (address: ShippingAddress) => {
     setSelectedAddress(address)
   }
   return (
@@ -34,7 +34,7 @@ const AddressList: FC<Props> = ({
           address={address}
           countries={countries}
           isSelected={selectedAddress?.id === address.id}
-          onSelect={() => haneldeAddressSelect(address)}
+          onSelect={() => handleAddressSelect(address)}
         />
       ))}
     </div>
