@@ -10,7 +10,8 @@ async function page() {
   const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
 
   const session = await auth()
-  if (session?.user.id) return redirect(`${locale}/`)
+  // if (session?.user.id) return redirect(`${locale}/`)
+  if (session?.user.id) return redirect(`/`)
 
   return <LoginForm />
 }

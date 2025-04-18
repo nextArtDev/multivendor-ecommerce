@@ -38,12 +38,12 @@ export const ShippingRateFormSchema = z.object({
 })
 
 export const ShippingAddressSchema = z.object({
-  // countryId: z
-  //   .string({
-  //     required_error: 'Country is mandatory.',
-  //     invalid_type_error: 'Country must be a valid string.',
-  //   })
-  //   .uuid(),
+  countryId: z
+    .string({
+      required_error: 'Country is mandatory.',
+      invalid_type_error: 'Country must be a valid string.',
+    })
+    .uuid(),
   firstName: z
     .string({
       required_error: 'First name is mandatory.',

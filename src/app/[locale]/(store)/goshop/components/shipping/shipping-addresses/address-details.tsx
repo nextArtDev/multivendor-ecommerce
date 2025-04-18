@@ -59,10 +59,10 @@ const AddressDetails: FC<AddressDetailsProps> = ({
     queryFn: getAllProvinces,
   })
 
-  // State for country selector
+  // // State for country selector
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
-  // State for selected country
+  // // State for selected country
   const [country, setCountry] = useState<string>('Afghanistan')
 
   // Form hook for managing form state and validation
@@ -75,7 +75,7 @@ const AddressDetails: FC<AddressDetailsProps> = ({
       lastName: data?.lastName,
       address1: data?.address1,
       address2: data?.address2 || '',
-      // countryId: data?.countryId,
+      countryId: data?.countryId,
       phone: data?.phone,
       cityId: data?.city.id.toString(),
       provinceId: data?.province.id.toString(),
@@ -108,24 +108,25 @@ const AddressDetails: FC<AddressDetailsProps> = ({
     console.log({ values })
     try {
       // Upserting category data
-      // const response = await upsertShippingAddress({
-      //   id: data?.id ? data.id : v4(),
-      //   firstName: values.firstName,
-      //   lastName: values.lastName,
-      //   phone: values.phone,
-      //   address1: values.address1,
-      //   address2: values.address2 || '',
-      //   cityId: +values.cityId,
-      //   provinceId: +values.provinceId,
+      const response = await upsertShippingAddress({
+        id: data?.id ? data.id : v4(),
+        firstName: values.firstName,
+        lastName: values.lastName,
+        phone: values.phone,
+        address1: values.address1,
+        address2: values.address2 || '',
+        cityId: +values.cityId,
+        provinceId: +values.provinceId,
 
-      //   countryId: values.countryId,
-      //   // state: values.state,
-      //   default: values.default,
-      //   zip_code: values.zip_code,
-      //   userId: '',
-      //   createdAt: new Date(),
-      //   updatedAt: new Date(),
-      // })
+        countryId: values.countryId,
+
+        // state: values.state,
+        default: values.default,
+        zip_code: values.zip_code,
+        userId: '',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
 
       // Displaying success message
       toast.success(
@@ -137,7 +138,7 @@ const AddressDetails: FC<AddressDetailsProps> = ({
       // Refresh data
       router.refresh()
       setShow(false)
-    } catch (error: any) {
+    } catch (error) {
       // Handling form submission errors
       toast.error(error.toString())
     }
@@ -201,7 +202,7 @@ const AddressDetails: FC<AddressDetailsProps> = ({
           </div>
           <div className="space-y-2">
             <FormLabel>Address</FormLabel>
-            {/* <div>
+            <div>
               <FormField
                 disabled={isLoading}
                 control={form.control}
@@ -225,7 +226,7 @@ const AddressDetails: FC<AddressDetailsProps> = ({
                   </FormItem>
                 )}
               />
-            </div> */}
+            </div>
             <div className="!mt-3 flex flex-col gap-3">
               <FormField
                 disabled={isLoading}

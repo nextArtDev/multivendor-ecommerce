@@ -22,6 +22,7 @@ const CheckoutContainer: FC<Props> = ({
   addresses,
   userCountry,
 }) => {
+  // console.log({ countries })
   const [cartData, setCartData] = useState<CartWithCartItemsType>(cart)
 
   const [selectedAddress, setSelectedAddress] =

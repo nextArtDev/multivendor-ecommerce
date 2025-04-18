@@ -4,15 +4,18 @@ import LangToggle from '@/components/shared/lang-toggle'
 import { ModeToggle } from '@/components/ui/mode-toggle'
 import { UserButton } from '@/components/auth/user-button'
 import { Link } from '@/navigation'
-// import Amazon from '../../../public/'
 import { prisma } from '@/lib/prisma'
-import ProvinceCity from '@/components/shared/province-city'
-import MyForm from '@/components/shared/province-form'
+// import Amazon from '../../../public/'
+// import { prisma } from '@/lib/prisma'
+// import ProvinceCity from '@/components/shared/province-city'
+// import MyForm from '@/components/shared/province-form'
+// import { seedCountries } from '@/lib/seed-countries'
 // import { seed } from '@/lib/actions/seed'
 export default async function Home() {
   // const provinces = await prisma.province.findMany({})
   const t = await getTranslations('HomePage')
   // await seed()
+  // await seedCountries()
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">

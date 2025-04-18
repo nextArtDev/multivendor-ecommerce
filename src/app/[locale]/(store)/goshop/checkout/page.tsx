@@ -26,7 +26,7 @@ export default async function CheckoutPage() {
     },
   })
 
-  if (!cart) redirect('/cart')
+  if (!cart) redirect('/goshop/cart')
 
   // Get user shipping address
   const addresses = await getUserShippingAddresses()
