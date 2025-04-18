@@ -38,12 +38,12 @@ export const ShippingRateFormSchema = z.object({
 })
 
 export const ShippingAddressSchema = z.object({
-  countryId: z
-    .string({
-      required_error: 'Country is mandatory.',
-      invalid_type_error: 'Country must be a valid string.',
-    })
-    .uuid(),
+  // countryId: z
+  //   .string({
+  //     required_error: 'Country is mandatory.',
+  //     invalid_type_error: 'Country must be a valid string.',
+  //   })
+  //   .uuid(),
   firstName: z
     .string({
       required_error: 'First name is mandatory.',
@@ -87,21 +87,28 @@ export const ShippingAddressSchema = z.object({
     .max(100, { message: 'Address line 2 cannot exceed 100 characters.' })
     .optional(),
 
-  state: z
-    .string({
-      required_error: 'State is mandatory.',
-      invalid_type_error: 'State must be a valid string.',
-    })
-    .min(2, { message: 'State should be at least 2 characters long.' })
-    .max(50, { message: 'State cannot exceed 50 characters.' }),
+  // state: z
+  //   .string({
+  //     required_error: 'State is mandatory.',
+  //     invalid_type_error: 'State must be a valid string.',
+  //   })
+  //   .min(2, { message: 'State should be at least 2 characters long.' })
+  //   .max(50, { message: 'State cannot exceed 50 characters.' }),
 
-  city: z
+  cityId: z
     .string({
       required_error: 'City is mandatory.',
       invalid_type_error: 'City must be a valid string.',
     })
     .min(2, { message: 'City should be at least 2 characters long.' })
     .max(50, { message: 'City cannot exceed 50 characters.' }),
+  provinceId: z
+    .string({
+      required_error: 'province is mandatory.',
+      invalid_type_error: 'province must be a valid string.',
+    })
+    .min(2, { message: 'province should be at least 2 characters long.' })
+    .max(50, { message: 'province cannot exceed 50 characters.' }),
 
   zip_code: z
     .string({

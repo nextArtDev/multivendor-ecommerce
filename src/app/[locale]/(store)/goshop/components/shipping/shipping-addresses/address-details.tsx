@@ -38,6 +38,9 @@ import { Button } from '@/components/ui/button'
 import { UserShippingAddressType } from '../../../types'
 import { ShippingAddressSchema } from '../../../lib/schemas/shipping'
 import { upsertShippingAddress } from '../../../lib/actions/user'
+import ProvinceCity from '@/components/shared/province-city'
+import { useQuery } from '@tanstack/react-query'
+import { getAllProvinces } from '../../../lib/queries/address'
 
 interface AddressDetailsProps {
   data?: UserShippingAddressType
@@ -51,6 +54,10 @@ const AddressDetails: FC<AddressDetailsProps> = ({
   setShow,
 }) => {
   const router = useRouter() // Hook for routing
+  const provinces = useQuery({
+    queryKey: ['provinces'],
+    queryFn: getAllProvinces,
+  })
 
   // State for country selector
   const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -68,9 +75,10 @@ const AddressDetails: FC<AddressDetailsProps> = ({
       lastName: data?.lastName,
       address1: data?.address1,
       address2: data?.address2 || '',
-      countryId: data?.countryId,
+      // countryId: data?.countryId,
       phone: data?.phone,
-      // city: data?.city,
+      cityId: data?.city.id.toString(),
+      provinceId: data?.province.id.toString(),
       // state: data?.state,
       zip_code: data?.zip_code,
       default: data?.default,
@@ -85,6 +93,8 @@ const AddressDetails: FC<AddressDetailsProps> = ({
     if (data) {
       form.reset({
         ...data,
+        cityId: data.city.id.toString(),
+        provinceId: data.province.id.toString(),
         address2: data.address2 || '',
       })
       handleCountryChange(data?.country.name)
@@ -95,24 +105,27 @@ const AddressDetails: FC<AddressDetailsProps> = ({
   const handleSubmit = async (
     values: z.infer<typeof ShippingAddressSchema>
   ) => {
+    console.log({ values })
     try {
       // Upserting category data
-      const response = await upsertShippingAddress({
-        id: data?.id ? data.id : v4(),
-        firstName: values.firstName,
-        lastName: values.lastName,
-        phone: values.phone,
-        address1: values.address1,
-        address2: values.address2 || '',
-        // city: values.city,
-        countryId: values.countryId,
-        state: values.state,
-        default: values.default,
-        zip_code: values.zip_code,
-        userId: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
+      // const response = await upsertShippingAddress({
+      //   id: data?.id ? data.id : v4(),
+      //   firstName: values.firstName,
+      //   lastName: values.lastName,
+      //   phone: values.phone,
+      //   address1: values.address1,
+      //   address2: values.address2 || '',
+      //   cityId: +values.cityId,
+      //   provinceId: +values.provinceId,
+
+      //   countryId: values.countryId,
+      //   // state: values.state,
+      //   default: values.default,
+      //   zip_code: values.zip_code,
+      //   userId: '',
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      // })
 
       // Displaying success message
       toast.success(
@@ -133,7 +146,7 @@ const AddressDetails: FC<AddressDetailsProps> = ({
   const handleCountryChange = (name: string) => {
     const country = countries.find((c) => c.name === name)
     if (country) {
-      form.setValue('countryId', country.id)
+      // form.setValue('countryId', country.id)
     }
     setCountry(name)
   }
@@ -188,7 +201,7 @@ const AddressDetails: FC<AddressDetailsProps> = ({
           </div>
           <div className="space-y-2">
             <FormLabel>Address</FormLabel>
-            <div>
+            {/* <div>
               <FormField
                 disabled={isLoading}
                 control={form.control}
@@ -202,7 +215,7 @@ const AddressDetails: FC<AddressDetailsProps> = ({
                         onToggle={() => setIsOpen((prev) => !prev)}
                         onChange={(val) => handleCountryChange(val)}
                         selectedValue={
-                          (countries.find(
+                          (countries?.find(
                             (c) => c.name === country
                           ) as SelectMenuOption) || countries[0]
                         }
@@ -212,7 +225,7 @@ const AddressDetails: FC<AddressDetailsProps> = ({
                   </FormItem>
                 )}
               />
-            </div>
+            </div> */}
             <div className="!mt-3 flex flex-col gap-3">
               <FormField
                 disabled={isLoading}
@@ -249,7 +262,7 @@ const AddressDetails: FC<AddressDetailsProps> = ({
             </div>
 
             <div className="!mt-3 flex items-center justify-between gap-3">
-              <FormField
+              {/* <FormField
                 disabled={isLoading}
                 control={form.control}
                 name="state"
@@ -273,8 +286,9 @@ const AddressDetails: FC<AddressDetailsProps> = ({
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                )}
-              />
+                )} 
+              /> */}
+              <ProvinceCity provinces={provinces.data || []} />
             </div>
             <FormField
               disabled={isLoading}
