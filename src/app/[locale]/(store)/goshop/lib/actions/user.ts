@@ -504,3 +504,22 @@ export const placeOrder = async (
     orderId: order.id,
   }
 }
+
+export const emptyUserCart = async () => {
+  try {
+    // Ensure the user is authenticated
+    const user = await currentUser()
+    if (!user) throw new Error('Unauthenticated.')
+
+    const userId = user.id
+
+    const res = await prisma.cart.delete({
+      where: {
+        userId,
+      },
+    })
+    if (res) return true
+  } catch (error) {
+    throw error
+  }
+}

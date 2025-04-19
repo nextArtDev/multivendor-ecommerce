@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import FastDelivery from '../cart/fast-delivery'
 import { SecurityPrivacyCard } from '../shipping/returns-security-privacy-card'
 import { CartWithCartItemsType } from '../../types'
-import { placeOrder } from '../../lib/actions/user'
+import { emptyUserCart, placeOrder } from '../../lib/actions/user'
 
 interface Props {
   shippingAddress: ShippingAddress | null
@@ -34,12 +34,12 @@ const PlaceOrderCard: FC<Props> = ({
       toast.error('Select a shipping address first !')
     } else {
       const order = await placeOrder(shippingAddress, id)
-      console.log(order)
-      // if (order) {
-      //   emptyCart();
-      //   await emptyUserCart();
-      //   push(`/order/${order.orderId}`);
-      // }
+
+      if (order) {
+        emptyCart()
+        await emptyUserCart()
+        push(`/goshop/order/${order.orderId}`)
+      }
     }
     setLoading(false)
   }
