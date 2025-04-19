@@ -1,24 +1,24 @@
-import { CartItem } from "@prisma/client";
-import { ChevronRight, Truck } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { CartItem } from '@prisma/client'
+import { ChevronRight, Truck } from 'lucide-react'
+import Image from 'next/image'
+import { Link } from '@/navigation'
 
 export default function CheckoutProductCard({
   product,
   isDiscounted,
 }: {
-  product: CartItem;
-  isDiscounted: boolean;
+  product: CartItem
+  isDiscounted: boolean
 }) {
-  const { productSlug, variantSlug, sizeId, shippingFee } = product;
+  const { productSlug, variantSlug, sizeId, shippingFee } = product
   return (
-    <div className="bg-white px-6 border-t bordet-t-[#ebebeb] select-none">
+    <div className="bg-white px-6 border-t border-t-[#ebebeb] select-none">
       <div className="py-4">
         <div className="relative flex self-start">
           {/* Image */}
           <div className="flex items-center">
             <Link
-              href={`/product/${productSlug}/${variantSlug}?size=${sizeId}`}
+              href={`/goshop/product/${productSlug}/${variantSlug}?size=${sizeId}`}
             >
               <div className="m-0 mr-4 ml-2 w-28 h-28 bg-gray-200 relative rounded-lg">
                 <Image
@@ -79,7 +79,7 @@ export default function CheckoutProductCard({
                     <span className="text-[#01a971] ml-1">
                       {shippingFee
                         ? `$${shippingFee.toFixed(2)}`
-                        : "Free Delivery"}
+                        : 'Free Delivery'}
                     </span>
                   </span>
                 </div>
@@ -89,5 +89,5 @@ export default function CheckoutProductCard({
         </div>
       </div>
     </div>
-  );
+  )
 }

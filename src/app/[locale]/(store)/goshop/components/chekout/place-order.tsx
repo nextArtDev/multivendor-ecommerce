@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import FastDelivery from '../cart/fast-delivery'
 import { SecurityPrivacyCard } from '../shipping/returns-security-privacy-card'
 import { CartWithCartItemsType } from '../../types'
+import { placeOrder } from '../../lib/actions/user'
 
 interface Props {
   shippingAddress: ShippingAddress | null
@@ -32,7 +33,8 @@ const PlaceOrderCard: FC<Props> = ({
     if (!shippingAddress) {
       toast.error('Select a shipping address first !')
     } else {
-      // const order = await placeOrder(shippingAddress, id);
+      const order = await placeOrder(shippingAddress, id)
+      console.log(order)
       // if (order) {
       //   emptyCart();
       //   await emptyUserCart();
@@ -115,7 +117,7 @@ const PlaceOrderCard: FC<Props> = ({
         )}
       </div>
       <div className="mt-2 p-4 bg-white">
-        <Button onClick={() => handlePlaceOrder()}>
+        <Button variant={'secondary'} onClick={() => handlePlaceOrder()}>
           {loading ? (
             <PulseLoader size={5} color="#fff" />
           ) : (
@@ -123,10 +125,10 @@ const PlaceOrderCard: FC<Props> = ({
           )}
         </Button>
       </div>
-      <div className="mt-2 p-4 bg-white px-6">
+      <div className="mt-2 p-4 bg-secondary rounded-md  px-6">
         <FastDelivery />
       </div>
-      <div className="mt-2 p-4 bg-white px-6">
+      <div className="mt-2 p-4 bg-secondary rounded-md  px-6">
         <SecurityPrivacyCard />
       </div>
     </div>

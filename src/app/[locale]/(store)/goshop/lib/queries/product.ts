@@ -455,3 +455,48 @@ export const getStoreFollowingInfo = async (storeId: string) => {
       : 0,
   }
 }
+
+export const getDeliveryDetailsForStoreByCountry = async (
+  storeId: string,
+  countryId: string
+) => {
+  // Get shipping rate
+  const shippingRate = await prisma.shippingRate.findFirst({
+    where: {
+      countryId,
+      storeId,
+    },
+  })
+
+  let storeDetails
+  if (!shippingRate) {
+    storeDetails = await prisma.store.findUnique({
+      where: {
+        id: storeId,
+      },
+      select: {
+        defaultShippingService: true,
+        defaultDeliveryTimeMin: true,
+        defaultDeliveryTimeMax: true,
+      },
+    })
+  }
+
+  const shippingService = shippingRate
+    ? shippingRate.shippingService
+    : storeDetails?.defaultShippingService
+
+  const deliveryTimeMin = shippingRate
+    ? shippingRate.deliveryTimeMin
+    : storeDetails?.defaultDeliveryTimeMin
+
+  const deliveryTimeMax = shippingRate
+    ? shippingRate.deliveryTimeMax
+    : storeDetails?.defaultDeliveryTimeMax
+
+  return {
+    shippingService,
+    deliveryTimeMin,
+    deliveryTimeMax,
+  }
+}
