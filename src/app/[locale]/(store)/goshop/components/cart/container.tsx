@@ -23,7 +23,7 @@ export default function CartContainer({
 }: {
   userCountry: Country
 }) {
-  const cartItems = useFromStore(useCartStore, (state) => state.cart) || []
+  const cartItems = useFromStore(useCartStore, (state) => state.cart)
   const setCart = useCartStore((state) => state.setCart)
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -42,6 +42,7 @@ export default function CartContainer({
 
   useEffect(() => {
     const loadAndSyncCart = async () => {
+      if (!cartItems) return
       try {
         setLoading(true)
         const updatedCart = await updateCartWithLatest(cartItems)

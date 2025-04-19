@@ -9,6 +9,7 @@ import {
 } from '@/components/amazon/lib/queries/product'
 import { getCookie } from 'cookies-next'
 import { CartItem, Country, Store } from '@prisma/client'
+import { cookies } from 'next/headers'
 
 export const saveUserCart = async (
   cartProducts: CartProductType[]
@@ -281,8 +282,8 @@ export const updateCartWithLatest = async (
         sku: variant.sku,
         name: product.name,
         variantName: variant.variantName,
-        image: variant.variantImage[0].url,
-        variantImage: variant.variantImage,
+        images: product.images,
+        variantImage: variant.variantImage[0].url,
         stock: size.quantity,
         weight: variant.weight,
         shippingMethod: product.shippingFeeMethod,
