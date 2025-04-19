@@ -24,6 +24,7 @@ import {
 import { CartProductType } from '../../types'
 import { Country } from '../header/header'
 import { toast } from 'sonner'
+import { toggleWishlistItem } from '../../lib/queries/user'
 
 interface Props {
   product: CartProductType
@@ -169,8 +170,8 @@ const CartProduct: FC<Props> = ({
   // Handle add product to wishlist
   const handleaddToWishlist = async () => {
     try {
-      // const res = await addToWishlist(productId, variantId, sizeId);
-      // if (res) toast.success("Product successfully added to wishlist.");
+      const res = await toggleWishlistItem(productId, variantId, sizeId)
+      if (res) toast.success(res.message)
     } catch (error: any) {
       toast.error(error.toString())
     }

@@ -19,6 +19,7 @@ import ProductCardImageSwiper from './swiper'
 import Rating from '@/components/amazon/product/rating'
 import VariantSwitcher from './variant-switcher'
 import ProductPrice from './product-price'
+import { toggleWishlistItem } from '../../lib/queries/user'
 
 export default function ProductCard({ product }: { product: ProductType }) {
   const { name, slug, rating, sales, images, variants, id } = product
@@ -27,8 +28,8 @@ export default function ProductCard({ product }: { product: ProductType }) {
 
   const handleAddToWishlist = async () => {
     try {
-      // const res = await addToWishlist(id, variant.variantId);
-      // if (res) toast.success("Product successfully added to wishlist.");
+      const res = await toggleWishlistItem(id, variant.variantId)
+      if (res) toast.success(res.message)
     } catch (error: any) {
       toast.error(error.toString())
     }

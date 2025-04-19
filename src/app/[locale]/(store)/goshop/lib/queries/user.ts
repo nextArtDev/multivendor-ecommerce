@@ -584,3 +584,88 @@ export const getUserShippingAddresses = async () => {
     throw error
   }
 }
+
+// export const addToWishlist = async (
+//   productId: string,
+//   variantId: string,
+//   sizeId?: string
+// ) => {
+//   // Ensure the user is authenticated
+//   const user = await currentUser()
+
+//   if (!user || !user.id) throw new Error('Unauthenticated.')
+
+//   const userId = user.id
+
+//   try {
+//     const existingWIshlistItem = await prisma.wishlist.findFirst({
+//       where: {
+//         userId,
+//         productId,
+//         variantId,
+//       },
+//     })
+
+//     if (existingWIshlistItem) {
+//       throw new Error('Product is already in the wishlist')
+//     }
+
+//     return await prisma.wishlist.create({
+//       data: {
+//         userId,
+//         productId,
+//         variantId,
+//         sizeId,
+//       },
+//     })
+//   } catch (error) {
+//     throw error
+//   }
+// }
+
+export const toggleWishlistItem = async (
+  productId: string,
+  variantId: string,
+  sizeId?: string
+) => {
+  // Ensure the user is authenticated
+  const user = await currentUser()
+
+  if (!user || !user.id) throw new Error('Unauthenticated.')
+
+  const userId = user.id
+
+  try {
+    // Check if the item already exists in the wishlist
+    const existingWishlistItem = await prisma.wishlist.findFirst({
+      where: {
+        userId,
+        productId,
+        variantId,
+      },
+    })
+
+    if (existingWishlistItem) {
+      // If it exists, remove it from the wishlist
+      await prisma.wishlist.delete({
+        where: {
+          id: existingWishlistItem.id,
+        },
+      })
+      return { message: 'Product removed from wishlist' }
+    } else {
+      // If it doesn't exist, add it to the wishlist
+      await prisma.wishlist.create({
+        data: {
+          userId,
+          productId,
+          variantId,
+          sizeId,
+        },
+      })
+      return { message: 'Product successfully added to wishlist.' }
+    }
+  } catch (error) {
+    throw error
+  }
+}
