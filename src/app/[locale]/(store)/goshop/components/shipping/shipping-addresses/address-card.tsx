@@ -4,7 +4,10 @@ import { Check } from 'lucide-react'
 import { FC, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
-import { upsertShippingAddress } from '../../../lib/actions/user'
+import {
+  updateDefaultShippingAddress,
+  upsertShippingAddress,
+} from '../../../lib/actions/user'
 import { toast } from 'sonner'
 import AddressDetails from './address-details'
 import Modal from '@/components/shared/modal'
@@ -27,11 +30,14 @@ const ShippingAddressCard: FC<Props> = ({
   const [show, setShow] = useState(false)
   const handleMakeDefault = async () => {
     try {
-      const { country, ...newAddress } = address
-      const response = await upsertShippingAddress({
-        ...newAddress,
-        default: true,
-      })
+      // const { country, ...newAddress } = address
+      // const response = await upsertShippingAddress({
+      //   // ...newAddress,
+      //   ...address,
+      //   default: true,
+      // })
+      const response = await updateDefaultShippingAddress(address.id)
+
       if (response) {
         toast.success('New Default Address saved.')
         router.refresh()
@@ -52,14 +58,14 @@ const ShippingAddressCard: FC<Props> = ({
         <span className="leading-8 inline-flex p-0.5 cursor-pointer">
           <span
             className={cn(
-              'leading-8 inline-block w-5 h-5 rounded-full bg-white border border-gray-300',
+              'leading-8 inline-block w-5 h-5 rounded-full  bg-white border border-gray-300',
               {
-                'bg-orange-background border-none flex items-center justify-center':
+                'bg-secondary/80 border-none flex items-center justify-center':
                   isSelected,
               }
             )}
           >
-            {isSelected && <Check className="stroke-white w-3" />}
+            {isSelected && <Check className="stroke-white  w-3" />}
           </span>
         </span>
         <input type="checkbox" hidden id={address.id} />
@@ -82,6 +88,8 @@ const ShippingAddressCard: FC<Props> = ({
         <div className="text-sm max-w-[90%] text-gray-600 leading-4 overflow-hidden text-ellipsis whitespace-nowrap">
           {/* {address.state}, {address.city}, {address.country.name},&nbsp; */}
           {address.country.name},&nbsp;
+          {address.city.name},&nbsp;
+          {address.province.name},&nbsp;
           {address.zip_code}
         </div>
         {/* Save as default - Edit */}

@@ -126,6 +126,7 @@ export async function followStore(
 
 export const upsertShippingAddress = async (address: ShippingAddress) => {
   try {
+    // console.log({ address })
     // const headerResponse = await headers()
     // const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
     // Get current user
@@ -153,7 +154,7 @@ export const upsertShippingAddress = async (address: ShippingAddress) => {
               default: false,
             },
           })
-        } catch (error) {
+        } catch {
           throw new Error('Could not reset default shipping addresses')
         }
       }
@@ -175,6 +176,53 @@ export const upsertShippingAddress = async (address: ShippingAddress) => {
     })
 
     return upsertedAddress
+  } catch (error) {
+    // Log and re-throw any errors
+    throw error
+  }
+}
+export const updateDefaultShippingAddress = async (addressId: string) => {
+  try {
+    // console.log({ address })
+    // const headerResponse = await headers()
+    // const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
+    // Get current user
+    const user = await currentUser()
+
+    // Ensure user is authenticated
+    if (!user) throw new Error('Unauthenticated.')
+
+    // Ensure address data is provided
+    if (!addressId) throw new Error('Please provide address data.')
+
+    // Handle making the rest of addresses default false when we are adding a new default
+
+    const addressDB = await prisma.shippingAddress.findUnique({
+      where: { id: addressId },
+    })
+    if (addressDB) {
+      await prisma.shippingAddress.updateMany({
+        where: {
+          userId: user.id,
+          default: true,
+        },
+        data: {
+          default: false,
+        },
+      })
+    }
+
+    const updatedAddress = await prisma.shippingAddress.update({
+      where: {
+        id: addressId,
+      },
+      data: {
+        default: true,
+        userId: user.id,
+      },
+    })
+
+    return updatedAddress
   } catch (error) {
     // Log and re-throw any errors
     throw error

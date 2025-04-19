@@ -1,6 +1,7 @@
 import { Country, ShippingAddress } from '@prisma/client'
 import { Dispatch, FC, SetStateAction, useEffect } from 'react'
 import ShippingAddressCard from './address-card'
+import { UserShippingAddressType } from '../../../types'
 
 interface Props {
   addresses: UserShippingAddressType[]

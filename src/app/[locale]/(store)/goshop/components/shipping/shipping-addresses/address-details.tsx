@@ -41,6 +41,13 @@ import { upsertShippingAddress } from '../../../lib/actions/user'
 import ProvinceCity from '@/components/shared/province-city'
 import { useQuery } from '@tanstack/react-query'
 import { getAllProvinces } from '../../../lib/queries/address'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface AddressDetailsProps {
   data?: UserShippingAddressType
@@ -60,10 +67,10 @@ const AddressDetails: FC<AddressDetailsProps> = ({
   })
 
   // // State for country selector
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+  // const [isOpen, setIsOpen] = useState<boolean>(false)
 
   // // State for selected country
-  const [country, setCountry] = useState<string>('Afghanistan')
+  // const [country, setCountry] = useState<string>('Afghanistan')
 
   // Form hook for managing form state and validation
   const form = useForm<z.infer<typeof ShippingAddressSchema>>({
@@ -97,7 +104,7 @@ const AddressDetails: FC<AddressDetailsProps> = ({
         provinceId: data.province.id.toString(),
         address2: data.address2 || '',
       })
-      handleCountryChange(data?.country.name)
+      // handleCountryChange(data?.country.name)
     }
   }, [data, form])
 
@@ -144,13 +151,13 @@ const AddressDetails: FC<AddressDetailsProps> = ({
     }
   }
 
-  const handleCountryChange = (name: string) => {
-    const country = countries.find((c) => c.name === name)
-    if (country) {
-      // form.setValue('countryId', country.id)
-    }
-    setCountry(name)
-  }
+  // const handleCountryChange = (name: string) => {
+  //   const country = countries.find((c) => c.name === name)
+  //   if (country) {
+  //     // form.setValue('countryId', country.id)
+  //   }
+  //   setCountry(name)
+  // }
 
   return (
     <div>
@@ -208,20 +215,47 @@ const AddressDetails: FC<AddressDetailsProps> = ({
                 control={form.control}
                 name="countryId"
                 render={({ field }) => (
-                  <FormItem className="flex-1 md:w-[calc(50%-8px)] !mt-3">
-                    <FormControl>
-                      <CountrySelector
-                        id={'countries'}
-                        open={isOpen}
-                        onToggle={() => setIsOpen((prev) => !prev)}
-                        onChange={(val) => handleCountryChange(val)}
-                        selectedValue={
-                          (countries?.find(
-                            (c) => c.name === country
-                          ) as SelectMenuOption) || countries[0]
-                        }
-                      />
-                    </FormControl>
+                  // <FormItem className="flex-1 md:w-[calc(50%-8px)] !mt-3">
+                  //   <FormControl>
+                  //     <CountrySelector
+                  //       id={'countries'}
+                  //       open={isOpen}
+                  //       onToggle={() => setIsOpen((prev) => !prev)}
+                  //       onChange={(val) => handleCountryChange(val)}
+                  //       selectedValue={
+                  //         (countries?.find(
+                  //           (c) => c.name === country
+                  //         ) as SelectMenuOption) || countries[0]
+                  //       }
+                  //     />
+                  //   </FormControl>
+                  //   <FormMessage />
+                  // </FormItem>
+                  <FormItem className="flex-1">
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            defaultValue={field.value?.[0]}
+                            placeholder="Select a Country"
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {countries?.map((country) => (
+                          <SelectItem
+                            key={country.id}
+                            value={String(country.id)}
+                          >
+                            {country.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
