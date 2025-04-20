@@ -3,6 +3,7 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { CouponFormSchema } from '@/lib/schemas/dashboard'
+import { Coupon } from '@prisma/client'
 
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
@@ -95,6 +96,80 @@ export async function createCoupon(
     })
 
     // return couponDetails
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return {
+        errors: {
+          _form: [err.message],
+        },
+      }
+    } else {
+      return {
+        errors: {
+          _form: ['مشکلی پیش آمده، لطفا دوباره امتحان کنید!'],
+        },
+      }
+    }
+  }
+  revalidatePath(path)
+  redirect(`/${locale}/dashboard/seller/stores/${storeUrl}/coupons`)
+}
+
+interface DeleteBillboardFormState {
+  errors: {
+    name?: string[]
+    featured?: string[]
+    url?: string[]
+    images?: string[]
+    _form?: string[]
+  }
+}
+
+export async function deleteCoupon(
+  path: string,
+  couponId: string,
+  storeUrl: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  formState: DeleteBillboardFormState,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  formData: FormData
+): Promise<DeleteBillboardFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
+  const session = await auth()
+  if (!session || !session.user || session.user.role !== 'SELLER') {
+    return {
+      errors: {
+        _form: ['شما اجازه دسترسی ندارید!'],
+      },
+    }
+  }
+  // console.log(result)
+  if (!couponId) {
+    return {
+      errors: {
+        _form: ['کوپن در دسترس نیست!'],
+      },
+    }
+  }
+
+  try {
+    const isExisting: Coupon | null = await prisma.coupon.findFirst({
+      where: { id: couponId },
+    })
+    if (!isExisting) {
+      return {
+        errors: {
+          _form: ['کوپن حذف شده است!'],
+        },
+      }
+    }
+
+    await prisma.coupon.delete({
+      where: {
+        id: couponId,
+      },
+    })
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {

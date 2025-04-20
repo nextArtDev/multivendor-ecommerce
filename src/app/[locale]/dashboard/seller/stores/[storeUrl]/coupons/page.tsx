@@ -28,7 +28,7 @@ export default async function SellerCouponsPage({
       }
       modalChildren={<CouponDetails storeUrl={storeUrl} />}
       newTabLink={`/dashboard/seller/stores/${storeUrl}/coupons/new`}
-      filterValue="name"
+      filterValue="code"
       data={coupons}
       columns={columns}
       searchPlaceholder="Search coupon name..."

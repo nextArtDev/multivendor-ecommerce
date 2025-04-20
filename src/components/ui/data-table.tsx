@@ -58,7 +58,6 @@ export default function DataTable<TData, TValue>({
   subheading,
   noHeader,
   newTabLink,
-  editTabLink,
 }: DataTableProps<TData, TValue>) {
   // Modal state
   const { setOpen } = useModal()
@@ -156,17 +155,10 @@ export default function DataTable<TData, TValue>({
                         key={cell.id}
                         className="max-w-[400px] break-words"
                       >
-                        <Link
-                          href={`${editTabLink}/${
-                            (cell.getContext().row.original as { id: string })
-                              .id
-                          }`}
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </Link>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>

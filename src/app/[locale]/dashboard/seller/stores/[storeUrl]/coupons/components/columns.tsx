@@ -2,7 +2,6 @@
 
 // React, Next.js imports
 import { useActionState } from 'react'
-import NextImage from 'next/image'
 
 // UI components
 import {
@@ -20,7 +19,6 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -32,26 +30,15 @@ import {
 import { useModal } from '@/providers/modal-provider'
 
 // Lucide icons
-import {
-  CopyPlus,
-  FilePenLine,
-  MoreHorizontal,
-  SquareStack,
-  Trash,
-} from 'lucide-react'
+import { MoreHorizontal, Trash } from 'lucide-react'
 
 // Queries
 
 // Tanstack React Table
 import { ColumnDef } from '@tanstack/react-table'
 
-// Types
-
-import Link from 'next/link'
-// import { toast } from 'sonner'
-// import { deleteProduct } from '@/lib/actions/dashboard/products'
+import { deleteCoupon } from '@/lib/actions/dashboard/coupons'
 import { StoreProductType } from '@/lib/types'
-import { deleteProduct } from '@/lib/actions/dashboard/products'
 import { usePathname } from '@/navigation'
 import { format } from 'date-fns-jalali'
 
@@ -86,29 +73,26 @@ export const columns: ColumnDef<StoreProductType>[] = [
     },
   },
 
-  // {
-  //   id: 'actions',
-  //   cell: ({ row }) => {
-  //     const rowData = row.original
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      const rowData = row.original
 
-  //     return (
-  //       <CellActions
-  //         productId={rowData.id}
-  //         href={`/dashboard/seller/stores/${row.original.store.url}/products/${row.original.id}/variants`}
-  //       />
-  //     )
-  //   },
-  // },
+      return (
+        <CellActions couponId={rowData.id} storeUrl={row.original.store.url} />
+      )
+    },
+  },
 ]
 
 // Define props interface for CellActions component
 interface CellActionsProps {
-  productId: string
-  href: string
+  couponId: string
+  storeUrl: string
 }
 
 // CellActions component definition
-const CellActions: React.FC<CellActionsProps> = ({ productId, href }) => {
+const CellActions: React.FC<CellActionsProps> = ({ couponId, storeUrl }) => {
   // Hooks
   const { setClose } = useModal()
   // const [loading, setLoading] = useState(false)
@@ -117,12 +101,12 @@ const CellActions: React.FC<CellActionsProps> = ({ productId, href }) => {
   // const router = useRouter()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, deleteAction, pending] = useActionState(
-    deleteProduct.bind(null, path, productId as string),
+    deleteCoupon.bind(null, path, couponId as string, storeUrl),
     {
       errors: {},
     }
   )
-  if (!productId) return null
+  if (!couponId) return null
 
   // Return null if rowData or rowData.id don't exist
 
@@ -138,18 +122,12 @@ const CellActions: React.FC<CellActionsProps> = ({ productId, href }) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <Link href={href}>
-              <DropdownMenuItem className="flex gap-2">
-                <SquareStack size={15} /> Variants
-              </DropdownMenuItem>
-            </Link>
-            <AlertDialogTrigger asChild>
-              <DropdownMenuItem className="flex gap-2" onClick={() => {}}>
-                <Trash size={15} /> Delete product
-              </DropdownMenuItem>
-            </AlertDialogTrigger>
-          </DropdownMenuGroup>
+
+          <AlertDialogTrigger asChild>
+            <DropdownMenuItem className="flex gap-2">
+              <Trash size={15} /> Delete coupon
+            </DropdownMenuItem>
+          </AlertDialogTrigger>
         </DropdownMenuContent>
       </DropdownMenu>
       <AlertDialogContent className="max-w-lg">
@@ -159,7 +137,7 @@ const CellActions: React.FC<CellActionsProps> = ({ productId, href }) => {
           </AlertDialogTitle>
           <AlertDialogDescription className="text-left">
             This action cannot be undone. This will permanently delete the
-            product and variants that exist inside product.
+            coupon and variants that exist inside coupon.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex items-center">

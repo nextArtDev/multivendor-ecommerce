@@ -26,6 +26,9 @@ export const getAllStoreCoupons = async (storeUrl: string) => {
       where: {
         storeId: store.id,
       },
+      include: {
+        store: true,
+      },
     })
     // console.log({ coupons })
     return coupons
