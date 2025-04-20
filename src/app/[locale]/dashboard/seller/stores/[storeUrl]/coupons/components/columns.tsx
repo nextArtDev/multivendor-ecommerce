@@ -41,6 +41,7 @@ import { deleteCoupon } from '@/lib/actions/dashboard/coupons'
 import { StoreProductType } from '@/lib/types'
 import { usePathname } from '@/navigation'
 import { format } from 'date-fns-jalali'
+import { getTimeUntil } from '@/lib/utils'
 
 export const columns: ColumnDef<StoreProductType>[] = [
   {
@@ -62,6 +63,18 @@ export const columns: ColumnDef<StoreProductType>[] = [
     header: 'EndDate',
     cell: ({ row }) => {
       return <span>{format(row.original.endDate, 'Pp HH:mm:ss')}</span>
+    },
+  },
+  {
+    accessorKey: 'timeLeft',
+    header: 'Time Left',
+    cell: ({ row }) => {
+      const { days, hours } = getTimeUntil(row.original.endDate)
+      return (
+        <span>
+          {days} days and {hours} hours
+        </span>
+      )
     },
   },
 
