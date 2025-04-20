@@ -12,6 +12,7 @@ import { SecurityPrivacyCard } from '../shipping/returns-security-privacy-card'
 import CartProduct from './cart-product'
 import FastDelivery from './fast-delivery'
 import { updateCartWithLatest } from '../../lib/queries/user'
+import CountryNote from '../country-note'
 // import CartProduct from "../cards/cart-product";
 // import FastDelivery from "../cards/fast-delivery";
 // import { SecurityPrivacyCard } from "../product-page/returns-security-privacy-card";
@@ -74,9 +75,9 @@ export default function CartContainer({
                   selectedItems={selectedItems}
                   setSelectedItems={setSelectedItems}
                 />
-                {/* <div className="my-2">
+                <div className="my-2">
                   <CountryNote country={userCountry.name} />
-                </div> */}
+                </div>
                 <div className="h-auto overflow-x-hidden overflow-auto mt-2">
                   {/* Cart items */}
                   {cartItems.map((product) => (

@@ -5,6 +5,8 @@ import {
   City,
   Country,
   Coupon,
+  FreeShipping,
+  FreeShippingCountry,
   Image,
   Prisma,
   Province,
@@ -85,4 +87,8 @@ export type UserShippingAddressType = ShippingAddress & {
 export type CartWithCartItemsType = Cart & {
   cartItems: CartItem[]
   coupon: (Coupon & { store: Store }) | null
+}
+
+export type FreeShippingWithCountriesType = FreeShipping & {
+  eligibaleCountries: FreeShippingCountry[]
 }
