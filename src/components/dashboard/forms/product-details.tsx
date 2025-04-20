@@ -1104,8 +1104,8 @@ const ProductDetails: FC<ProductDetailProps> = ({
                             defaultValue={field.value}
                             onValueChange={field.onChange}
                             placeholder="Product weight"
-                            min={0.01}
-                            step={0.01}
+                            min={1}
+                            step={1}
                             className="!shadow-none rounded-md !text-sm"
                           />
                         </FormControl>

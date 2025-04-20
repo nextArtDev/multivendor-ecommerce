@@ -596,7 +596,7 @@ export const VariantFormSchema = z.object({
     .optional(),
   weight: z
     .number()
-    .min(0.01, {
+    .min(1, {
       message: 'Please provide a valid variant weight.',
     })
     .optional(),
@@ -660,4 +660,26 @@ export const VariantFormSchema = z.object({
     })
     .optional(),
   saleEndDate: z.union([z.date(), z.string()]).optional(),
+})
+
+export const CouponFormSchema = z.object({
+  code: z
+    .string({
+      required_error: 'Coupon code is required.',
+      invalid_type_error: 'Coupon code must be a string.',
+    })
+    .min(2, { message: 'Coupon code must be at least 2 characters long.' })
+    .max(50, { message: 'Coupon code cannot exceed 50 characters.' })
+    .regex(/^[a-zA-Z0-9]+$/, {
+      message: 'Only letters and numbers are allowed in the coupon code.',
+    }),
+  startDate: z.union([z.date(), z.string()]),
+  endDate: z.union([z.date(), z.string()]),
+  discount: z
+    .number({
+      required_error: 'Discount is required.',
+      invalid_type_error: 'Discount must be a number.',
+    })
+    .min(1, { message: 'Discount must be at least 1.' })
+    .max(99, { message: 'Discount cannot exceed 99.' }),
 })
