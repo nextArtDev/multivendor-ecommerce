@@ -97,7 +97,7 @@ export default function ProductPageActions({
 
   const handleBuy = () => {
     handleAddToCart()
-    push('/cart')
+    push('/goshop/cart')
   }
   return (
     <div className=" bg-background/50 backdrop-blur-md border rounded-md overflow-hidden overflow-y-auto p-4 pb-0">

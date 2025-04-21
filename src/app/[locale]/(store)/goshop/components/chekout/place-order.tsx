@@ -1,4 +1,4 @@
-import { Coupon, ShippingAddress } from '@prisma/client'
+import { ShippingAddress } from '@prisma/client'
 import { Dispatch, FC, SetStateAction, useState } from 'react'
 
 import { useCartStore } from '@/cart-store/useCartStore'
@@ -12,6 +12,7 @@ import FastDelivery from '../cart/fast-delivery'
 import { SecurityPrivacyCard } from '../shipping/returns-security-privacy-card'
 import { CartWithCartItemsType } from '../../types'
 import { emptyUserCart, placeOrder } from '../../lib/actions/user'
+import ApplyCouponForm from '../coupon/apply-coupon'
 
 interface Props {
   shippingAddress: ShippingAddress | null
@@ -112,7 +113,7 @@ const PlaceOrderCard: FC<Props> = ({
           </div>
         ) : (
           <div className="p-4 bg-white">
-            {/* <ApplyCouponForm cartId={id} setCartData={setCartData} /> */}
+            <ApplyCouponForm cartId={id} setCartData={setCartData} />
           </div>
         )}
       </div>

@@ -1,6 +1,6 @@
 import { usePathname } from '@/navigation'
 import CategoryDetails from '@/components/dashboard/forms/category-details'
-import { ModalData, useModal } from '@/providers/modal-provider'
+import { useModal } from '@/providers/modal-provider'
 import CustomModal from '@/components/dashboard/custom-modal'
 import { useToast } from '@/hooks/use-toast'
 import { getCategoryById } from '@/lib/queries/dashboard'
