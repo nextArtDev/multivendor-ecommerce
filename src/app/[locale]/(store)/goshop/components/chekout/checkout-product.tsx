@@ -64,7 +64,7 @@ export default function CheckoutProductCard({
                     ${product.price.toFixed(2)} x {product.quantity}
                   </span>
                   {isDiscounted && (
-                    <span className="text-xs font-normal text-orange-background">
+                    <span className="text-xs font-normal text-red-300">
                       (Coupon applied)
                     </span>
                   )}

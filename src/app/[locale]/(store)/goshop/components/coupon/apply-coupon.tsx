@@ -56,7 +56,7 @@ export default function ApplyCouponForm({
       )
     }
     if (!!formState?.updatedCart) {
-      console.log('Updated Cart:', formState.updatedCart)
+      // console.log('Updated Cart:', formState.updatedCart)
       setCartData(formState.updatedCart)
       // Update local state, UI, or perform other actions with updatedCart
     }
