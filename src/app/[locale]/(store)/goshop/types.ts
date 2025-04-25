@@ -8,6 +8,8 @@ import {
   FreeShipping,
   FreeShippingCountry,
   Image,
+  OrderGroup,
+  OrderItem,
   Prisma,
   Province,
   ShippingAddress,
@@ -16,6 +18,7 @@ import {
   Store,
   User,
 } from '@prisma/client'
+import { getOrder } from './lib/queries/order'
 
 export type ProductDataType = Prisma.PromiseReturnType<
   typeof retrieveProductDetailsOptimized
@@ -91,4 +94,58 @@ export type CartWithCartItemsType = Cart & {
 
 export type FreeShippingWithCountriesType = FreeShipping & {
   eligibaleCountries: FreeShippingCountry[]
+}
+
+export enum OrderStatus {
+  Pending = 'Pending',
+  Confirmed = 'Confirmed',
+  Processing = 'Processing',
+  Shipped = 'Shipped',
+  OutforDelivery = 'OutforDelivery',
+  Delivered = 'Delivered',
+  Cancelled = 'Cancelled',
+  Failed = 'Failed',
+  Refunded = 'Refunded',
+  Returned = 'Returned',
+  PartiallyShipped = 'PartiallyShipped',
+  OnHold = 'OnHold',
+}
+
+export enum PaymentStatus {
+  Pending = 'Pending',
+  Paid = 'Paid',
+  Failed = 'Failed',
+  Declined = 'Declined',
+  Cancelled = 'Cancelled',
+  Refunded = 'Refunded',
+  PartiallyRefunded = 'PartiallyRefunded',
+  Chargeback = 'Chargeback',
+}
+
+export type OrderGroupWithItemsType = OrderGroup & {
+  items: OrderItem[]
+  store: Store
+  _count: {
+    items: number
+  }
+  coupon: Coupon | null
+}
+
+export type OrderFulltType = Prisma.PromiseReturnType<typeof getOrder>
+
+export enum ProductStatus {
+  Pending = 'Pending',
+  Processing = 'Processing',
+  ReadyForShipment = 'ReadyForShipment',
+  Shipped = 'Shipped',
+  Delivered = 'Delivered',
+  Canceled = 'Canceled',
+  Returned = 'Returned',
+  Refunded = 'Refunded',
+  FailedDelivery = 'FailedDelivery',
+  OnHold = 'OnHold',
+  Backordered = 'Backordered',
+  PartiallyShipped = 'PartiallyShipped',
+  ExchangeRequested = 'ExchangeRequested',
+  AwaitingPickup = 'AwaitingPickup',
 }

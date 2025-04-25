@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
-import Header, { Country } from '../components/header/header'
-import CartContainer from '../components/cart/container'
+import Header, { Country } from '../../components/header/header'
+import CartContainer from '../../components/cart/container'
 
 export default async function CartPage() {
   // Get cookies from the store

@@ -3,9 +3,10 @@ import { prisma } from '@/lib/prisma'
 
 import { cookies } from 'next/headers'
 import { redirect } from '@/navigation'
-import Header, { Country } from '../components/header/header'
-import CheckoutContainer from '../components/chekout/container'
-import { getUserShippingAddresses } from '../lib/queries/user'
+import { getUserShippingAddresses } from '../../lib/queries/user'
+
+import Header, { Country } from '../../components/header/header'
+import CheckoutContainer from '../../components/chekout/container'
 
 export default async function CheckoutPage() {
   const user = await currentUser()
