@@ -6,9 +6,9 @@ import {
   Text,
   View,
 } from '@react-pdf/renderer'
-import { OrderFulltType } from '../../types'
+import { OrderFullType } from '../../types'
 export const generateOrderPDFBlob = async (
-  order: OrderFulltType
+  order: OrderFullType
 ): Promise<Blob> => {
   if (!order) throw new Error('Order is required to generate the PDF.')
 

@@ -7,10 +7,10 @@ import React from 'react'
 import { generateOrderPDFBlob } from './pdf-invoice'
 import PaymentStatusTag from './payment-status'
 import OrderStatusTag from './order-status'
-import { OrderFulltType, OrderStatus, PaymentStatus } from '../../types'
+import { OrderFullType, OrderStatus, PaymentStatus } from '../../types'
 import { downloadBlobAsFile, printPDF } from '../../lib/utils'
 
-export default function OrderHeader({ order }: { order: OrderFulltType }) {
+export default function OrderHeader({ order }: { order: OrderFullType }) {
   if (!order) return
 
   const handleDownload = async () => {

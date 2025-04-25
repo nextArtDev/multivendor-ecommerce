@@ -124,14 +124,14 @@ export enum PaymentStatus {
 
 export type OrderGroupWithItemsType = OrderGroup & {
   items: OrderItem[]
-  store: Store
+  store: Store & { logo: Image | null }
   _count: {
     items: number
   }
   coupon: Coupon | null
 }
 
-export type OrderFulltType = Prisma.PromiseReturnType<typeof getOrder>
+export type OrderFullType = Prisma.PromiseReturnType<typeof getOrder>
 
 export enum ProductStatus {
   Pending = 'Pending',

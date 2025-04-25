@@ -18,7 +18,11 @@ export const getOrder = async (orderId: string) => {
       groups: {
         include: {
           items: true,
-          store: true,
+          store: {
+            include: {
+              logo: true,
+            },
+          },
           coupon: true,
           _count: {
             select: {
@@ -34,6 +38,8 @@ export const getOrder = async (orderId: string) => {
         include: {
           country: true,
           user: true,
+          city: true,
+          province: true,
         },
       },
       paymentDetails: true,
