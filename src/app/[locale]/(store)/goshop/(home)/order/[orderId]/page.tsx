@@ -17,6 +17,7 @@ export default async function OrderPage({
   params: Promise<{ orderId: string }>
 }) {
   const orderId = (await params).orderId
+
   const order = await getOrder(orderId)
   if (!order) return redirect('/')
 

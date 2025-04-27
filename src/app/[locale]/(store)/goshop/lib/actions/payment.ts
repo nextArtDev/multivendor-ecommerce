@@ -4,7 +4,8 @@ import { currentUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
-import { redirect } from 'next/navigation'
+import { permanentRedirect, redirect, RedirectType } from 'next/navigation'
+
 import ZarinPalCheckout from 'zarinpal-checkout'
 
 //https://www.zarinpal.com/docs/paymentGateway/connectToGateway.html#%D8%A8%D8%A7%D8%B2%DA%AF%D8%B4%D8%AA-%D8%A8%D9%87-%D9%88%D8%A8%E2%80%8C%D8%B3%D8%A7%DB%8C%D8%AA-%D9%BE%D8%B0%DB%8C%D8%B1%D9%86%D8%AF%D9%87
@@ -19,12 +20,17 @@ interface ZarinpalPaymentFormState {
 
     _form?: string[]
   }
+  payment?: {
+    status?: number
+    authority?: string
+    url?: string
+  }
 }
 
 export async function zarinpalPayment(
   path: string,
   orderId: string,
-  amount: number,
+  //   amount: number,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   formState: ZarinpalPaymentFormState,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -33,6 +39,7 @@ export async function zarinpalPayment(
   const headerResponse = await headers()
   const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
 
+  //   console.log({ orderId })
   const zarinpal = ZarinPalCheckout.create(
     process.env.ZARINPAL_KEY as string,
     true
@@ -74,11 +81,20 @@ export async function zarinpalPayment(
 
     const payment = await zarinpal.PaymentRequest({
       Amount: +order?.total, // In Tomans
-      CallbackURL: `${locale}/goshop/orders/`,
+      CallbackURL: `${locale}/goshop/order/${orderId}`,
       Description: 'A Payment from Go Shop',
       // Email: 'hi@siamak.work',
       // Mobile: '09120000000',
     })
+
+    if (payment.status === 100) {
+      return {
+        payment,
+        errors: {},
+      }
+    }
+    // console.log({ payment })
+    // permanentRedirect(payment.url, RedirectType.push)
 
     //   .then((response) => {
     //     if (response.status === 100) {
@@ -88,7 +104,7 @@ export async function zarinpalPayment(
     //   .catch((err) => {
     //     console.error(err)
     //   })
-    console.log({ payment })
+    // console.log(payment.url)
     // if (!isUsersReview) {
     //   return {
     //     errors: {
@@ -129,6 +145,6 @@ export async function zarinpalPayment(
       }
     }
   }
-  revalidatePath(path)
-  redirect(`${locale}/goshop/orders/${orderId}`)
+  //   revalidatePath(path)
+  //   redirect(`${payment.}/goshop/orders/${orderId}`)
 }

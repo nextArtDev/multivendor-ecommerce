@@ -1,6 +1,7 @@
 'use client'
 
 import { FC } from 'react'
+import ZarinpalPayment from '../payment/ZarinpalPayment'
 
 interface Props {
   orderId: string
@@ -12,6 +13,9 @@ const OrderPayment: FC<Props> = ({ amount, orderId }) => {
     <div className="w-full h-full min-[768px]:min-w-[400px] space-y-5">
       {/* Paypal */}
 
+      <div className="mt-6">
+        <ZarinpalPayment orderId={orderId} />
+      </div>
       {/* <div className="mt-6">
         <PaypalWrapper>
           <PaypalPayment orderId={orderId} />
