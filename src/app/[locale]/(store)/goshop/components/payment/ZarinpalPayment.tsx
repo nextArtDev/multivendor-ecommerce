@@ -1,5 +1,6 @@
 'use client'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
+import { useSearchParams } from 'next/navigation'
 
 import { FormEvent, useActionState, useEffect, useState } from 'react'
 import { zarinpalPayment } from '../../lib/actions/payment'
@@ -8,7 +9,7 @@ import { usePathname } from '@/navigation'
 export default function ZarinpalPayment({ orderId }: { orderId: string }) {
   const path = usePathname()
   const router = useRouter()
-
+  const searchParams = useSearchParams()
   const [errorMessage, setErrorMessage] = useState<string>()
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
@@ -25,7 +26,16 @@ export default function ZarinpalPayment({ orderId }: { orderId: string }) {
     }
   )
   console.log({ ActionState })
-  router.push(ActionState.payment?.url)
+  useEffect(() => {
+    if (ActionState.payment?.url) {
+      router.push(ActionState.payment?.url)
+    }
+    if (searchParams) {
+      console.log(searchParams.get('Authority'))
+      console.log(searchParams.get('Status'))
+    }
+  }, [ActionState, router, searchParams])
+
   //   const getClientSecret = async () => {
   //     const res = await zarinpalPayment(orderId)
   //     if (res.clientSecret) setClientSecret(res.clientSecret)

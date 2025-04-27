@@ -81,7 +81,8 @@ export async function zarinpalPayment(
 
     const payment = await zarinpal.PaymentRequest({
       Amount: +order?.total, // In Tomans
-      CallbackURL: `${locale}/goshop/order/${orderId}`,
+      //   CallbackURL: `${locale}/goshop/order/${orderId}`,
+      CallbackURL: `http://localhost:3000/${locale}/goshop/order/${orderId}`,
       Description: 'A Payment from Go Shop',
       // Email: 'hi@siamak.work',
       // Mobile: '09120000000',
