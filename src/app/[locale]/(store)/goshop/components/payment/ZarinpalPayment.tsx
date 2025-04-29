@@ -2,21 +2,51 @@
 import { useRouter } from '@/navigation'
 import { useSearchParams } from 'next/navigation'
 
-import { FormEvent, useActionState, useEffect, useState } from 'react'
-import { zarinpalPayment } from '../../lib/actions/payment'
+import {
+  FormEvent,
+  useActionState,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
+import {
+  zarinpalPayment,
+  zarinpalPaymentApproval,
+} from '../../lib/actions/payment'
 import { usePathname } from '@/navigation'
 
 export default function ZarinpalPayment({ orderId }: { orderId: string }) {
   const path = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [errorMessage, setErrorMessage] = useState<string>()
-  const [clientSecret, setClientSecret] = useState<string | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [zarinpalResponse, setZarinpalResponse] = useState({
+    Authority: '',
+    Status: '',
+  })
 
-  //   useEffect(() => {
-  //     getClientSecret()
-  //   }, [orderId])
+  // const [errorMessage, setErrorMessage] = useState<string>()
+  // const [clientSecret, setClientSecret] = useState<string | null>(null)
+  // const [loading, setLoading] = useState<boolean>(false)
+
+  const verifyPayment = useCallback(async () => {
+    const verif = await zarinpalPaymentApproval(
+      path,
+      orderId,
+      zarinpalResponse.Authority,
+      zarinpalResponse.Status
+    )
+    console.log({ verif })
+  }, [path, orderId, zarinpalResponse.Authority, zarinpalResponse.Status])
+
+  useEffect(() => {
+    if (searchParams?.get('Authority') && searchParams?.get('Status')) {
+      setZarinpalResponse({
+        Authority: searchParams.get('Authority') as string,
+        Status: searchParams.get('Status') as string,
+      })
+      verifyPayment()
+    }
+  }, [searchParams, verifyPayment])
 
   const [ActionState, zarinpalPaymentAction, pending] = useActionState(
     zarinpalPayment.bind(null, path, orderId as string),
@@ -30,11 +60,7 @@ export default function ZarinpalPayment({ orderId }: { orderId: string }) {
     if (ActionState.payment?.url) {
       router.push(ActionState.payment?.url)
     }
-    if (searchParams) {
-      console.log(searchParams.get('Authority'))
-      console.log(searchParams.get('Status'))
-    }
-  }, [ActionState, router, searchParams])
+  }, [ActionState.payment?.url, router])
 
   //   const getClientSecret = async () => {
   //     const res = await zarinpalPayment(orderId)
@@ -74,24 +100,24 @@ export default function ZarinpalPayment({ orderId }: { orderId: string }) {
   //     }
   //     setLoading(false)
   //   }
-
-  //   if (!clientSecret) {
-  //     return (
-  //       <div className="flex items-center justify-center">
-  //         <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white">
-  //           <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-  //             Loading...
-  //           </span>
-  //         </div>
-  //       </div>
-  //     )
-  //   }
+  console.log(zarinpalResponse.Status)
+  if (zarinpalResponse.Status) {
+    return (
+      <div className="flex items-center justify-center">
+        {zarinpalResponse.Status === 'OK' ? 'Sucsess' : 'Failed'}
+        {/* <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white">
+          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+          </span>
+        </div> */}
+      </div>
+    )
+  }
   return (
     <form action={zarinpalPaymentAction} className="bg-white p-2 rounded-md">
       {/* {clientSecret && <PaymentElement />} */}
-      {errorMessage && (
+      {/* {errorMessage && (
         <div className="tetx-sm text-red-500">{errorMessage}</div>
-      )}
+      )} */}
       <button
         disabled={pending}
         className="text-white w-full p-5 bg-black mt-2 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse"

@@ -598,9 +598,9 @@ model Order {
 
   groups OrderGroup[] @relation("OrderGroupToOrder")
 
-  orderStatus   OrderStatus   @default(Pending)
-  paymentStatus PaymentStatus @default(Pending)
-
+  orderStatus    OrderStatus     @default(Pending)
+  paymentStatus  PaymentStatus   @default(Pending)
+  authority      String?
   paymentMethod  PaymentMethod?
   paymentDetails PaymentDetails? @relation("PaymentDetailsToOrder")
 

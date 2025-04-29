@@ -19,6 +19,7 @@ export default async function OrderPage({
   const orderId = (await params).orderId
 
   const order = await getOrder(orderId)
+  console.log({ order })
   if (!order) return redirect('/')
 
   // Get the total count of items across all groups
