@@ -100,23 +100,25 @@ export default function OrderGroupTable({
             }
           )}
         >
-          <button className="flex rounded-md outline-0 py-6 sm:pr-6 sm:border border-secondary whitespace-nowrap gap-2 items-center justify-center font-semibold group text-lg  bg-secondary transition-all duration-500 hover:text-primary">
-            <svg
-              className="stroke-primary transition-all duration-500 group-hover:stroke-primary-foreground"
-              xmlns="http://www.w3.org/2000/svg"
-              width={22}
-              height={22}
-              viewBox="0 0 22 22"
-              fill="none"
-            >
-              <path
-                d="M5.5 5.5L16.5 16.5M16.5 5.5L5.5 16.5"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-            </svg>
-            Cancel Order
-          </button>
+          {!check && (
+            <button className="flex rounded-md outline-0 py-6 sm:pr-6 sm:border border-secondary whitespace-nowrap gap-2 items-center justify-center font-semibold group text-lg  bg-secondary transition-all duration-500 hover:text-primary">
+              <svg
+                className="stroke-primary transition-all duration-500 group-hover:stroke-primary-foreground"
+                xmlns="http://www.w3.org/2000/svg"
+                width={22}
+                height={22}
+                viewBox="0 0 22 22"
+                fill="none"
+              >
+                <path
+                  d="M5.5 5.5L16.5 16.5M16.5 5.5L5.5 16.5"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+              </svg>
+              Cancel Order
+            </button>
+          )}
           <p className="font-medium text-lg  px-6 py-3 max-lg:text-center">
             Subtotal:
             <span className="text-muted-foreground ms-1">

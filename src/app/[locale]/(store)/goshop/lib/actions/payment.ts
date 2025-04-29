@@ -2,6 +2,7 @@
 
 import { currentUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { Order, PaymentDetails } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 // import { permanentRedirect, redirect, RedirectType } from 'next/navigation'
@@ -20,6 +21,9 @@ interface ZarinpalPaymentApprovalFormState {
 
     _form?: string[]
   }
+  // updatedOrder?:{
+  //   Order:Order &{ paymentDetails:PaymentDetails|null}
+  // }
   // payment?: {
   //   status?: number
   //   authority?: string
@@ -97,26 +101,61 @@ export async function zarinpalPaymentApproval(
       if (verification.status === 100) {
         console.log(`Verified! Ref ID: ${verification.refId}`)
 
-        await prisma.order.update({
+        const paymentDetails = await prisma.paymentDetails.upsert({
+          where: {
+            orderId: order.id,
+          },
+          update: {
+            paymentInetntId: verification.refId.toString(),
+            status: 'OK',
+            amount: order.total,
+            paymentMethod: 'Zarinpal',
+            userId: user.id,
+            currency: 'IRT',
+          },
+          create: {
+            paymentInetntId: verification.refId.toString(),
+            status: 'OK',
+            amount: order.total,
+            paymentMethod: 'Zarinpal',
+            userId: user.id,
+            currency: 'IRT',
+            orderId: order.id,
+          },
+        })
+        console.log({ paymentDetails })
+
+        const updatedOrder = await prisma.order.update({
           where: {
             id: orderId,
             userId: user.id,
           },
           data: {
             paymentStatus: 'Paid',
+            paymentDetails: {
+              connect: {
+                id: paymentDetails.id,
+              },
+            },
+          },
+          include: {
+            paymentDetails: true,
           },
         })
-        // const paymentDetailes = await prisma.paymentDetails.update({
-        //   where: {
-        //     orderId: order.id,
-        //   },
-        //   data: {
-        //     paymentInetntId: verification.refId.toString(),
-        //   },
-        // })
-        // console.log({ paymentDetailes })
+        console.log({ updatedOrder })
+
+        // return   updatedOrder
       } else if (verification.status !== 100) {
         console.log(verification.status)
+        await prisma.order.update({
+          where: {
+            id: orderId,
+            userId: user.id,
+          },
+          data: {
+            paymentStatus: 'Failed',
+          },
+        })
         return {
           errors: {
             _form: ['اطلاعات پرداخت نادرست است!'],
