@@ -4,6 +4,8 @@ import {
   OrderTableDateFilter,
   OrderTableFilter,
   PaymentStatus,
+  PaymentTableDateFilter,
+  PaymentTableFilter,
 } from '../../types'
 import { subMonths, subYears } from 'date-fns-jalali'
 import { prisma } from '@/lib/prisma'
@@ -122,6 +124,91 @@ export const getUserOrders = async (
   // Return paginated data with metadata
   return {
     orders,
+    totalPages,
+    currentPage: page,
+    pageSize,
+    totalCount,
+  }
+}
+
+export const getUserPayments = async (
+  filter: PaymentTableFilter = '',
+  period: PaymentTableDateFilter = '',
+  search = '' /* Search by Payment intent id */,
+  page: number = 1,
+  pageSize: number = 10
+) => {
+  // Retrieve current user
+  const user = await currentUser()
+
+  // Check if user is authenticated
+  if (!user) throw new Error('Unauthenticated.')
+
+  // Calculate pagination values
+  const skip = (page - 1) * pageSize
+
+  // Construct the base query
+  const whereClause: any = {
+    AND: [
+      {
+        userId: user.id,
+      },
+    ],
+  }
+
+  // Apply filters
+  if (filter === 'paypal') whereClause.AND.push({ paymentMethod: 'Paypal' })
+  if (filter === 'credit-card')
+    whereClause.AND.push({ paymentMethod: 'Stripe' })
+
+  // Apply period filter
+  const now = new Date()
+  if (period === 'last-6-months') {
+    whereClause.AND.push({
+      createdAt: { gte: subMonths(now, 6) },
+    })
+  }
+  if (period === 'last-1-year')
+    whereClause.AND.push({ createdAt: { gte: subYears(now, 1) } })
+  if (period === 'last-2-years')
+    whereClause.AND.push({ createdAt: { gte: subYears(now, 2) } })
+
+  // Apply search filter
+  if (search.trim()) {
+    whereClause.AND.push({
+      OR: [
+        {
+          id: { contains: search }, // Search by ID
+        },
+        {
+          paymentInetntId: { contains: search }, // Search by Payment intent ID
+        },
+      ],
+    })
+  }
+
+  // Fetch payments for the current page
+  const payments = await prisma.paymentDetails.findMany({
+    where: whereClause,
+    include: {
+      order: true,
+    },
+    take: pageSize, // Limit to page size
+    skip, // Skip the orders of previous pages
+    orderBy: {
+      updatedAt: 'desc', // Sort by most updated recently
+    },
+  })
+
+  // Fetch total count of orders for the query
+  const totalCount = await prisma.paymentDetails.count({ where: whereClause })
+
+  // Calculate total pages
+  const totalPages = Math.ceil(totalCount / pageSize)
+
+  // Return paginated data with metadata
+  return {
+    payments,
     totalPages,
     currentPage: page,
     pageSize,
