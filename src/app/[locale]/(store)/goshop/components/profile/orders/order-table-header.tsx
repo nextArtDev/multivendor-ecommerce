@@ -1,6 +1,7 @@
+'use client'
 import { cn } from '@/lib/utils'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { DeleteIcon, SearchIcon } from '../../icons'
 import { OrderTableDateFilter, OrderTableFilter } from '../../../types'
@@ -39,11 +40,11 @@ const OrderTableHeader: FC<Props> = ({
   }, [debouncedSearch, setSearch])
 
   return (
-    <div className="pt-4 px-6 bg-white">
+    <div className="pt-4 px-6  ">
       <div className="flex items-center justify-between">
         <div className="-ml-3 text-main-primary text-sm">
           <div className="relative overflow-x-hidden">
-            <div className="py-4 inline-flex items-center bg-white justify-center relative">
+            <div className="py-4 inline-flex items-center   justify-center relative">
               {filters.map((f) => (
                 <div
                   key={f.filter}
@@ -111,13 +112,13 @@ const OrderTableHeader: FC<Props> = ({
           <input
             type="text"
             placeholder="Order ID, product or store name"
-            className="h-8 border text-sm relative inline-block w-full py-[3px] px-3 text-main-primary leading-6 bg-white  transition-all duration-75 placeholder:text-xs"
+            className="h-8 border text-sm relative inline-block w-full py-[3px] px-3 text-main-primary leading-6  transition-all duration-75 placeholder:text-xs"
             value={debouncedSearch}
             onChange={(e) => setDebouncedSearch(e.target.value)}
           />
           {/* Search icon */}
-          <span className="-ml-[1px] rounded-r-md relative bg-white text-center">
-            <button className="rounded-r-md min-w-[52px] h-8 text-white bg-[linear-gradient(90deg,_#ff640e,_#ff3000)] grid place-items-center">
+          <span className="-ml-[1px] rounded-r-md relative text-center">
+            <button className="rounded-r-md min-w-[52px] h-8  bg-[linear-gradient(90deg,_#ff640e,_#ff3000)] grid place-items-center">
               <span className="text-2xl inline-block ">
                 <SearchIcon />
               </span>

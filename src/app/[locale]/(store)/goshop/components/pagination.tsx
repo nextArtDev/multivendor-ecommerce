@@ -43,13 +43,12 @@ const Pagination: FC<Props> = ({ totalPages }) => {
             <span
               key={i}
               className={cn(
-                'text-sm font-medium leading-none cursor-pointer text-gray-600  hover:text-orange-background  border-t border-transparent pt-3 mr-4 px-2',
+                'text-sm font-medium leading-none cursor-pointer    border-t border-transparent pt-3 mr-4 px-2',
                 {
-                  'text-orange-background border-orange-background':
-                    page && i === +page,
+                  '  border-orange-background': page && i === +page,
                 }
               )}
-              onClick={() => setPage(String(Number(page) + 1))}
+              // onClick={() => setPage(String(Number(page) + 1))}
             >
               {page && +page + 1}
             </span>

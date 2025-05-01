@@ -163,7 +163,20 @@ export default function OrdersTable({
           </div>
         </div>
       </div>
-      <Pagination page={page} setPage={setPage} totalPages={totalDataPages} />
+      {(orders.length >= totalPages - 1 || page) && (
+        <Pagination
+          // page={page}
+          // setPage={setPage}
+          // totalPages={totalDataPages}
+          totalPages={
+            // totalPages
+            // filters.rating || filters.hasImages
+            //   ? orders.length / pageSize + 1
+            // :
+            1 / totalPages + 1
+          }
+        />
+      )}
     </div>
   )
 }

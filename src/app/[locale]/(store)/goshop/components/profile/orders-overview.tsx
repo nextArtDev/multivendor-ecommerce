@@ -64,21 +64,21 @@ const menu = [
   {
     title: 'Unpaid',
     img: UnpaidImg,
-    link: '/profile/orders/unpaid',
+    link: '/goshop/profile/orders/unpaid',
   },
   {
     title: 'To be shipped',
     img: ToBeShippedImg,
-    link: '/profile/orders/toShip',
+    link: '/goshop/profile/orders/toShip',
   },
   {
     title: 'Shipped',
     img: ShippedImg,
-    link: '/profile/orders/shipped',
+    link: '/goshop/profile/orders/shipped',
   },
   {
     title: 'Delivered',
     img: ToBeReviewedImg,
-    link: '/profile/orders/delivered',
+    link: '/goshop/profile/orders/delivered',
   },
 ]
