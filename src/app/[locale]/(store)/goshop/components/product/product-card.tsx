@@ -51,7 +51,7 @@ export default function ProductCard({ product }: { product: ProductType }) {
             className="w-full relative inline-block overflow-hidden"
           >
             {/* Images Swiper */}
-            <ProductCardImageSwiper images={images} />
+            {images && <ProductCardImageSwiper images={images} />}
             {/* Title */}
             <div className="text-sm   h-[18px] overflow-hidden overflow-ellipsis line-clamp-1">
               {name} · {variantName}

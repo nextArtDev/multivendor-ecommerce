@@ -19,6 +19,7 @@ import {
   User,
 } from '@prisma/client'
 import { getOrder } from './lib/queries/order'
+import { getUserOrders, getUserPayments } from './lib/queries/profile'
 
 export type ProductDataType = Prisma.PromiseReturnType<
   typeof retrieveProductDetailsOptimized
@@ -186,3 +187,7 @@ export type ReviewDateFilter =
   | 'last-6-months'
   | 'last-1-year'
   | 'last-2-years'
+
+export type ProductWishlistType = Prisma.PromiseReturnType<
+  typeof getUserWishlist
+>['wishlist'][0]
