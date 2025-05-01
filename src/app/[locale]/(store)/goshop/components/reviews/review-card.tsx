@@ -27,7 +27,7 @@ export default function ReviewCard({
   return (
     <div className="border border-secondary bg-primary/40 backdrop-blur-md rounded-xl flex h-fit relative py-4 px-2.5">
       <div className="w-16 px- space-y-1">
-        {user?.image ? (
+        {/* {user?.image ? (
           <NextImage
             src={user?.image?.url}
             alt="Profile image"
@@ -35,12 +35,12 @@ export default function ReviewCard({
             height={100}
             className="w-11 h-11 rounded-full object-cover"
           />
-        ) : (
-          <User
-            className="border border-primary p-1 rounded-full text-primary "
-            size={35}
-          />
-        )}
+        ) : ( */}
+        <User
+          className="border border-primary p-1 rounded-full text-primary "
+          size={35}
+        />
+        {/* )} */}
         <span className="text-xs capitalize ">{cesnoredName}</span>
       </div>
       <div className="flex flex-1 flex-col justify-between leading-5 overflow-hidden px-1.5">

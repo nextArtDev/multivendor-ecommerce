@@ -118,7 +118,8 @@ export type RatingStatisticsType = Prisma.PromiseReturnType<
 >
 export type ReviewWithImageType = Review & {
   images: Image[] | null
-  user: User & { image: Image }
+  // user: User & { image: Image |null}
+  user: User
 }
 
 export type StatisticsCardType = Prisma.PromiseReturnType<

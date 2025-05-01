@@ -22,7 +22,7 @@ const UserShippingAddresses: FC<Props> = ({
 }) => {
   const [show, setShow] = useState<boolean>(false)
   return (
-    <div className="w-full py-4 px-6 bg-white">
+    <div className="w-full py-4 px-6  ">
       <div className="relative flex flex-col text-sm">
         <h1 className="text-lg mb-3 font-bold">Shipping Addresses</h1>
         {addresses && addresses.length > 0 && (

@@ -16,7 +16,7 @@ import { Country } from '../country-lang-curr-selector'
 import ProductSwiper from './product-swiper'
 import ProductInfo from './product-info'
 import ProductPageActions from './product-actions'
-import { isProductValidToAdd } from '../../lib/utils'
+import { isProductValidToAdd, updateProductHistory } from '../../lib/utils'
 import { useSearchParams } from 'next/navigation'
 import { Rating } from '@/components/shared/rating'
 import { useCartStore } from '@/cart-store/useCartStore'
@@ -182,7 +182,7 @@ const ProductPageContainer: FC<Props> = ({
   }, [setCart])
 
   // Add product to history
-  // updateProductHistory(variantId)
+  updateProductHistory(variantId)
 
   const maxQty = useMemo(() => {
     const search_product = cartItems?.find(
