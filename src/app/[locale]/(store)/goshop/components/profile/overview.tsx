@@ -17,7 +17,7 @@ export default async function ProfileOverview() {
             height={200}
             className="w-14 h-14 rounded-full object-cover"
           /> */}
-          <div className="flex-1 ml-4 text-main-primary text-xl font-bold capitalize ">
+          <div className="flex-1 ml-4   text-xl font-bold capitalize ">
             {user.name?.toLowerCase()}
           </div>
         </div>

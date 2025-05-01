@@ -44,7 +44,7 @@ export default function OrdersOverview() {
           <AppealIcon />
         </span>
         <div className="ml-1.5 ">My appeal</div>
-        <span className="absolute right-0 text-main-secondary text-lg">
+        <span className="absolute right-0  text-lg">
           <ArrowIcon />
         </span>
       </div>
@@ -53,7 +53,7 @@ export default function OrdersOverview() {
           <DollarIcon />
         </span>
         <div className="ml-1.5 ">In dispute</div>
-        <span className="absolute right-0 text-main-secondary text-lg">
+        <span className="absolute right-0  text-lg">
           <ArrowIcon />
         </span>
       </div>
