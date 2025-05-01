@@ -5,8 +5,8 @@ import ReactStars from 'react-rating-stars-component'
 import Rating from '@/components/amazon/product/rating'
 import { ReviewWithImageType } from '../../lib/queries/review'
 import { User } from 'lucide-react'
-import { Image, ProductVariant } from '@prisma/client'
-import { ProductDataType, ProductVariantDataType } from '../../types'
+import { ProductDataType } from '../../types'
+
 export default function ReviewCard({
   review,
   product,
@@ -57,7 +57,7 @@ export default function ReviewCard({
           <Rating rating={review.rating} color="#FFD804" size={6} />
           <div className="flex items-center gap-x-2">
             <NextImage
-              src={product.images?.[1].url}
+              src={product?.images?.[1].url}
               alt=""
               width={40}
               height={40}
@@ -76,9 +76,9 @@ export default function ReviewCard({
             </div>
           </div>
           <p className="text-sm">{review.review}</p>
-          {images.length > 0 && (
+          {images?.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {images.map((img) => (
+              {images?.map((img) => (
                 <div
                   key={img.id}
                   className="w-20 h-20 rounded-xl overflow-hidden cursor-pointer"
