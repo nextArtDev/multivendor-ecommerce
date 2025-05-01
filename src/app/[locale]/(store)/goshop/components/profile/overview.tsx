@@ -1,7 +1,7 @@
 import { currentUser } from '@/lib/auth'
+import { Link } from '@/navigation'
 import { Eye, Heart, Puzzle, Rss, WalletCards } from 'lucide-react'
 // import Image from "next/image";
-import Link from 'next/link'
 
 export default async function ProfileOverview() {
   const user = await currentUser()
@@ -44,26 +44,26 @@ const menu = [
   {
     title: 'Wishlist',
     icon: <Heart />,
-    link: '/profile/wishlist',
+    link: '/goshop/profile/wishlist',
   },
   {
     title: 'Following',
     icon: <Rss />,
-    link: '/profile/following/1',
+    link: '/goshop/profile/following/1',
   },
   {
     title: 'Viewed',
     icon: <Eye />,
-    link: '/profile/history/1',
+    link: '/goshop/profile/history/1',
   },
   {
     title: 'Coupons',
     icon: <Puzzle />,
-    link: '/profile/coupons',
+    link: '/goshop/profile/coupons',
   },
   {
     title: 'Shopping credit',
     icon: <WalletCards />,
-    link: '/profile/credit',
+    link: '/goshop/profile/credit',
   },
 ]

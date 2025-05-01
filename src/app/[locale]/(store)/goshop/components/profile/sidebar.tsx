@@ -1,7 +1,6 @@
 'use client'
 import { cn } from '@/lib/utils'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { Link, usePathname } from '@/navigation'
 
 export default function ProfileSidebar() {
   const pathname = usePathname()
@@ -16,7 +15,7 @@ export default function ProfileSidebar() {
         </span>
         <span>
           <Link href="/profile">Account</Link>
-          {pathname !== '/profile' && <span className="mx-2">&gt;</span>}
+          {pathname !== '/profile' && <span className="mx-2 ">&gt;</span>}
         </span>
         {path && (
           <span>
@@ -41,7 +40,7 @@ export default function ProfileSidebar() {
                   'relative flex h-9 items-center text-sm px-4 cursor-pointer hover:bg-secondary',
 
                   {
-                    'bg-secondary user-menu-item':
+                    'bg-secondary user-menu-item border-l  ':
                       item.link &&
                       (pathname === item.link ||
                         (pathname.startsWith(item.link) &&

@@ -1,4 +1,3 @@
-import Link from 'next/link'
 // import { AppealIcon, ArrowIcon, DollarIcon } from "@/components/store/icons";
 import UnpaidImg from '../../../../../../../public/assets/images/unpaid.avif'
 // import UnpaidImg from '@/public/assets/images/unpaid.avif'
@@ -7,6 +6,7 @@ import ShippedImg from '../../../../../../../public/assets/images/shipped.avif'
 import ToBeReviewedImg from '../../../../../../../public/assets/images/to-de-reviewed.webp'
 import Image from 'next/image'
 import { AppealIcon, ArrowIcon, DollarIcon } from '../icons'
+import { Link } from '@/navigation'
 export default function OrdersOverview() {
   return (
     <div className="mt-4   p-4 border shadow-sm">
@@ -14,7 +14,7 @@ export default function OrdersOverview() {
         <div className="inline-block flex-1 py-3 text-xl font-bold">
           My Orders
         </div>
-        <Link href="/profile/orders">
+        <Link href="/goshop/profile/orders">
           <div className="flex items-center  text-sm cursor-pointer">
             View All
             <span className="ml-2 text-lg inline-block">

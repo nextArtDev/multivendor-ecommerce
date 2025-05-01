@@ -1,15 +1,5 @@
 'use client'
-// import OrderStatusTag from "@/components/shared/order-status";
-// import PaymentStatusTag from "@/components/shared/payment-status";
-// import {
-//   OrderStatus,
-//   OrderTableDateFilter,
-//   OrderTableFilter,
-//   PaymentStatus,
-//   UserOrderType,
-// } from "@/lib/types";
-// import Pagination from "../../shared/pagination";
-// import { getUserOrders } from "@/queries/profile";
+
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -158,7 +148,7 @@ export default function OrdersTable({
                         </td>
                         <td className="p-4">${order.total.toFixed(2)}</td>
                         <td className="p-4">
-                          <Link href={`/order/${order.id}`}>
+                          <Link href={`/goshop/order/${order.id}`}>
                             <span className="text-xs text-blue-primary cursor-pointer hover:underline">
                               View
                             </span>
