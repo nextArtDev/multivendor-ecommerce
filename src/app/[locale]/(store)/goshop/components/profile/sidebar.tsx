@@ -62,34 +62,34 @@ export default function ProfileSidebar() {
 const menu = [
   {
     title: 'Overview',
-    link: '/profile',
+    link: '/goshop/profile',
   },
   {
     title: 'Orders',
-    link: '/profile/orders',
+    link: '/goshop/profile/orders',
   },
   {
     title: 'Payment',
-    link: '/profile/payment',
+    link: '/goshop/profile/payment',
   },
   {
     title: 'Shipping address',
-    link: '/profile/addresses',
+    link: '/goshop/profile/addresses',
   },
   {
     title: 'Reviews',
-    link: '/profile/reviews',
+    link: '/goshop/profile/reviews',
   },
   {
     title: 'History',
-    link: '/profile/history/1',
+    link: '/goshop/profile/history/1',
   },
   {
     title: 'Wishlist',
-    link: '/profile/wishlist/1',
+    link: '/goshop/profile/wishlist/1',
   },
   {
     title: 'Following',
-    link: '/profile/following/1',
+    link: '/goshop/profile/following/1',
   },
 ]
