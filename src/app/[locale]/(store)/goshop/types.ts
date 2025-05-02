@@ -2,6 +2,7 @@ import { retrieveProductDetailsOptimized } from '@/components/amazon/lib/queries
 import {
   Cart,
   CartItem,
+  Category,
   City,
   Country,
   Coupon,
@@ -16,10 +17,15 @@ import {
   Size,
   Spec,
   Store,
+  SubCategory,
   User,
 } from '@prisma/client'
 import { getOrder } from './lib/queries/order'
-import { getUserOrders, getUserPayments } from './lib/queries/profile'
+import {
+  getUserOrders,
+  getUserPayments,
+  getUserWishlist,
+} from './lib/queries/profile'
 
 export type ProductDataType = Prisma.PromiseReturnType<
   typeof retrieveProductDetailsOptimized
@@ -191,3 +197,19 @@ export type ReviewDateFilter =
 export type ProductWishlistType = Prisma.PromiseReturnType<
   typeof getUserWishlist
 >['wishlist'][0]
+
+export type FiltersQueryType = {
+  search: string
+  category: string
+  subCategory: string
+  offer: string
+  size: string
+  sort: string
+  minPrice: string
+  maxPrice: string
+  color: string
+}
+
+export type CatgegoryWithSubsType = Category & {
+  subCategories: SubCategory[]
+}
