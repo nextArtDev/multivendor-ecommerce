@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
 import Pagination from '../../pagination'
 import ProductList from '../../product/product-list'
 import { ProductWishlistType } from '../../../types'
@@ -20,7 +20,7 @@ export default function WishlistContainer({
 
   useEffect(() => {
     if (currentPage !== page) {
-      router.push(`/profile/wishlist/${currentPage}`)
+      router.push(`/goshop/profile/wishlist/${currentPage}`)
     }
   }, [currentPage, page])
   return (
@@ -28,7 +28,11 @@ export default function WishlistContainer({
       <div className="flex flex-wrap pb-16">
         <ProductList products={products} />
       </div>
-      <Pagination page={page} setPage={setPage} totalPages={totalPages} />
+      <Pagination
+        // page={page}
+        // setPage={setPage}
+        totalPages={totalPages}
+      />
     </div>
   )
 }

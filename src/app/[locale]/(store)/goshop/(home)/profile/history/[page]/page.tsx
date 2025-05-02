@@ -10,10 +10,10 @@ export default function ProfileHistoryPage({
 }: {
   params: { page: string }
 }) {
-  const [products, setProducts] = useState<any>([])
-  const [page, setPage] = useState<number>(Number(params.page) || 1)
+  const [products, setProducts] = useState([])
+  // const [page, setPage] = useState<number>(Number(params.page) || 1)
   const [totalPages, setTotalPages] = useState<number>(0)
-  const [laoding, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     // Fetch history from localStorage
@@ -35,7 +35,7 @@ export default function ProfileHistoryPage({
         setProducts(res.products)
         setTotalPages(res.totalPages)
         setLoading(false)
-      } catch (error) {
+      } catch {
         setProducts([])
         setLoading(false)
       }
@@ -45,15 +45,19 @@ export default function ProfileHistoryPage({
     fetchHistory()
   }, [params.page])
   return (
-    <div className="bg-white py-4 px-6">
+    <div className=" py-4 px-6">
       <h1 className="text-lg mb-3 font-bold">Your product view history</h1>
-      {laoding ? (
+      {loading ? (
         <div>loading...</div>
       ) : products.length > 0 ? (
         <div className="pb-16">
           <ProductList products={products} />
           <div className="mt-2">
-            <Pagination page={page} setPage={setPage} totalPages={totalPages} />
+            <Pagination
+              // page={page}
+              // setPage={setPage}
+              totalPages={totalPages}
+            />
           </div>
         </div>
       ) : (

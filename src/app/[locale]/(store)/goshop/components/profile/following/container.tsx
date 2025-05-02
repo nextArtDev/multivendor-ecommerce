@@ -1,5 +1,5 @@
 'use client'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/navigation'
 import { FC, useEffect, useState } from 'react'
 import StoreCard from '../../store/store-card'
 import Pagination from '../../pagination'
@@ -23,7 +23,7 @@ const FollowingContainer: FC<Props> = ({ stores, page, totalPages }) => {
 
   useEffect(() => {
     if (currentPage !== page) {
-      router.push(`/profile/following/${currentPage}`)
+      router.push(`/goshop/profile/following/${currentPage}`)
     }
   }, [currentPage, page])
   return (
@@ -33,7 +33,11 @@ const FollowingContainer: FC<Props> = ({ stores, page, totalPages }) => {
           <StoreCard key={store.id} store={store} />
         ))}
       </div>
-      <Pagination page={page} setPage={setPage} totalPages={totalPages} />
+      <Pagination
+        // page={page}
+        // setPage={setPage}
+        totalPages={totalPages}
+      />
     </div>
   )
 }

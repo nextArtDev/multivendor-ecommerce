@@ -619,6 +619,7 @@ export const getProductsByIds = async (
             slug: true,
             rating: true,
             sales: true,
+            images: true,
           },
         },
       },
@@ -631,6 +632,7 @@ export const getProductsByIds = async (
       slug: variant.product.slug,
       name: variant.product.name,
       rating: variant.product.rating,
+
       sales: variant.product.sales,
       variants: [
         {
