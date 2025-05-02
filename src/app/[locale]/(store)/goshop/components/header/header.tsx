@@ -43,7 +43,6 @@ const Header = async () => {
         </div>
         <div className="hidden lg:flex w-full lg:w-fit lg:mt-2 justify-end mt-1.5 pl-6">
           <div className="lg:flex">{/* <DownloadApp /> */}</div>
-          {/* <CountryLanguageCurrencySelector userCountry={userCountry} /> */}
           <CountryLanguageCurrencySelector userCountry={userCountry} />
           <UserMenu />
           <Cart />

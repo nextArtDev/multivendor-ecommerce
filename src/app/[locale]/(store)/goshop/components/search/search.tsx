@@ -19,9 +19,9 @@ export default function Search() {
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
-    if (pathname !== '/browse') {
+    if (pathname !== '/goshop/browse') {
       // We are not in browse page
-      push(`/browse?search=${searchQuery}`)
+      push(`/goshop/browse?search=${searchQuery}`)
     } else {
       // We are in browse page
       if (!searchQuery) {
@@ -37,7 +37,7 @@ export default function Search() {
     const value = e.target.value
     setSearchQuery(value)
 
-    if (pathname === '/browse') return
+    if (pathname === '/goshop/browse') return
 
     if (value.length >= 2) {
       try {

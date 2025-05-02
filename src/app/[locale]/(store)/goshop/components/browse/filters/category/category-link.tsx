@@ -51,9 +51,9 @@ export default function CategoryLink({
             className="flex items-center text-left cursor-pointer whitespace-nowrap select-none"
             onClick={() => handleCategoryChange(category.url)}
           >
-            <span className="mr-2 border border-[#ccc] w-3 h-3 rounded-full relative grid place-items-center">
+            <span className="mr-2  border border-primary w-3 h-3 rounded-full relative grid place-items-center">
               {category.url === categoryQuery && (
-                <div className="h-1.5 w-1.5 inline-block   rounded-full"></div>
+                <div className="h-1.5 w-1.5 bg-primary inline-block   rounded-full"></div>
               )}
             </span>
             <div className="flex-1 text-xs inline-block overflow-visible text-clip whitespace-normal">
@@ -76,9 +76,9 @@ export default function CategoryLink({
                   className="w-full flex items-center text-left cursor-pointer whitespace-nowrap select-none"
                   onClick={() => handleSubCategoryChange(sub.url)}
                 >
-                  <span className="mr-2 border border-[#ccc] w-3 h-3 rounded-full relative grid place-items-center">
+                  <span className="mr-2 border border-primary w-3 h-3 rounded-full relative grid place-items-center">
                     {sub.url === subCategoryQuery && (
-                      <div className="h-1.5 w-1.5 inline-block  rounded-full"></div>
+                      <div className="h-1.5 w-1.5 bg-primary inline-block  rounded-full"></div>
                     )}
                   </span>
                   <div className="flex-1 text-xs inline-block overflow-visible text-clip whitespace-normal">
