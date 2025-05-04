@@ -13,6 +13,7 @@ import PaymentStatusTag from '@/app/[locale]/(store)/goshop/components/order-pag
 import { OrderStatus, PaymentStatus } from '@/app/[locale]/(store)/goshop/types'
 import CustomModal from '@/components/dashboard/custom-modal'
 import OrderStatusSelect from './order-status-select'
+import StoreOrderSummary from './store-order-summary'
 
 export const columns: ColumnDef<StoreOrderType>[] = [
   {

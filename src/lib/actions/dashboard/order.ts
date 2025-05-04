@@ -1,6 +1,6 @@
 'use server'
 
-import { OrderStatus } from '@/app/[locale]/(store)/goshop/types'
+import { OrderStatus, ProductStatus } from '@/app/[locale]/(store)/goshop/types'
 import { currentUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
@@ -55,4 +55,56 @@ export const updateOrderGroupStatus = async (
   })
 
   return updatedOrder.status
+}
+
+export const updateOrderItemStatus = async (
+  storeId: string,
+  orderItemId: string,
+  status: ProductStatus
+) => {
+  // Retrieve current user
+  const user = await currentUser()
+
+  // Check if user is authenticated
+  if (!user) throw new Error('Unauthenticated.')
+
+  // Verify seller permission
+  if (user.role !== 'SELLER')
+    throw new Error(
+      'Unauthorized Access: Seller Privileges Required for Entry.'
+    )
+
+  const store = await prisma.store.findUnique({
+    where: {
+      id: storeId,
+      userId: user.id,
+    },
+  })
+
+  // Verify seller ownership
+  if (!store) {
+    throw new Error('Unauthorized Access !')
+  }
+
+  // Retrieve the product item to be updated
+  const product = await prisma.orderItem.findUnique({
+    where: {
+      id: orderItemId,
+    },
+  })
+
+  // Ensure order existence
+  if (!product) throw new Error('Order item not found.')
+
+  // Update the order status
+  const updatedProduct = await prisma.orderItem.update({
+    where: {
+      id: orderItemId,
+    },
+    data: {
+      status,
+    },
+  })
+
+  return updatedProduct.status
 }

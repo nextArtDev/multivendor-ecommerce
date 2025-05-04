@@ -7,9 +7,10 @@ import { columns } from './components/columns'
 export default async function SellerOrdersPage({
   params,
 }: {
-  params: { storeUrl: string }
+  params: Promise<{ storeUrl: string }>
 }) {
-  const orders = await getStoreOrders(params.storeUrl)
+  const storeUrl = (await params).storeUrl
+  const orders = await getStoreOrders(storeUrl)
   return (
     <div>
       <DataTable
