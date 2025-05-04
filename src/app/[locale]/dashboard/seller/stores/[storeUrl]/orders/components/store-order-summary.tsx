@@ -31,8 +31,8 @@ const StoreOrderSummary: FC<Props> = ({ group }) => {
   const {
     address1,
     address2,
-    cityId,
-    provinceId,
+    city,
+    province,
     country,
     firstName,
     lastName,
@@ -109,7 +109,8 @@ const StoreOrderSummary: FC<Props> = ({ group }) => {
               Address
             </p>
             <h6 className="font-semibold text-lg leading-9">
-              {address1}, {address2 && `${address2},`} {provinceId}, {cityId}
+              {address1}, {address2 && `${address2},`} {city.name},{' '}
+              {province.name}
               ,&nbsp;
               {zip_code}, {country.name}
             </h6>

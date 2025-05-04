@@ -683,3 +683,9 @@ export const CouponFormSchema = z.object({
     .min(1, { message: 'Discount must be at least 1.' })
     .max(99, { message: 'Discount cannot exceed 99.' }),
 })
+export const UpdateOrderGroupStatusFormSchema = z.object({
+  status: z.string({
+    required_error: 'Coupon code is required.',
+    invalid_type_error: 'Coupon code must be a string.',
+  }),
+})

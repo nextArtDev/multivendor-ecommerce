@@ -34,7 +34,7 @@ export async function createCoupon(
     startDate: formData.get('startDate'),
     endDate: formData.get('endDate'),
   })
-  console.log(result.data)
+  // console.log(result.data)
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
     return {

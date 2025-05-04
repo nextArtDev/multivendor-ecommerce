@@ -44,6 +44,8 @@ export const getStoreOrders = async (storeUrl: string) => {
             shippingAddress: {
               include: {
                 country: true,
+                city: true,
+                province: true,
                 user: {
                   select: {
                     phone: true,
