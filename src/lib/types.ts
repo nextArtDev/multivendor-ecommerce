@@ -59,6 +59,7 @@ import {
   Spec,
 } from '@prisma/client'
 import { getAllStoreProducts } from './queries/dashboard/products'
+import { getStoreOrders } from './queries/dashboard/store'
 
 export interface DashboardSidebarMenuInterface {
   label: string
@@ -119,7 +120,7 @@ export type ProductWithVariantType = {
 export type StoreProductType = Prisma.PromiseReturnType<
   typeof getAllStoreProducts
 >[0]
-
+export type StoreOrderType = Prisma.PromiseReturnType<typeof getStoreOrders>[0]
 // // Store default shipping details
 // export type StoreDefaultShippingType = Prisma.PromiseReturnType<
 //   typeof getStoreDefaultShippingDetails
