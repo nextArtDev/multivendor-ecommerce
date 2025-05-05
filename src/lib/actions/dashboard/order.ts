@@ -18,13 +18,10 @@ interface UpdateOrderGroupStatusFormState {
 }
 
 export async function updateOrderGroupStatus(
-  path: string,
-  storeId: string,
+  formData: FormData,
   groupId: string,
-
-  formState: UpdateOrderGroupStatusFormState,
-
-  formData: FormData
+  storeId: string,
+  path: string
 ): Promise<UpdateOrderGroupStatusFormState> {
   const headerResponse = await headers()
   const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
@@ -32,7 +29,7 @@ export async function updateOrderGroupStatus(
   const result = UpdateOrderGroupStatusFormSchema.safeParse({
     status: formData.get('status'),
   })
-
+  console.log({ result })
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
     return {
