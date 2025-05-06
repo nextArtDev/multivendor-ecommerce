@@ -45,7 +45,7 @@ const OrderStatusSelect: FC<Props> = ({ groupId, status, storeId }) => {
       </div>
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-md shadow-md mt-2 w-[140px]">
+        <div className="absolute !z-50 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-md shadow-md mt-2 w-[140px]">
           {options.map((option) => (
             <button
               key={option}

@@ -1,7 +1,7 @@
 // Next.js
 import { currentUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { redirect } from 'next/navigation'
+import { redirect } from '@/navigation'
 import { headers } from 'next/headers'
 
 export default async function SellerDashboardPage() {
@@ -9,7 +9,7 @@ export default async function SellerDashboardPage() {
   const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
   const user = await currentUser()
   if (!user) {
-    redirect(`/${locale}`)
+    redirect(`/`)
     return // Ensure no further code is executed after redirect
   }
 
@@ -20,7 +20,7 @@ export default async function SellerDashboardPage() {
   })
 
   if (stores.length === 0) {
-    redirect(`/${locale}/dashboard/seller/stores/new`)
+    redirect(`/dashboard/seller/stores/new`)
     return // Ensure no further code is executed after redirect
   }
 
