@@ -9,6 +9,8 @@ import { prisma } from '../../prisma'
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
 import { StoreFormSchema } from '@/lib/schemas/dashboard'
 import { headers } from 'next/headers'
+import { StoreStatus } from '@/lib/types'
+import { currentUser } from '@/lib/auth'
 
 interface CreateStoreFormState {
   success?: string
@@ -455,15 +457,21 @@ export async function deleteStore(
   formData: FormData
 ): Promise<DeleteStoreFormState> {
   // console.log({ path, storeId })
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
   const session = await auth()
-  if (!session || !session.user || session.user.role !== 'SELLER') {
+  if (
+    !session ||
+    !session.user ||
+    // session.user.role !== 'SELLER' ||
+    session.user.role !== 'ADMIN'
+  ) {
     return {
       errors: {
         _form: ['شما اجازه دسترسی ندارید!'],
       },
     }
   }
-  // console.log(result)
   if (!storeId) {
     return {
       errors: {
@@ -471,6 +479,7 @@ export async function deleteStore(
       },
     }
   }
+  console.log(storeId)
 
   try {
     const isExisting:
@@ -531,6 +540,56 @@ export async function deleteStore(
     }
   } finally {
     revalidatePath(path)
-    redirect(`/dashboard/seller/stores`)
+    redirect(`/${locale}/dashboard/seller/stores`)
   }
+}
+
+export const updateStoreStatus = async (
+  storeId: string,
+  status: StoreStatus
+) => {
+  // Retrieve current user
+  const user = await currentUser()
+
+  // Check if user is authenticated
+  if (!user) throw new Error('Unauthenticated.')
+
+  // Verify admin permission
+  if (user.role !== 'ADMIN')
+    throw new Error('Unauthorized Access: Admin Privileges Required for Entry.')
+
+  const store = await prisma.store.findUnique({
+    where: {
+      id: storeId,
+    },
+  })
+
+  // Verify seller ownership
+  if (!store) {
+    throw new Error('Store not found !')
+  }
+
+  // Retrieve the order to be updated
+  const updatedStore = await prisma.store.update({
+    where: {
+      id: storeId,
+    },
+    data: {
+      status,
+    },
+  })
+
+  // Update the user role
+  if (store.status === 'PENDING' && updatedStore.status === 'ACTIVE') {
+    await prisma.user.update({
+      where: {
+        id: updatedStore.userId,
+      },
+      data: {
+        role: 'SELLER',
+      },
+    })
+  }
+
+  return updatedStore.status
 }

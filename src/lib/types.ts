@@ -60,6 +60,7 @@ import {
 } from '@prisma/client'
 import { getAllStoreProducts } from './queries/dashboard/products'
 import { getStoreOrders } from './queries/dashboard/store'
+import { getAllStores } from './queries/dashboard'
 
 export interface DashboardSidebarMenuInterface {
   label: string
@@ -116,11 +117,21 @@ export type ProductWithVariantType = {
   updatedAt: Date
 }
 
+export type AdminStoreType = Prisma.PromiseReturnType<typeof getAllStores>[0]
+
 // Store product
 export type StoreProductType = Prisma.PromiseReturnType<
   typeof getAllStoreProducts
 >[0]
 export type StoreOrderType = Prisma.PromiseReturnType<typeof getStoreOrders>[0]
+
+export enum StoreStatus {
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  BANNED = 'BANNED',
+  DISABLED = 'DISABLED',
+}
+
 // // Store default shipping details
 // export type StoreDefaultShippingType = Prisma.PromiseReturnType<
 //   typeof getStoreDefaultShippingDetails

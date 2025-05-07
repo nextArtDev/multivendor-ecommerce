@@ -4,11 +4,7 @@ import { redirect } from '@/navigation'
 import { currentUser } from '@/lib/auth'
 import Header from '@/components/dashboard/header'
 import Sidebar from '@/components/dashboard/sidebar/sidebar'
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
 export default async function AdminDashboardLayout({
   children,
