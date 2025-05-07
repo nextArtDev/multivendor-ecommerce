@@ -1,14 +1,12 @@
 // Next.js
 import { currentUser } from '@/lib/auth'
 import { redirect } from '@/navigation'
-import { headers } from 'next/headers'
+
 import { Link } from '@/navigation'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 
 export default async function DashboardPage() {
-  const headerResponse = await headers()
-  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
   // Retrieve the current user information
   const user = await currentUser()
 

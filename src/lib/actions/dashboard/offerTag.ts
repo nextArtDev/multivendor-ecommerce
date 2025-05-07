@@ -94,7 +94,7 @@ export async function createOfferTag(
     }
   }
   revalidatePath(path)
-  redirect(`${locale}/dashboard/admin/offer-tags`)
+  redirect(`/${locale}/dashboard/admin/offer-tags`)
 }
 interface EditOfferTagFormState {
   errors: {
@@ -201,7 +201,7 @@ export async function editOfferTag(
     }
   }
   revalidatePath(path)
-  redirect(`${locale}/dashboard/admin/offer-tags`)
+  redirect(`/${locale}/dashboard/admin/offer-tags`)
 }
 
 //////////////////////
@@ -273,5 +273,5 @@ export async function deleteOfferTag(
     }
   }
   revalidatePath(path)
-  redirect(`${locale}/dashboard/admin/offer-tags`)
+  redirect(`/${locale}/dashboard/admin/offer-tags`)
 }
