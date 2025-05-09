@@ -29,6 +29,7 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar'
 import { Store } from '@prisma/client'
+import { Link } from '@/navigation'
 
 interface SidebarProps {
   isAdmin?: boolean
@@ -45,7 +46,9 @@ const Sidebar: FC<SidebarProps> = async ({ isAdmin, stores }) => {
     <ShadSidebar>
       {/* <div className="w-[300px] border-r h-screen p-4 flex flex-col fixed top-0 left-0 bottom-0"> */}
       <SidebarHeader className="py-0 my-0 scale-75">
-        <Logo width="100%" height="180px" />
+        <Link href={'/goshop'}>
+          <Logo width="100%" height="180px" />
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <div className="w-full px-2 flex items-center justify-center">

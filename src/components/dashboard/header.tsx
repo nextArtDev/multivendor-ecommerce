@@ -1,4 +1,4 @@
-import { UserButton } from '../auth/user-button'
+// import { UserButton } from '../auth/user-button'
 import { ModeToggle } from '../ui/mode-toggle'
 // import { SidebarTrigger } from '../ui/sidebar'
 
@@ -9,8 +9,8 @@ export default function Header() {
         {/* <UserButton afterSignOutUrl="/" /> */}
         {/* <SidebarTrigger className=" md:ml-[250px]" /> */}
         <div>
-          <UserButton />
           <ModeToggle />
+          {/* <UserButton /> */}
         </div>
       </div>
     </div>
