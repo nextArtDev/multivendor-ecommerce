@@ -4,7 +4,11 @@ import { redirect } from '@/navigation'
 import { currentUser } from '@/lib/auth'
 import Header from '@/components/dashboard/header'
 import Sidebar from '@/components/dashboard/sidebar/sidebar'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
 
 export default async function AdminDashboardLayout({
   children,
@@ -22,7 +26,8 @@ export default async function AdminDashboardLayout({
 
         <SidebarInset>
           {/* Header */}
-          <div className="w-full mt-[75px] p-4">
+          <SidebarTrigger className="z-50 m-4" />
+          <div className="w-full mt-[75px] p-4 ">
             <Header />
             {children}
           </div>

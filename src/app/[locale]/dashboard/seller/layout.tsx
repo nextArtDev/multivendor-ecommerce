@@ -14,6 +14,6 @@ export default async function SellerDashboardLayout({
   // Block non sellers from accessing the seller dashboard
   const user = await currentUser()
 
-  if (user?.role !== 'SELLER' || 'ADMIN') redirect(`/`)
+  if (user?.role !== 'SELLER' || user?.role !== 'ADMIN') redirect(`/`)
   return <div>{children}</div>
 }
