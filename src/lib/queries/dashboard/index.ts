@@ -3,39 +3,51 @@ import { Category, Image, Store, SubCategory } from '@prisma/client'
 import { cache } from 'react'
 
 export const getAllCategories = cache(
-  (
-    storeId?: string
-  ): Promise<
-    (Category & { images: Image[] } & {
+  async ({
+    page = 1,
+    pageSize = 100,
+  }: {
+    page?: number
+    pageSize?: number
+  }): Promise<{
+    categories: (Category & { images: Image[] } & {
       subCategories: (SubCategory & { images: Image[] })[]
     })[]
-  > => {
-    const categories = prisma.category.findMany({
-      where: {},
-      // ? {
-      //     products: {
-      //       some: {
-      //         storeId,
-      //       },
-      //     },
-      //   }
-      // : {},
+    isNext: boolean
+  }> => {
+    const skipAmount = (page - 1) * pageSize
+    const [categories, count] = await prisma.$transaction([
+      prisma.category.findMany({
+        where: {},
+        // ? {
+        //     products: {
+        //       some: {
+        //         storeId,
+        //       },
+        //     },
+        //   }
+        // : {},
 
-      include: {
-        images: true,
-        subCategories: {
-          include: {
-            images: true,
+        include: {
+          images: true,
+          subCategories: {
+            include: {
+              images: true,
+            },
           },
         },
-      },
 
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
+        skip: skipAmount,
+        take: pageSize,
 
-    return categories
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
+      prisma.category.count({}),
+    ])
+    const isNext = count > skipAmount + categories.length
+    return { categories, isNext }
   }
 )
 export const getCategoryById = cache(

@@ -1,4 +1,4 @@
-import { usePathname } from '@/navigation'
+import { Link, usePathname } from '@/navigation'
 import CategoryDetails from '@/components/dashboard/forms/category-details'
 import { useModal } from '@/providers/modal-provider'
 import CustomModal from '@/components/dashboard/custom-modal'
@@ -83,13 +83,13 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
               }
             }}
           >
-            {/* <Link
+            <Link
               className="flex items-center gap-2"
-              href={`/dashboard/admin/categories/new/${rowData.id}`}
+              href={`/dashboard/admin/categories/${rowData.id}`}
             >
-            </Link> */}
-            <Edit size={15} />
-            Edit Details
+              <Edit size={15} />
+              Edit Details
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <AlertDialogTrigger asChild>

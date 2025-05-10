@@ -107,10 +107,18 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
     formData.append('name_fa', data.name_fa || '')
     formData.append('url', data.url)
 
-    if (data.featured) {
-      formData.append('featured', 'true')
+    if (!initialData) {
+      if (data.featured) {
+        formData.append('featured', 'true')
+      } else {
+        formData.append('featured', 'false')
+      }
     } else {
-      formData.append('featured', 'false')
+      if (data.featured) {
+        formData.append('featured', true.toString())
+      } else {
+        formData.append('featured', false.toString())
+      }
     }
 
     // if (data.images && data.images.length > 0) {
@@ -131,7 +139,6 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
           try {
             const res = await editCategory(
               formData,
-
               initialData.id as string,
               path
             )
@@ -150,6 +157,11 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
               form.setError('name_fa', {
                 type: 'custom',
                 message: res?.errors.name_fa?.join(' و '),
+              })
+            } else if (res?.errors?.featured) {
+              form.setError('featured', {
+                type: 'custom',
+                message: res?.errors.featured?.join(' و '),
               })
             } else if (res?.errors?._form) {
               toast.error(res?.errors._form?.join(' و '))
@@ -287,7 +299,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
                   <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                     <FormControl>
                       <Checkbox
-                        checked={field.value}
+                        checked={Boolean(field.value)}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>

@@ -125,6 +125,7 @@ interface EditCategoryFormState {
     name?: string[]
     name_fa?: string[]
     description?: string[]
+    featured?: string[]
 
     images?: string[]
     _form?: string[]
@@ -143,11 +144,10 @@ export async function editCategory(
     name_fa: formData.get('name_fa'),
     url: formData.get('url'),
     images: formData.getAll('images'),
-    featured: formData.get('featured'),
+    featured: Boolean(formData.get('featured')),
   })
 
-  // console.log(result)
-  // console.log(formData.getAll('images'))
+  // console.log(formData.getAll('featured'))
 
   if (!result.success) {
     // console.log(result.error.flatten().fieldErrors)

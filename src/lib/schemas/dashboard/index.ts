@@ -66,7 +66,7 @@ export const CategoryFormSchema = z.object({
       message:
         'Only letters, numbers, hyphen, and underscore are allowed in the category url, and consecutive occurrences of hyphens, underscores, or spaces are not permitted.',
     }),
-  featured: z.boolean().default(false),
+  featured: z.union([z.boolean().default(false), z.string()]),
 })
 
 export const CategoryServerFormSchema = z.object({
