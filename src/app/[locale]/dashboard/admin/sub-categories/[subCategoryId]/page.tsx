@@ -2,7 +2,7 @@ import SubCategoryDetails from '@/components/dashboard/forms/sub-category-detail
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 
-export default async function EditsubCategoryPage({
+export default async function EditSubCategoryPage({
   params,
 }: {
   params: Promise<{ subcategoryId: string }>

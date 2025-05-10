@@ -4,7 +4,6 @@ import { Link, usePathname } from '@/navigation'
 import { useModal } from '@/providers/modal-provider'
 import CustomModal from '@/components/dashboard/custom-modal'
 import { useToast } from '@/hooks/use-toast'
-import { getSubCategoryById } from '@/lib/queries/dashboard'
 import { Edit, MoreHorizontal, Trash } from 'lucide-react'
 // UI components
 import {
@@ -34,6 +33,7 @@ import { deleteSubCategory } from '@/lib/actions/dashboard/subCategories'
 import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details'
 import { useQuery } from '@tanstack/react-query'
 import { allCategories } from '@/lib/queries/dashboard/category'
+import { getSubCategoryById } from '@/lib/queries/dashboard/sub-categories'
 
 interface CellActionsProps {
   rowData: SubCategory & { images: Image[] }
@@ -96,13 +96,13 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
               }
             }}
           >
-            <Link
+            {/* <Link
               className="flex items-center gap-2"
               href={`/dashboard/admin/sub-categories/${rowData.id}`}
             >
-              <Edit size={15} />
-              Edit Details
-            </Link>
+            </Link> */}
+            <Edit size={15} />
+            Edit Details
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <AlertDialogTrigger asChild>
