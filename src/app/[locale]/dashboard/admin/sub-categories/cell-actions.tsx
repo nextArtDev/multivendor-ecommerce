@@ -1,9 +1,10 @@
+'use client'
 import { usePathname } from '@/navigation'
 
-import { ModalData, useModal } from '@/providers/modal-provider'
+import { useModal } from '@/providers/modal-provider'
 import CustomModal from '@/components/dashboard/custom-modal'
 import { useToast } from '@/hooks/use-toast'
-import { getSubCategoryById } from '@/lib/queries/dashboard'
+import { allCategories, getSubCategoryById } from '@/lib/queries/dashboard'
 import { Edit, MoreHorizontal, Trash } from 'lucide-react'
 // UI components
 import {
@@ -31,6 +32,7 @@ import { Image, SubCategory } from '@prisma/client'
 import { useActionState } from 'react'
 import { deleteSubCategory } from '@/lib/actions/dashboard/subCategories'
 import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details'
+import { useQuery } from '@tanstack/react-query'
 
 interface CellActionsProps {
   rowData: SubCategory & { images: Image[] }
@@ -42,7 +44,11 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
   const { setOpen, setClose } = useModal()
   const path = usePathname()
   const { toast } = useToast()
-
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => await allCategories(),
+  })
+  console.log({ data })
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, deleteAction, pending] = useActionState(
     deleteSubCategory.bind(null, path, rowData.id as string),
@@ -70,7 +76,10 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
               try {
                 setOpen(
                   <CustomModal>
-                    <SubCategoryDetails initialData={rowData} />
+                    <SubCategoryDetails
+                      initialData={rowData}
+                      categories={data}
+                    />
                   </CustomModal>,
                   async () => {
                     const data = await getSubCategoryById(rowData.id)

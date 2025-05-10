@@ -24,16 +24,15 @@ export const columns: ColumnDef<
 >[] = [
   {
     accessorKey: 'image',
-    header: '',
+    header: 'Image',
     cell: ({ row }) => {
       return (
-        <div className="relative h-44 min-w-64 rounded-xl overflow-hidden">
+        <div className="relative w-20  aspect-square min-w-20 rounded-2xl overflow-hidden">
           <NextImage
             src={row.original?.images[0]?.url}
-            alt=""
-            width={1000}
-            height={1000}
-            className="w-40 h-40 rounded-full object-cover shadow-2xl"
+            alt={row.original.name}
+            fill
+            className="  rounded-2xl object-cover shadow-2xl"
           />
         </div>
       )

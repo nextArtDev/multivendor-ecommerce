@@ -69,23 +69,40 @@ export const getCategoryById = cache(
   }
 )
 export const getAllSubCategories = cache(
-  (): Promise<
-    (SubCategory & { category: Category } & { images: Image[] })[] | null
-  > => {
-    const subCategories = prisma.subCategory.findMany({
-      include: {
-        images: true,
-        category: true,
-      },
+  async ({
+    page = 1,
+    pageSize = 100,
+  }: {
+    page?: number
+    pageSize?: number
+  }): Promise<{
+    subCategories: (SubCategory & { category: Category } & {
+      images: Image[]
+    })[]
+    isNext: boolean
+  }> => {
+    const skipAmount = (page - 1) * pageSize
+    const [subCategories, count] = await prisma.$transaction([
+      prisma.subCategory.findMany({
+        include: {
+          images: true,
+          category: true,
+        },
 
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
+        orderBy: {
+          createdAt: 'desc',
+        },
 
-    return subCategories
+        skip: skipAmount,
+        take: pageSize,
+      }),
+      prisma.category.count({}),
+    ])
+    const isNext = count > skipAmount + subCategories.length
+    return { subCategories: subCategories, isNext }
   }
 )
+
 export const getSubCategoryById = cache(
   (
     id: string
@@ -150,6 +167,18 @@ export const getStoreById = cache(
     return store
   }
 )
+
+// export const allCategories = await prisma.category.findMany({})
+export const allCategories = cache(async () => {
+  try {
+    // Retrieve all subcategories of category from the database
+    const allCategories = await prisma.category.findMany({})
+    // console.log({ allCategories })
+    return allCategories
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+  }
+})
 
 export const getAllCategoriesForCategory = cache((categoryId: string) => {
   // Retrieve all subcategories of category from the database

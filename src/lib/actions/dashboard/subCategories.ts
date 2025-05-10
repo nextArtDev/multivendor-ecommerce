@@ -140,7 +140,7 @@ export async function createSubCategory(
     }
   }
   revalidatePath(path)
-  redirect(`${locale}/dashboard/admin/sub-categories`)
+  redirect(`/${locale}/dashboard/admin/sub-categories`)
 }
 interface EditSubCategoryFormState {
   errors: {
@@ -164,7 +164,7 @@ export async function editSubCategory(
     name_fa: formData.get('name_fa'),
     url: formData.get('url'),
     images: formData.getAll('images'),
-    featured: formData.get('featured'),
+    featured: Boolean(formData.get('featured')),
     categoryId: formData.get('categoryId'),
   })
 
@@ -322,7 +322,7 @@ export async function editSubCategory(
     }
   }
   revalidatePath(path)
-  redirect(`${locale}/dashboard/admin/sub-categories`)
+  redirect(`/${locale}/dashboard/admin/sub-categories`)
 }
 
 //////////////////////
@@ -411,5 +411,5 @@ export async function deleteSubCategory(
     }
   }
   revalidatePath(path)
-  redirect(`${locale}/dashboard/admin/sub-categories`)
+  redirect(`/${locale}/dashboard/admin/sub-categories`)
 }

@@ -68,6 +68,7 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
 
   // const router = useRouter() // Hook for routing
   const path = usePathname()
+
   const [isPending, startTransition] = useTransition()
   // Form hook for managing form state and validation
   const form = useForm<z.infer<typeof SubCategoryFormSchema>>({
@@ -85,18 +86,6 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
       categoryId: initialData?.categoryId,
     },
   })
-
-  //    const [deleteState, deleteAction] = useFormState(
-  //      deleteCategory.bind(
-  //        null,
-  //        path,
-  //        params.storeId as string,
-  //        categoryId as string
-  //      ),
-  //      {
-  //        errors: {},
-  //      }
-  //    )
 
   // Reset form values when data changes
   useEffect(() => {
@@ -124,15 +113,23 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
     formData.append('url', data.url)
     formData.append('categoryId', data.categoryId)
 
-    if (data.featured) {
-      formData.append('featured', 'true')
+    if (!initialData) {
+      if (data.featured) {
+        formData.append('featured', 'true')
+      } else {
+        formData.append('featured', 'false')
+      }
     } else {
-      formData.append('featured', 'false')
+      if (data.featured) {
+        formData.append('featured', true.toString())
+      } else {
+        formData.append('featured', false.toString())
+      }
     }
 
     if (data.images && data.images.length > 0) {
       for (let i = 0; i < data.images.length; i++) {
-        formData.append('cover', data.images[i] as string | Blob)
+        formData.append('images', data.images[i] as string | Blob)
       }
     }
     try {
@@ -320,7 +317,7 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
                           <SelectTrigger>
                             <SelectValue
                               defaultValue={field.value}
-                              placeholder="یک بیلبورد را انتخاب کنید"
+                              placeholder="Select a Category"
                             />
                           </SelectTrigger>
                         </FormControl>
@@ -349,7 +346,7 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
                   <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                     <FormControl>
                       <Checkbox
-                        checked={field.value}
+                        checked={Boolean(field.value)}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
