@@ -13,9 +13,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 interface ImageSliderProps {
   urls: string[]
   className?: string
+  unoptimized?: boolean
 }
 
-const ImageSlider = ({ urls, className }: ImageSliderProps) => {
+const ImageSlider = ({ urls, className, unoptimized }: ImageSliderProps) => {
   const [swiper, setSwiper] = useState<null | SwiperType>(null)
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -87,6 +88,7 @@ const ImageSlider = ({ urls, className }: ImageSliderProps) => {
         {urls.map((url, i) => (
           <SwiperSlide key={i} className="-z-10 relative h-full w-full">
             <Image
+              unoptimized={unoptimized}
               fill
               loading="eager"
               className={cn(

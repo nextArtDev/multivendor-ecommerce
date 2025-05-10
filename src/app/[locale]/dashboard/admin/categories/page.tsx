@@ -12,6 +12,7 @@ import { getAllCategories } from '@/lib/queries/dashboard'
 export default async function AdminCategoriesPage() {
   // Fetching stores data from the database
   const categories = await getAllCategories()
+  // console.log({ categories })
 
   // Checking if no categories are found
   if (!categories) return null // If no categories found, return null

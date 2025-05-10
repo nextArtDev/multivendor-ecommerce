@@ -120,7 +120,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ initialData }) => {
     // }
     if (data.images && data.images.length > 0) {
       for (let i = 0; i < data.images.length; i++) {
-        formData.append('cover', data.images[i] as string | Blob)
+        formData.append('images', data.images[i] as string | Blob)
       }
     }
     try {

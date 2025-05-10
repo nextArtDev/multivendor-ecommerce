@@ -47,7 +47,7 @@ export async function createCategory(
       errors: result.error.flatten().fieldErrors,
     }
   }
-  //   console.log(result?.data)
+  // console.log(result?.data)
 
   const session = await auth()
   if (!session || !session.user || session.user.role !== 'ADMIN') {

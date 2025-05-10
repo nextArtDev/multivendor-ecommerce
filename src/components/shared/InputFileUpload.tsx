@@ -11,10 +11,12 @@ import { X } from 'lucide-react'
 
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { FileInput, FileUploader } from '../ui/file-upload'
-import ImageSlider from './ImageSlider'
+
 import { cn } from '@/lib/utils'
 import { Image } from '@prisma/client'
+
+import { FileInput, FileUploader } from './file-input'
+import ImageSlider from './ImageSlider'
 
 const InputFileUpload = ({
   name,
@@ -22,12 +24,14 @@ const InputFileUpload = ({
   className,
   multiple = true,
   initialDataImages,
+  unoptimized = false,
 }: {
   name: string
   label?: string
   className?: string
   multiple?: boolean
   initialDataImages?: Partial<Image>[] | null
+  unoptimized?: boolean
 }) => {
   const form = useFormContext()
   const [files, setFiles] = useState<File[] | null>(null)
@@ -88,7 +92,7 @@ const InputFileUpload = ({
               >
                 {!!initialUrls?.length && !!initials ? (
                   <div className={cn('relative w-60 h-60 ', className)}>
-                    <ImageSlider urls={initialUrls} />
+                    <ImageSlider unoptimized={unoptimized} urls={initialUrls} />
                     <Button
                       size="icon"
                       onClick={() => {
@@ -104,7 +108,7 @@ const InputFileUpload = ({
                   </div>
                 ) : files && files.length > 0 ? (
                   <div className={cn('relative w-60 h-60 ', className)}>
-                    <ImageSlider urls={urls} />
+                    <ImageSlider unoptimized={unoptimized} urls={urls} />
                     <Button
                       size="icon"
                       onClick={() => {
@@ -165,11 +169,11 @@ const FileSvgDraw = () => {
         />
       </svg>
       <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-        <span className="font-semibold">Click to upload</span>
-        &nbsp; or drag and drop
+        <span className="font-semibold">برای اپلود عکس کلید کرده</span>
+        &nbsp; یا عکس را گرفته در این محل رها کنید
       </p>
       <p className="text-xs text-gray-500 dark:text-gray-400">
-        SVG, PNG, JPG or GIF
+        SVG, PNG, JPG یا GIF
       </p>
     </>
   )
