@@ -169,16 +169,6 @@ export const getStoreById = cache(
 )
 
 // export const allCategories = await prisma.category.findMany({})
-export const allCategories = cache(async () => {
-  try {
-    // Retrieve all subcategories of category from the database
-    const allCategories = await prisma.category.findMany({})
-    // console.log({ allCategories })
-    return allCategories
-  } catch (error) {
-    console.error('Error fetching categories:', error)
-  }
-})
 
 export const getAllCategoriesForCategory = cache((categoryId: string) => {
   // Retrieve all subcategories of category from the database

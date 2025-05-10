@@ -1,10 +1,10 @@
 'use client'
-import { usePathname } from '@/navigation'
+import { Link, usePathname } from '@/navigation'
 
 import { useModal } from '@/providers/modal-provider'
 import CustomModal from '@/components/dashboard/custom-modal'
 import { useToast } from '@/hooks/use-toast'
-import { allCategories, getSubCategoryById } from '@/lib/queries/dashboard'
+import { getSubCategoryById } from '@/lib/queries/dashboard'
 import { Edit, MoreHorizontal, Trash } from 'lucide-react'
 // UI components
 import {
@@ -33,6 +33,7 @@ import { useActionState } from 'react'
 import { deleteSubCategory } from '@/lib/actions/dashboard/subCategories'
 import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details'
 import { useQuery } from '@tanstack/react-query'
+import { allCategories } from '@/lib/queries/dashboard/category'
 
 interface CellActionsProps {
   rowData: SubCategory & { images: Image[] }
@@ -41,14 +42,15 @@ interface CellActionsProps {
 // CellActions component definition
 export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
   // Hooks
+  // console.log({ rowData })
   const { setOpen, setClose } = useModal()
   const path = usePathname()
   const { toast } = useToast()
-  const { isPending, isError, data, error } = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => await allCategories(),
+  const { data: categories } = useQuery({
+    queryKey: ['categories', rowData.id],
+    queryFn: () => allCategories(),
   })
-  console.log({ data })
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, deleteAction, pending] = useActionState(
     deleteSubCategory.bind(null, path, rowData.id as string),
@@ -78,11 +80,12 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
                   <CustomModal>
                     <SubCategoryDetails
                       initialData={rowData}
-                      categories={data}
+                      categories={categories}
                     />
                   </CustomModal>,
                   async () => {
                     const data = await getSubCategoryById(rowData.id)
+                    // console.log({ data })
                     return {
                       rowData: data,
                     }
@@ -93,13 +96,13 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
               }
             }}
           >
-            {/* <Link
+            <Link
               className="flex items-center gap-2"
-              href={`/dashboard/admin/categories/new/${rowData.id}`}
+              href={`/dashboard/admin/sub-categories/${rowData.id}`}
             >
-            </Link> */}
-            <Edit size={15} />
-            Edit Details
+              <Edit size={15} />
+              Edit Details
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <AlertDialogTrigger asChild>

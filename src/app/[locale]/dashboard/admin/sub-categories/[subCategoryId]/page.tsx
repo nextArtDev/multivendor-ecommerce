@@ -19,7 +19,7 @@ export default async function EditsubCategoryPage({
     },
   })
   const categories = await prisma.category.findMany({})
-  console.log({ subcategory })
+
   if (!subcategory) return notFound()
   return (
     <div>
