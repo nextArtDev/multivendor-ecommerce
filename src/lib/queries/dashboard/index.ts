@@ -50,24 +50,7 @@ export const getAllCategories = cache(
     return { categories, isNext }
   }
 )
-export const getCategoryById = cache(
-  (id: string): Promise<(Category & { images: Image[] }) | null> => {
-    const category = prisma.category.findFirst({
-      where: {
-        id,
-      },
-      include: {
-        images: true,
-      },
 
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
-
-    return category
-  }
-)
 export const getAllSubCategories = cache(
   async ({
     page = 1,
@@ -152,6 +135,19 @@ export const getAllCategoriesForCategory = cache((categoryId: string) => {
   const subCategories = prisma.subCategory.findMany({
     where: {
       categoryId,
+    },
+    orderBy: {
+      updatedAt: 'desc',
+    },
+  })
+
+  return subCategories
+})
+export const getAllCategoriesWillStoreUrl = cache((storeUrl: string) => {
+  // Retrieve all subcategories of category from the database
+  const subCategories = prisma.category.findMany({
+    where: {
+      url: storeUrl,
     },
     orderBy: {
       updatedAt: 'desc',

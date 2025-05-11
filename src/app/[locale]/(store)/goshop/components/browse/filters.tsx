@@ -5,7 +5,10 @@ import FiltersHeader from './filters/header'
 import PriceFilter from './filters/price/price'
 import ColorFilter from './filters/color/color-filter'
 import { FiltersQueryType } from '../../types'
-import { getAllCategories } from '@/lib/queries/dashboard'
+import {
+  getAllCategories,
+  getAllCategoriesWillStoreUrl,
+} from '@/lib/queries/dashboard'
 import { getAllOfferTags } from '@/lib/queries/dashboard/tags'
 
 export default async function ProductFilters({
@@ -15,7 +18,7 @@ export default async function ProductFilters({
   queries: FiltersQueryType
   storeUrl?: string
 }) {
-  const categories = await getAllCategories(storeUrl)
+  const categories = await getAllCategoriesWillStoreUrl({ storeUrl })
   const offers = await getAllOfferTags(storeUrl)
 
   return (

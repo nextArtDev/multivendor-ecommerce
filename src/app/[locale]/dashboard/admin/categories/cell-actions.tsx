@@ -3,7 +3,6 @@ import CategoryDetails from '@/components/dashboard/forms/category-details'
 import { useModal } from '@/providers/modal-provider'
 import CustomModal from '@/components/dashboard/custom-modal'
 import { useToast } from '@/hooks/use-toast'
-import { getCategoryById } from '@/lib/queries/dashboard'
 import { Edit, MoreHorizontal, Trash } from 'lucide-react'
 // UI components
 import {
@@ -30,6 +29,7 @@ import { Category, Image } from '@prisma/client'
 
 import { useActionState } from 'react'
 import { deleteCategory } from '@/lib/actions/dashboard/categories'
+import { getCategoryById } from '@/lib/queries/dashboard/category'
 
 interface CellActionsProps {
   rowData: Category & { images: Image[] }
@@ -83,13 +83,13 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
               }
             }}
           >
-            <Link
+            {/* <Link
               className="flex items-center gap-2"
               href={`/dashboard/admin/categories/${rowData.id}`}
             >
               <Edit size={15} />
-              Edit Details
-            </Link>
+            </Link> */}
+            Edit Details
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <AlertDialogTrigger asChild>
