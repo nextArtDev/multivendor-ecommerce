@@ -1,5 +1,5 @@
 'use client'
-import { Link, usePathname } from '@/navigation'
+import { usePathname } from '@/navigation'
 
 import { useModal } from '@/providers/modal-provider'
 import CustomModal from '@/components/dashboard/custom-modal'
@@ -31,8 +31,8 @@ import { Image, SubCategory } from '@prisma/client'
 import { useActionState } from 'react'
 import { deleteSubCategory } from '@/lib/actions/dashboard/subCategories'
 import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details'
-import { useQuery } from '@tanstack/react-query'
-import { allCategories } from '@/lib/queries/dashboard/category'
+// import { useQuery } from '@tanstack/react-query'
+// import { allCategories } from '@/lib/queries/dashboard/category'
 import { getSubCategoryById } from '@/lib/queries/dashboard/sub-categories'
 
 interface CellActionsProps {
@@ -46,10 +46,6 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
   const { setOpen, setClose } = useModal()
   const path = usePathname()
   const { toast } = useToast()
-  const { data: categories } = useQuery({
-    queryKey: ['categories', rowData.id],
-    queryFn: () => allCategories(),
-  })
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, deleteAction, pending] = useActionState(
@@ -80,7 +76,7 @@ export const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
                   <CustomModal>
                     <SubCategoryDetails
                       initialData={rowData}
-                      categories={categories}
+                      // categories={categories}
                     />
                   </CustomModal>,
                   async () => {

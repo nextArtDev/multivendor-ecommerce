@@ -9,7 +9,7 @@ import { columns } from './columns'
 import DataTable from '@/components/ui/data-table'
 import { getAllSubCategories } from '@/lib/queries/dashboard'
 import SubCategoryDetails from '@/components/dashboard/forms/sub-category-details'
-import { prisma } from '@/lib/prisma'
+// import { prisma } from '@/lib/prisma'
 
 export default async function AdminSubCategoriesPage({
   searchParams,
@@ -21,11 +21,11 @@ export default async function AdminSubCategoriesPage({
 
   // Fetching stores data from the database
   const subCategoriesResponse = await getAllSubCategories({ page })
-  const categories = await prisma.category.findMany({})
+  // const categories = await prisma.category.findMany({})
   // console.log(subCategoriesResponse.subCategories)
 
   // Checking if no categories are found
-  if (!subCategoriesResponse.subCategories || !categories) return null // If no categories found, return null
+  if (!subCategoriesResponse.subCategories) return null // If no categories found, return null
 
   return (
     <DataTable
@@ -35,7 +35,7 @@ export default async function AdminSubCategoriesPage({
           Create category
         </>
       }
-      modalChildren={<SubCategoryDetails categories={categories} />}
+      modalChildren={<SubCategoryDetails />}
       newTabLink="/dashboard/admin/sub-categories/new"
       filterValue="name"
       data={subCategoriesResponse.subCategories}

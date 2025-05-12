@@ -4,7 +4,7 @@
 import { FC, useEffect, useTransition } from 'react'
 
 // Prisma model
-import { Category, Image, SubCategory } from '@prisma/client'
+import { Image, SubCategory } from '@prisma/client'
 
 // Form handling utilities
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -54,15 +54,17 @@ import {
 } from '@/lib/actions/dashboard/subCategories'
 import { usePathname } from '@/navigation'
 import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
+import { allCategories } from '@/lib/queries/dashboard/category'
 
 interface SubCategoryDetailsProps {
   initialData?: SubCategory & { images: Image[] }
-  categories: Partial<Category>[]
+  // categories: Partial<Category>[]
 }
 
 const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
   initialData,
-  categories,
+  // categories,
 }) => {
   // Initializing necessary hooks
 
@@ -70,6 +72,11 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
   const path = usePathname()
 
   const [isPending, startTransition] = useTransition()
+
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => allCategories(),
+  })
   // Form hook for managing form state and validation
   const form = useForm<z.infer<typeof SubCategoryFormSchema>>({
     mode: 'onChange', // Form validation mode
@@ -322,7 +329,7 @@ const SubCategoryDetails: FC<SubCategoryDetailsProps> = ({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {categories.map((category) => (
+                          {categories?.map((category) => (
                             <SelectItem key={category.id} value={category.id!}>
                               {category.name}
                             </SelectItem>
