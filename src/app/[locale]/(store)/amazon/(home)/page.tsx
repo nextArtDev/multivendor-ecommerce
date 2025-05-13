@@ -41,7 +41,7 @@ const cards = [
   },
 ]
 const HomePage = async () => {
-  const categories = await getAllCategories()
+  const categories = await getAllCategories({})
   const carouselItems = categories.map((category) => {
     return {
       title: category.name,

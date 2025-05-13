@@ -5,10 +5,7 @@ import FiltersHeader from './filters/header'
 import PriceFilter from './filters/price/price'
 import ColorFilter from './filters/color/color-filter'
 import { FiltersQueryType } from '../../types'
-import {
-  getAllCategories,
-  getAllCategoriesWillStoreUrl,
-} from '@/lib/queries/dashboard'
+import { getAllCategoriesWillStoreUrl } from '@/lib/queries/dashboard'
 import { getAllOfferTags } from '@/lib/queries/dashboard/tags'
 
 export default async function ProductFilters({

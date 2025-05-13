@@ -22,7 +22,7 @@ export default async function SellerProductsPage({
   if (!products) return notFound()
   // console.log({ products })
 
-  const categories = await getAllCategories()
+  const categories = await getAllCategories({})
   const offerTags = await getAllOfferTags()
 
   const countries = await prisma.country.findMany({
