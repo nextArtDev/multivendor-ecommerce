@@ -807,7 +807,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                 </div>
               </div>
               {/* sizes */}
-              <InputFieldset label="Sizes, Quantities, Prices, Disocunts">
+              <InputFieldset label="Sizes, Quantities, Prices, Discounts">
                 <div className="w-full flex flex-col gap-y-3">
                   <ClickToAddInputs
                     details={sizes}
@@ -1368,7 +1368,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                     </label>
                   </div>
                   <div>
-                    <p className="mt-4 text-sm text-main-secondary dark:text-gray-400 pb-3 flex">
+                    <p className="mt-4 text-sm pb-3 flex">
                       <Dot className="-me-1" />
                       If not select the countries you want to ship this product
                       to for free
@@ -1390,7 +1390,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                                   defaultOptions={countryOptions}
                                   placeholder="Select frameworks you like..."
                                   emptyIndicator={
-                                    <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                                    <p className="text-center text-lg leading-10  ">
                                       no results found.
                                     </p>
                                   }
@@ -1399,7 +1399,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                             </FormItem>
                           )}
                         />
-                        <p className="mt-4 text-sm text-main-secondary dark:text-gray-400 pb-3 flex">
+                        <p className="mt-4 text-sm  pb-3 flex">
                           <Dot className="-me-1" />
                           List of countries you offer free shipping for this
                           product :&nbsp;
@@ -1415,7 +1415,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
                             .freeShippingCountriesIds?.map((country, index) => (
                               <div
                                 key={country.label}
-                                className="text-xs inline-flex items-center px-3 py-1 bg-blue-200 text-blue-primary rounded-md gap-x-2"
+                                className="text-xs inline-flex items-center px-3 py-1 rounded-md gap-x-2"
                               >
                                 <span>{country.label}</span>
                                 <span

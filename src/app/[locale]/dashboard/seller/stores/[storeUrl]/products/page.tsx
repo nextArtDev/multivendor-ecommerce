@@ -40,7 +40,7 @@ export default async function SellerProductsPage({
       }
       modalChildren={
         <ProductDetails
-          categories={categories}
+          categories={categories.categories}
           offerTags={offerTags}
           storeUrl={storeUrl}
           countries={countries}

@@ -58,7 +58,7 @@ import { usePathname } from '@/navigation'
 export const columns: ColumnDef<StoreProductType>[] = [
   {
     accessorKey: 'image',
-    header: '',
+    header: 'Image',
     cell: ({ row }) => {
       return (
         <div className="flex flex-col gap-y-3">
@@ -82,7 +82,7 @@ export const columns: ColumnDef<StoreProductType>[] = [
                         alt={`${variant.variantName} image`}
                         width={1000}
                         height={1000}
-                        className="max-w-72 h-72 rounded-md object-cover shadow-sm"
+                        className="max-w-32 h-32 rounded-md object-cover shadow-sm"
                       />
                     )}
                     <Link
@@ -93,13 +93,13 @@ export const columns: ColumnDef<StoreProductType>[] = [
                       </div>
                     </Link>
                     {/* Info */}
-                    <div className="flex mt-2 gap-2 p-1">
+                    <div className="flex flex-col mt-2 gap-2 ">
                       {/* Colors */}
-                      <div className="w-7 flex flex-col gap-2 rounded-md">
+                      <div className=" flex flex-wrap max-w-sm gap-2 rounded-md">
                         {variant.colors.map((color: Color) => (
                           <span
                             key={color.name}
-                            className="w-5 h-5 rounded-full shadow-2xl"
+                            className="w-4 h-4 rounded-full shadow-2xl"
                             style={{ backgroundColor: color.name }}
                           />
                         ))}
@@ -163,7 +163,7 @@ export const columns: ColumnDef<StoreProductType>[] = [
 
   {
     accessorKey: 'new-variant',
-    header: '',
+    header: 'Add Variant',
     cell: ({ row }) => {
       return (
         <Link
