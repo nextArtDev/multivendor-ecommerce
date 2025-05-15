@@ -81,10 +81,10 @@ export type ProductWithVariantType = {
   description: string
   variantName: string
   variantDescription: string
-  name_fa: string
-  description_fa: string
-  variantName_fa: string
-  variantDescription_fa: string
+  name_fa?: string
+  description_fa?: string
+  variantName_fa?: string
+  variantDescription_fa?: string
   images: Partial<Image[]>
   variantImage: Partial<Image[]>
   categoryId: string

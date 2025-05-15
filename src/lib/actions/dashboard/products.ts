@@ -368,7 +368,7 @@ export async function editProduct(
       },
     }
   }
-  // console.log(result)
+  console.log({ result })
 
   try {
     const isExisting:
@@ -490,7 +490,7 @@ export async function editProduct(
     }
   }
   revalidatePath(path)
-  redirect(`/${locale}/dashboard/seller/products`)
+  redirect(`/${locale}/dashboard/seller/products/${productId}/variants`)
 }
 
 //////////////////////
@@ -640,7 +640,6 @@ export async function deleteProduct(
       },
     })
   } catch (err: unknown) {
-    console.log(err)
     if (err instanceof Error) {
       return {
         errors: {
@@ -654,13 +653,12 @@ export async function deleteProduct(
         },
       }
     }
-  } finally {
-    revalidatePath(path)
-    redirect(
-      // `/${locale}/dashboard/seller/stores/${isExisting.store.url}/products/`
-      `/${locale}/dashboard/seller/stores/`
-    )
   }
+  revalidatePath(path)
+  redirect(
+    // `/${locale}/dashboard/seller/stores/${isExisting.store.url}/products/`
+    `/${locale}/dashboard/seller/stores/`
+  )
 }
 
 // Product Variant
