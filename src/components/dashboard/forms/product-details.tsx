@@ -789,7 +789,9 @@ const ProductDetails: FC<ProductDetailProps> = ({
                   label="images"
                   colors={colors}
                   setColors={setColors}
+                  // initialDataImages={data?.images || []}
                 />
+
                 <div className="w-full flex flex-col gap-y-3 xl:pl-5">
                   <ClickToAddInputs
                     details={

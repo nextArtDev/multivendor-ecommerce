@@ -139,6 +139,8 @@ export const getProductById = cache(
             specs: true,
           },
         },
+
+        images: true,
       },
     })
 
