@@ -358,7 +358,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
     }
 
     formData.append('shippingFeeMethod', values.shippingFeeMethod || [])
-    if (data.freeShippingForAllCountries) {
+    if (data?.freeShippingForAllCountries) {
       formData.append('freeShippingForAllCountries', 'true')
     }
 

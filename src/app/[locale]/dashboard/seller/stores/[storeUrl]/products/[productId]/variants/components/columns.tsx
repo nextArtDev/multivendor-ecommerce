@@ -50,7 +50,7 @@ import { usePathname } from '@/navigation'
 export const columns: ColumnDef<StoreProductType>[] = [
   {
     accessorKey: 'image',
-    header: '',
+    header: 'Image',
     cell: ({ row }) => {
       return (
         <div className="flex flex-col gap-y-3">
@@ -59,78 +59,69 @@ export const columns: ColumnDef<StoreProductType>[] = [
             {row.original.variantName}
           </h1>
           {/* Product variants */}
-          {/* <div className="relative flex flex-wrap gap-2">
-            {row.original.map(
+          <div className="relative flex flex-wrap gap-2">
+            {/* {row.original.map(
               (
                 variant: ProductVariant & { variantImage: Image[] | null } & {
                   colors: Color[]
                 } & { sizes: Size[] }
-              ) => (
-                <div key={variant.id} className="flex flex-col gap-y-2 group">
-                  <div className="relative cursor-pointer p-2">
-                    {variant?.variantImage && (
-                      <NextImage
-                        src={variant?.variantImage[0]?.url}
-                        alt={`${variant.variantName} image`}
-                        width={1000}
-                        height={1000}
-                        className="max-w-72 h-72 rounded-md object-cover shadow-sm"
+              ) => ( */}
+            <div key={row.original.id} className="flex flex-col gap-y-2 group">
+              <div className="relative flex  cursor-pointer p-2">
+                {row.original?.variantImage && (
+                  <NextImage
+                    src={row.original?.variantImage[0]?.url}
+                    alt={`${row.original.variantName} image`}
+                    width={1000}
+                    height={1000}
+                    className="max-w-24 h-24 rounded-md object-cover shadow-sm"
+                  />
+                )}
+                {/* <Link
+                  href={`/dashboard/seller/stores/${row.original.store.url}/products/${row.original.id}/variants/${variant.id}`}
+                >
+                  <div className="w-[304px] h-full absolute top-0 left-0 bottom-0 right-0 z-0 rounded-sm bg-black/50 transition-all duration-150 hidden group-hover:block">
+                    <FilePenLine className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white" />
+                  </div>
+                </Link> */}
+
+                <div className="flex mt-2 gap-2 p-1">
+                  <div className=" flex flex-wrap max-w-sm gap-2 rounded-md">
+                    {row.original.colors.map((color: Color) => (
+                      <span
+                        key={color.name}
+                        className="w-4 h-4 rounded-full shadow-2xl"
+                        style={{ backgroundColor: color.name }}
                       />
-                    )}
-                    <Link
-                      href={`/dashboard/seller/stores/${row.original.store.url}/products/${row.original.id}/variants/${variant.id}`}
-                    >
-                      <div className="w-[304px] h-full absolute top-0 left-0 bottom-0 right-0 z-0 rounded-sm bg-black/50 transition-all duration-150 hidden group-hover:block">
-                        <FilePenLine className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white" />
-                      </div>
-                    </Link>
-                 
-                    <div className="flex mt-2 gap-2 p-1">
-                 
-                      <div className="w-7 flex flex-col gap-2 rounded-md">
-                        {variant.colors.map((color: Color) => (
-                          <span
-                            key={color.name}
-                            className="w-5 h-5 rounded-full shadow-2xl"
-                            style={{ backgroundColor: color.name }}
-                          />
-                        ))}
-                      </div>
-                      <div>
-               
-                        <h1 className="max-w-40 capitalize text-sm">
-                          {variant.variantName}
-                        </h1>
-                      
-                        <div className="flex flex-wrap gap-2 max-w-72 mt-1">
-                          {variant.sizes.map((size: Size) => (
-                            <span
-                              key={size.size}
-                              className="w-fit p-1 rounded-md text-[11px] font-medium border-2 bg-white/10"
-                            >
-                              {size.size} - ({size.quantity}) - {size.price}$
-                            </span>
-                          ))}
-                        </div>
-                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <h1 className="max-w-40 capitalize text-sm">
+                      {row.original.variantName}
+                    </h1>
+
+                    <div className="flex flex-wrap gap-2 max-w-72 mt-1">
+                      {row.original.sizes.map((size: Size) => (
+                        <span
+                          key={size.size}
+                          className="w-fit flex gap-2 p-1 rounded-md text-[11px] font-medium border-2 bg-white/10"
+                        >
+                          {size.size} - ({size.quantity}) - {size.price}$
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>
-              )
-            )}
-          </div> */}
+              </div>
+            </div>
+            {/* )
+            )} */}
+          </div>
         </div>
       )
     },
   },
 
-  {
-    accessorKey: 'variant',
-    header: 'Variant',
-    cell: ({ row }) => {
-      return <span>{row.original.variantName}</span>
-    },
-  },
   // {
   //   accessorKey: 'offerTag',
   //   header: 'Offer',

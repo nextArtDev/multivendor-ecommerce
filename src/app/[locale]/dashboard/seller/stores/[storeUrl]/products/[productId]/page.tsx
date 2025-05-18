@@ -1,4 +1,4 @@
-import ProductDetails from '@/components/dashboard/forms/product-details'
+import ProductDetailsEdit from '@/components/dashboard/forms/product-details-edit'
 import { prisma } from '@/lib/prisma'
 import { getAllCategories } from '@/lib/queries/dashboard'
 import { getProductById } from '@/lib/queries/dashboard/products'
@@ -43,7 +43,7 @@ export default async function SellerNewProductPage({
 
   return (
     <div className="w-full">
-      <ProductDetails
+      <ProductDetailsEdit
         categories={categories.categories}
         data={productWithUndefined}
         storeUrl={storeUrl}

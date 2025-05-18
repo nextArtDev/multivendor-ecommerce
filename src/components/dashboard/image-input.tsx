@@ -11,7 +11,6 @@ import { useFormContext } from 'react-hook-form'
 import ImagesPreviewGrid from './images-preview-grid'
 
 import { FileInput, FileUploader } from '../ui/file-upload'
-import { Image } from '@prisma/client'
 
 const dropZoneConfig = {
   maxFiles: 5,

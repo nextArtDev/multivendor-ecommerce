@@ -535,6 +535,183 @@ export const ProductFormSchema = z.object({
   // .default([]),
   shippingFeeMethod: z.nativeEnum(ShippingFeeMethod),
 })
+export const ProductEditFormSchema = z.object({
+  name: z
+    .string({
+      required_error: 'Product name is mandatory.',
+      invalid_type_error: 'Product name must be a valid string.',
+    })
+    .min(2, { message: 'Product name should be at least 2 characters long.' })
+    .max(200, { message: 'Product name cannot exceed 200 characters.' }),
+  name_fa: z
+    .string({
+      required_error: 'Product name is mandatory.',
+      invalid_type_error: 'Product name must be a valid string.',
+    })
+    // .min(2, { message: 'Product name should be at least 2 characters long.' })
+    .max(200, { message: 'Product name cannot exceed 200 characters.' })
+    .optional(),
+  description: z
+    .string({
+      required_error: 'Product description is mandatory.',
+      invalid_type_error: 'Product description must be a valid string.',
+    })
+    .min(200, {
+      message: 'Product description should be at least 200 characters long.',
+    }),
+  description_fa: z
+    .string({
+      required_error: 'Product description is mandatory.',
+      invalid_type_error: 'Product description must be a valid string.',
+    })
+
+    .optional(),
+
+  images: imageSchema,
+  // .min(3, 'Please upload at least 3 images for the product.')
+  // .max(6, 'You can upload up to 6 images for the product.'),
+
+  //  z
+  //   .object({ url: z.string() })
+  //   .array()
+  //   .length(1, 'Choose a product variant image.'),
+  categoryId: z
+    .string({
+      required_error: 'Product category ID is mandatory.',
+      invalid_type_error: 'Product category ID must be a valid UUID.',
+    })
+    .uuid(),
+  subCategoryId: z
+    .string({
+      required_error: 'Product sub-category ID is mandatory.',
+      invalid_type_error: 'Product sub-category ID must be a valid UUID.',
+    })
+    .uuid(),
+  offerTagId: z
+    .string({
+      required_error: 'Product offer tag ID is mandatory.',
+      invalid_type_error: 'Product offer tag ID must be a valid UUID.',
+    })
+    // .uuid()
+    .optional(),
+  brand: z
+    .string({
+      required_error: 'Product brand is mandatory.',
+      invalid_type_error: 'Product brand must be a valid string.',
+    })
+    .min(2, {
+      message: 'Product brand should be at least 2 characters long.',
+    })
+    .max(50, {
+      message: 'Product brand cannot exceed 50 characters.',
+    })
+    .optional(),
+  sku: z
+    .string({
+      required_error: 'Product SKU is mandatory.',
+      invalid_type_error: 'Product SKU must be a valid string.',
+    })
+    .min(6, {
+      message: 'Product SKU should be at least 6 characters long.',
+    })
+    .max(50, {
+      message: 'Product SKU cannot exceed 50 characters.',
+    })
+    .optional(),
+  weight: z
+    .number()
+    .min(0.01, {
+      message: 'Please provide a valid product weight.',
+    })
+    .optional(),
+  keywords: z
+    .array(z.string())
+    .nonempty('Please at least one item')
+    // .string({
+    //   required_error: 'Product keywords are mandatory.',
+    //   invalid_type_error: 'Keywords must be valid strings.',
+    // })
+    // .array()
+    // .min(5, {
+    //   message: 'Please provide at least 5 keywords.',
+    // })
+    .max(10, {
+      message: 'You can provide up to 10 keywords.',
+    })
+    .optional(),
+  keywords_fa: z
+    .array(z.string())
+    .nonempty('Please at least one item')
+    .max(10, {
+      message: 'You can provide up to 10 keywords.',
+    })
+    .optional(),
+
+  product_specs: z
+    .object({
+      name: z.string(),
+      value: z.string(),
+      // name_fa: z.string(),
+    })
+    .array()
+    // .min(1, 'Please provide at least one product spec.')
+    .refine(
+      (product_specs) =>
+        product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
+      {
+        message: 'All product specs inputs must be filled correctly.',
+      }
+    )
+    .optional(),
+
+  questions: z
+    .object({
+      question: z.string(),
+      answer: z.string(),
+      // question_fa: z.string(),
+      // answer_fa: z.string(),
+    })
+    .array()
+    // .min(1, 'Please provide at least one product question.')
+    .refine(
+      (questions) =>
+        questions.every((q) => q.question.length > 0 && q.answer.length > 0),
+      {
+        message: 'All product question inputs must be filled correctly.',
+      }
+    )
+    .optional(),
+
+  freeShippingForAllCountries: z.boolean().default(false),
+  freeShippingCountriesIds: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        label: z.string(),
+        value: z.string(),
+        disable: z.boolean().optional(),
+      })
+    )
+    .optional()
+    .refine(
+      (ids) => ids?.every((item) => item.label && item.value),
+      'Each country must have a valid name and ID.'
+    )
+    .default([]), // use it when an array is optional
+  // .object({
+  //   id: z.string().optional(),
+  //   label: z.string(),
+  //   value: z.string(),
+  // })
+  // .array()
+  // .optional()
+  // .refine(
+  //   (ids) => ids?.every((item) => item.label && item.value),
+  //   'Each country must have a valid name and ID.'
+  // )
+  // .default([]),
+  shippingFeeMethod: z.nativeEnum(ShippingFeeMethod),
+})
 
 export const VariantFormSchema = z.object({
   variantName: z

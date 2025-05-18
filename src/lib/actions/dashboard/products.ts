@@ -16,7 +16,11 @@ import { redirect } from 'next/navigation'
 import { prisma } from '../../prisma'
 
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
-import { ProductFormSchema, VariantFormSchema } from '@/lib/schemas/dashboard'
+import {
+  ProductEditFormSchema,
+  ProductFormSchema,
+  VariantFormSchema,
+} from '@/lib/schemas/dashboard'
 import { headers } from 'next/headers'
 import { generateUniqueSlug } from '@/lib/slug-util'
 
@@ -303,7 +307,7 @@ export async function editProduct(
 ): Promise<EditProductFormState> {
   const headerResponse = await headers()
   const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
-  const result = ProductFormSchema.safeParse({
+  const result = ProductEditFormSchema.safeParse({
     name: formData.get('name'),
     description: formData.get('description'),
     variantName: formData.get('variantName'),
@@ -324,22 +328,22 @@ export async function editProduct(
     product_specs: formData
       .getAll('product_specs')
       .map((product_spec) => JSON.parse(product_spec.toString())),
-    variant_specs: formData
-      .getAll('variant_specs')
-      .map((variant_spec) => JSON.parse(variant_spec.toString())),
+    // variant_specs: formData
+    //   .getAll('variant_specs')
+    //   .map((variant_spec) => JSON.parse(variant_spec.toString())),
     questions: formData
       .getAll('questions')
       .map((question) => JSON.parse(question.toString())),
-    sizes: formData.getAll('sizes').map((size) => JSON.parse(size.toString())),
-    colors: formData
-      .getAll('colors')
-      .map((size) => JSON.parse(size.toString())),
+    // sizes: formData.getAll('sizes').map((size) => JSON.parse(size.toString())),
+    // colors: formData
+    //   .getAll('colors')
+    //   .map((size) => JSON.parse(size.toString())),
     shippingFeeMethod: formData.get('shippingFeeMethod'),
     freeShippingForAllCountries: Boolean(
       formData.get('freeShippingForAllCountries')
     ),
     images: formData.getAll('images'),
-    variantImage: formData.getAll('variantImage'),
+    // variantImage: formData.getAll('variantImage'),
   })
 
   if (!result.success) {
@@ -368,7 +372,7 @@ export async function editProduct(
       },
     }
   }
-  console.log({ result })
+  // console.log({ result })
 
   try {
     const isExisting:
