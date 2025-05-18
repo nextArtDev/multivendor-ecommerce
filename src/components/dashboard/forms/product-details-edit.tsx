@@ -279,12 +279,8 @@ const ProductDetailsEdit: FC<ProductDetailProps> = ({
     try {
       startTransition(async () => {
         try {
-          const res = await editProduct(
-            formData,
-            data?.productId as string,
-            path
-          )
-          // console.log({ res })
+          console.log(data?.productId)
+          const res = await editProduct(formData, data?.id as string, path)
           if (res?.errors?.name) {
             form.setError('name', {
               type: 'custom',

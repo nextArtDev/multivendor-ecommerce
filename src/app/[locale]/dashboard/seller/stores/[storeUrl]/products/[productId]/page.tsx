@@ -40,7 +40,7 @@ export default async function SellerNewProductPage({
     offerTagId: product.offerTagId ?? undefined,
     // Add similar lines for other possibly-null fields if needed
   }
-
+  console.log({ productWithUndefined })
   return (
     <div className="w-full">
       <ProductDetailsEdit

@@ -345,6 +345,7 @@ export async function editProduct(
     images: formData.getAll('images'),
     // variantImage: formData.getAll('variantImage'),
   })
+  console.log({ productId })
 
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
