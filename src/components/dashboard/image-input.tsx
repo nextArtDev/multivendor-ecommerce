@@ -11,6 +11,7 @@ import { useFormContext } from 'react-hook-form'
 import ImagesPreviewGrid from './images-preview-grid'
 
 import { FileInput, FileUploader } from '../ui/file-upload'
+import { Image } from '@prisma/client'
 
 const dropZoneConfig = {
   maxFiles: 5,
@@ -36,7 +37,7 @@ interface ImageInputProps {
   name: string
   label: string
   accept?: string
-  // initialDataImages?: Partial<Image>[] | null
+  initialDataImages?: Partial<Image>[] | null
 }
 
 export function ImageInput({
@@ -44,8 +45,8 @@ export function ImageInput({
   setColors,
   name,
   label,
-}: // initialDataImages,
-ImageInputProps) {
+  initialDataImages,
+}: ImageInputProps) {
   const { setValue, watch } = useFormContext()
   const form = useFormContext()
   const [files, setFiles] = useState<File[]>([])
@@ -119,7 +120,7 @@ ImageInputProps) {
                   {watchedFiles.length > 0 ? (
                     <div className="flex flex-col gap-y-2 xl:flex-row">
                       <ImagesPreviewGrid
-                        images={watchedFiles}
+                        images={watchedFiles || initialDataImages}
                         onRemove={(url) => {
                           const updatedImages = watchedFiles.filter(
                             (img: { url: string }) => img.url !== url

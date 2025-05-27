@@ -267,7 +267,7 @@ const ProductDetails: FC<ProductDetailProps> = ({
   // console.log({ SubCategories })
   // // Extract errors state from form
   const errors = form.formState.errors
-  console.log({ errors })
+  // console.log({ errors })
 
   // // Loading status based on form submission
   // const isPending = form.formState.isSubmitting
@@ -783,38 +783,32 @@ const ProductDetails: FC<ProductDetailProps> = ({
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-4"
             >
-              <div className="flex flex-col gap-y-6 xl:flex-row">
-                <ImageInput
+              {/* <ImageInput
                   name="images"
                   label="images"
                   colors={colors}
                   setColors={setColors}
                   // initialDataImages={data?.images || []}
+                /> */}
+              <div className="w-60 h-60 mb-16">
+                <InputFileUpload
+                  className="w-full"
+                  // initialDataImages={
+                  //   data?.variantImage ? data?.variantImage : []
+                  // }
+                  initialDataImages={
+                    data?.images
+                      ? data.images.filter(
+                          (image): image is NonNullable<typeof image> =>
+                            image !== undefined
+                        )
+                      : []
+                  }
+                  name="images"
+                  label="images"
                 />
-
-                <div className="w-full flex flex-col gap-y-3 xl:pl-5">
-                  <ClickToAddInputs
-                    details={
-                      // data?.colors?.map((color) => {
-                      //   return { color: color?.name }
-                      // }) || colors
-                      data?.colors
-                        ?.map((color) => color?.name)
-                        .filter((name): name is string => !!name)
-                        .map((name) => ({ color: name })) || colors
-                    }
-                    setDetails={setColors}
-                    initialDetail={{ color: '' }}
-                    header="Colors"
-                    colorPicker
-                  />
-                  {errors.colors && (
-                    <span className="text-sm font-medium text-destructive">
-                      {errors.colors.message}
-                    </span>
-                  )}
-                </div>
               </div>
+
               {/* sizes */}
               <InputFieldset label="Sizes, Quantities, Prices, Discounts">
                 <div className="w-full flex flex-col gap-y-3">
@@ -1125,9 +1119,49 @@ const ProductDetails: FC<ProductDetailProps> = ({
                 </div>
               </InputFieldset>
               {/* Variant image - Keywords*/}
-              <div className="flex items-center gap-10 py-14">
-                {/* Variant image */}
-                <div className="w-60 h-60">
+
+              {/* Variant image */}
+              <div className="flex flex-col gap-y-6 xl:flex-row">
+                <div className="min-w-sm shrink-0">
+                  <ImageInput
+                    name="variantImage"
+                    label="variantImage"
+                    colors={colors}
+                    setColors={setColors}
+                    initialDataImages={
+                      data?.variantImage
+                        ? data.variantImage.filter(
+                            (image): image is NonNullable<typeof image> =>
+                              image !== undefined
+                          )
+                        : []
+                    }
+                  />
+                </div>
+                <div className="w-full flex flex-col gap-y-3 xl:pl-5">
+                  <ClickToAddInputs
+                    details={
+                      // data?.colors?.map((color) => {
+                      //   return { color: color?.name }
+                      // }) || colors
+                      data?.colors
+                        ?.map((color) => color?.name)
+                        .filter((name): name is string => !!name)
+                        .map((name) => ({ color: name })) || colors
+                    }
+                    setDetails={setColors}
+                    initialDetail={{ color: '' }}
+                    header="Colors"
+                    colorPicker
+                  />
+                  {errors.colors && (
+                    <span className="text-sm font-medium text-destructive">
+                      {errors.colors.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+              {/* <div className="w-60 h-60">
                   <InputFileUpload
                     className="w-full"
                     // initialDataImages={
@@ -1145,28 +1179,28 @@ const ProductDetails: FC<ProductDetailProps> = ({
                     multiple={false}
                     label="VariantImage"
                   />
-                </div>
-                {/* Keywords */}
-                <div className="w-full flex-1 space-y-3">
-                  <FormField
-                    control={form.control}
-                    name="keywords"
-                    render={({ field }) => (
-                      <FormItem className="relative flex-1">
-                        <FormLabel>Product Keywords</FormLabel>
-                        <FormControl>
-                          <TagsInput
-                            maxItems={10}
-                            value={field?.value || []}
-                            onValueChange={field.onChange}
-                            placeholder="Enter your tags"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                </div> */}
+              {/* Keywords */}
+              <div className="w-full flex-1 space-y-3">
+                <FormField
+                  control={form.control}
+                  name="keywords"
+                  render={({ field }) => (
+                    <FormItem className="relative flex-1">
+                      <FormLabel>Product Keywords</FormLabel>
+                      <FormControl>
+                        <TagsInput
+                          maxItems={10}
+                          value={field?.value || []}
+                          onValueChange={field.onChange}
+                          placeholder="Enter your tags"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
+
               {/* Product and variant specs*/}
               <InputFieldset
                 label="Specifications"
