@@ -46,6 +46,7 @@ export default async function SellerNewProductPage({
         storeUrl={storeUrl}
         offerTags={offerTags}
         countries={countries}
+        data={product}
       />
     </div>
   )

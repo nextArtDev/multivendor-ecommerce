@@ -82,9 +82,11 @@ interface ProductFormProps {
   //   cover: Image[] | null
   // }
   //   data?: Partial<ProductWithVariantType>
-  data?: Product & { images: Image[] | null } & { specs: Spec[] | null } & {
-    questions: Question[] | null
-  } & { freeShipping: FreeShipping[] | null }
+  data?: Partial<
+    Product & { images: Image[] | null } & { specs: Spec[] | null } & {
+      questions: Question[] | null
+    } & { freeShipping: FreeShipping[] | null }
+  >
   categories: Category[]
   storeUrl: string
   offerTags: OfferTag[]

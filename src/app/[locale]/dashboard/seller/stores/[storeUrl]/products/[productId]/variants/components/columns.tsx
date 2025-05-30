@@ -198,7 +198,7 @@ const CellActions: React.FC<CellActionsProps> = ({ productId }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <AlertDialogTrigger asChild>
             <DropdownMenuItem className="flex gap-2" onClick={() => {}}>
-              <Trash size={15} /> Delete product
+              <Trash size={15} /> Delete variant
             </DropdownMenuItem>
           </AlertDialogTrigger>
         </DropdownMenuContent>
