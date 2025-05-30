@@ -6,10 +6,10 @@ import { Plus } from 'lucide-react'
 
 import { getAllCategories } from '@/lib/queries/dashboard'
 import { prisma } from '@/lib/prisma'
+import ProductDetails from '@/components/dashboard/forms/product-details'
 import { getAllOfferTags } from '@/lib/queries/dashboard/tags'
 import { getAllStoreProducts } from '@/lib/queries/dashboard/products'
 import { notFound } from 'next/navigation'
-import ProductForm from './components/new-product-form'
 
 export default async function SellerProductsPage({
   params,
@@ -39,7 +39,7 @@ export default async function SellerProductsPage({
         </>
       }
       modalChildren={
-        <ProductForm
+        <ProductDetails
           categories={categories.categories}
           offerTags={offerTags}
           storeUrl={storeUrl}
