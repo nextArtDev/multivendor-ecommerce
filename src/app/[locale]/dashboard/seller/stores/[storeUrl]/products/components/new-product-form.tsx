@@ -36,7 +36,17 @@ import { createProduct, editProduct } from '@/lib/actions/dashboard/products'
 import { NewProductFormSchema } from '@/lib/schemas/dashboard'
 import { ProductWithVariantType } from '@/lib/types'
 import { usePathname } from '@/navigation'
-import { Category, Country, OfferTag, ShippingFeeMethod } from '@prisma/client'
+import {
+  Category,
+  Country,
+  FreeShipping,
+  Image,
+  OfferTag,
+  Product,
+  Question,
+  ShippingFeeMethod,
+  Spec,
+} from '@prisma/client'
 import { Dot } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { FC, useEffect, useMemo, useRef, useState, useTransition } from 'react'
@@ -71,7 +81,10 @@ interface ProductFormProps {
   // } & { category: { id: string } } & { store: { id: string } } & {
   //   cover: Image[] | null
   // }
-  data?: Partial<ProductWithVariantType>
+  //   data?: Partial<ProductWithVariantType>
+  data?: Product & { images: Image[] | null } & { specs: Spec[] | null } & {
+    questions: Question[] | null
+  } & { freeShipping: FreeShipping[] | null }
   categories: Category[]
   storeUrl: string
   offerTags: OfferTag[]
@@ -110,13 +123,10 @@ const ProductForm: FC<ProductFormProps> = ({
   const [productSpecs, setProductSpecs] = useState<
     { name: string; value: string }[]
   >(
-    data?.product_specs
-      ? data?.product_specs
+    data?.specs
+      ? data?.specs
           .filter(
-            (
-              product_specs
-            ): product_specs is NonNullable<typeof product_specs> =>
-              product_specs !== undefined
+            (specs): specs is NonNullable<typeof specs> => specs !== undefined
           )
           .map(({ name, value }) => ({ name, value }))
       : [{ name: '', value: '' }]
@@ -149,12 +159,18 @@ const ProductForm: FC<ProductFormProps> = ({
       offerTagId: data?.offerTagId || undefined,
       subCategoryId: data?.subCategoryId,
       brand: data?.brand,
-      sku: data?.sku,
-      product_specs: data?.product_specs,
-      questions: data?.questions,
+
+      product_specs: data?.specs || [],
+      questions: data?.questions || [],
 
       freeShippingForAllCountries: data?.freeShippingForAllCountries,
-      freeShippingCountriesIds: data?.freeShippingCountriesIds || [],
+      freeShippingCountriesIds:
+        data?.freeShipping?.map((fsh) => {
+          return {
+            value: fsh.id,
+            label: fsh.id,
+          }
+        }) || [],
       shippingFeeMethod: data?.shippingFeeMethod,
     },
   })
@@ -174,20 +190,25 @@ const ProductForm: FC<ProductFormProps> = ({
         description: data?.description,
         description_fa: data?.description_fa || '',
 
-        images: data.images,
+        images: data?.images ? data?.images.map((img) => img.url) : [],
 
         categoryId: data?.categoryId,
-        offerTagId: data?.offerTagId,
+        offerTagId: data?.offerTagId || '',
         subCategoryId: data?.subCategoryId,
         brand: data?.brand,
-        sku: data?.sku,
 
-        product_specs: data?.product_specs,
+        product_specs: data?.specs || [],
 
-        questions: data?.questions,
+        questions: data?.questions || [],
 
         freeShippingForAllCountries: data?.freeShippingForAllCountries,
-        freeShippingCountriesIds: data?.freeShippingCountriesIds || [],
+        freeShippingCountriesIds:
+          data?.freeShipping?.map((fsh) => {
+            return {
+              value: fsh.id,
+              label: fsh.id,
+            }
+          }) || [],
         shippingFeeMethod: data?.shippingFeeMethod,
       })
     }
@@ -237,11 +258,7 @@ const ProductForm: FC<ProductFormProps> = ({
       if (data) {
         startTransition(async () => {
           try {
-            const res = await editProduct(
-              formData,
-              data.productId as string,
-              path
-            )
+            const res = await editProduct(formData, data.id as string, path)
             // console.log({ res })
             if (res?.errors?.name) {
               form.setError('name', {
@@ -425,7 +442,7 @@ const ProductForm: FC<ProductFormProps> = ({
         <CardHeader>
           <CardTitle>Create a new product</CardTitle>
           <CardDescription>
-            {data?.productId
+            {data?.id
               ? `Update ${data?.name} product information.`
               : ' Lets create a product. You can edit product later from the product page.'}
           </CardDescription>
@@ -853,7 +870,7 @@ const ProductForm: FC<ProductFormProps> = ({
               <Button type="submit" disabled={isPending}>
                 {isPending
                   ? 'loading...'
-                  : data?.productId && data.variantId
+                  : data?.id
                   ? 'Save product information'
                   : 'Create product'}
               </Button>

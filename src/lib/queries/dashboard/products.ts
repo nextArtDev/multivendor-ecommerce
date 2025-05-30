@@ -112,6 +112,30 @@ export const getVariantById = cache(
     return variant
   }
 )
+export const getVariantByProductId = cache(
+  (
+    productId: string
+  ): Promise<
+    | (ProductVariant & { variantImage: Image[] | null } & {
+        colors: Color[] | null
+      } & { sizes: Size[] | null } & { specs: Spec[] | null })[]
+    | null
+  > => {
+    const variant = prisma.productVariant.findMany({
+      where: {
+        productId,
+      },
+      include: {
+        variantImage: true,
+        colors: true,
+        sizes: true,
+        specs: true,
+      },
+    })
+
+    return variant
+  }
+)
 export const getProductById = cache(
   (
     id: string

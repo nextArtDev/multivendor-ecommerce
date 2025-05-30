@@ -1,12 +1,9 @@
-import ProductDetailsEdit from '@/components/dashboard/forms/product-details-edit'
 import { prisma } from '@/lib/prisma'
 import { getAllCategories } from '@/lib/queries/dashboard'
 import { getProductById } from '@/lib/queries/dashboard/products'
 import { getAllOfferTags } from '@/lib/queries/dashboard/tags'
 import { notFound } from 'next/navigation'
-
-// import { getAllCategories } from '@/queries/category'
-// import { getAllOfferTags } from '@/queries/offer-tag'
+import ProductForm from '../components/new-product-form'
 
 export default async function SellerNewProductPage({
   params,
@@ -18,6 +15,7 @@ export default async function SellerNewProductPage({
   const storeUrl = (await params).storeUrl
   const productId = (await params).productId
   const product = await getProductById(productId)
+
   // const categoryId = (await searchParams).categoryId
   const store = await prisma.store.findFirst({ where: { url: storeUrl } })
   if (!store || !product) return notFound()
@@ -43,9 +41,8 @@ export default async function SellerNewProductPage({
   console.log({ productWithUndefined })
   return (
     <div className="w-full">
-      <ProductDetailsEdit
+      <ProductForm
         categories={categories.categories}
-        data={productWithUndefined}
         storeUrl={storeUrl}
         offerTags={offerTags}
         countries={countries}
