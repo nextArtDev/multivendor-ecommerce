@@ -1,49 +1,43 @@
 // Queries
 
 import DataTable from '@/components/ui/data-table'
-import { columns } from '../../components/columns'
+
 import { Plus } from 'lucide-react'
 
-import { getAllCategories } from '@/lib/queries/dashboard'
-import { prisma } from '@/lib/prisma'
-import { getAllOfferTags } from '@/lib/queries/dashboard/tags'
-import { getAllStoreProducts } from '@/lib/queries/dashboard/products'
+import { getProductById } from '@/lib/queries/dashboard/products'
 import { notFound } from 'next/navigation'
-import ProductForm from '../../components/new-product-form'
+import { columns } from './components/columns'
+import VariantDetails from '@/components/dashboard/forms/variant-details'
 
 export default async function SellerProductsPage({
   params,
 }: {
-  params: Promise<{ storeUrl: string,productId:string }>
+  params: Promise<{ storeUrl: string; productId: string }>
 }) {
   const storeUrl = (await params).storeUrl
   const productId = (await params).productId
- 
-  const products = await getAllStoreProducts(storeUrl)
-  if (!productId) return notFound()
-  // console.log({ products })
- 
+
+  // Fetching products data from the database for the active store
+  const product = await getProductById(productId)
+  if (!product || !storeUrl) return notFound()
+
   return (
     <DataTable
       actionButtonText={
         <>
           <Plus size={15} />
-          Create product
+          {`Create variant for ${product.name}`}
         </>
       }
       modalChildren={
-        <ProductForm
-          categories={categories.categories}
-          offerTags={offerTags}
-          storeUrl={storeUrl}
-          countries={countries}
-        />
+        <VariantDetails data={product.variants[0]} productId={productId} />
       }
-      newTabLink={`/dashboard/seller/stores/${storeUrl}/products/${products.}new`}
+      newTabLink={`/dashboard/seller/stores/${storeUrl}/products/${product.id}/variants/new`}
+      editTabLink={`/dashboard/seller/stores/${storeUrl}/products/${product.id}/variants`}
       filterValue="name"
-      data={products}
+      data={product.variants}
       columns={columns}
-      searchPlaceholder="Search product name..."
+      searchPlaceholder="Search variant name..."
     />
   )
 }
