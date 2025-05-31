@@ -1,9 +1,12 @@
 import { prisma } from '@/lib/prisma'
 import {
   Color,
+  FreeShipping,
+  FreeShippingCountry,
   Image,
   Product,
   ProductVariant,
+  Question,
   Size,
   Spec,
 } from '@prisma/client'
@@ -140,7 +143,15 @@ export const getProductById = cache(
   (
     id: string
   ): Promise<
-    | (Product & {
+    | (Product & { images: Image[] | null } & { specs: Spec[] | null } & {
+        questions: Question[] | null
+      } & {
+        freeShipping:
+          | (FreeShipping & {
+              eligibaleCountries: FreeShippingCountry[] | null
+            })
+          | null
+      } & {
         variants: (ProductVariant & {
           variantImage: Image[] | null
           colors: Color[] | null
@@ -163,8 +174,14 @@ export const getProductById = cache(
             specs: true,
           },
         },
-
+        specs: true,
+        questions: true,
         images: true,
+        freeShipping: {
+          include: {
+            eligibaleCountries: true,
+          },
+        },
       },
     })
 

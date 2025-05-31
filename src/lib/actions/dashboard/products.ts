@@ -10,6 +10,7 @@ import {
   ProductVariant,
   Size,
   Spec,
+  Store,
 } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -340,6 +341,7 @@ export async function createNewProduct(
     freeShippingForAllCountries: Boolean(
       formData.get('freeShippingForAllCountries')
     ),
+    freeShippingCountriesIds: formData.getAll('freeShippingCountriesIds'),
     images: formData.getAll('images'),
   })
 
@@ -433,6 +435,22 @@ export async function createNewProduct(
         shippingFeeMethod: result.data.shippingFeeMethod,
         // freeShipping:result.data.freeShippingCountriesIds?true:false,
         freeShippingForAllCountries: result.data.freeShippingForAllCountries,
+        freeShipping: result.data.freeShippingForAllCountries
+          ? undefined
+          : result.data.freeShippingCountriesIds &&
+            result.data.freeShippingCountriesIds.length > 0
+          ? {
+              create: {
+                eligibaleCountries: {
+                  create: result.data.freeShippingCountriesIds.map(
+                    (country) => ({
+                      country: { connect: { id: country.value } },
+                    })
+                  ),
+                },
+              },
+            }
+          : undefined,
       },
     })
     await prisma.product.update({
@@ -497,45 +515,45 @@ export async function createNewProduct(
   revalidatePath(path)
   redirect(`/${locale}/dashboard/seller/stores/${storeUrl}/products`)
 }
-interface EditProductFormState {
-  errors: {
-    name?: string[]
-    description?: string[]
-    variantName?: string[]
-    variantDescription?: string[]
-    name_fa?: string[]
-    description_fa?: string[]
-    variantName_fa?: string[]
-    variantDescription_fa?: string[]
-    images?: string[]
-    variantImage?: string[]
-    categoryId?: string[]
-    subCategoryId?: string[]
-    offerTagId?: string[]
-    isSale?: string[]
-    saleEndDate?: string[]
-    brand?: string[]
-    sku?: string[]
-    weight?: string[]
-    colors?: string[]
-    sizes?: string[]
-    product_specs?: string[]
-    variant_specs?: string[]
-    keywords?: string[]
-    keywords_fa?: string[]
-    questions?: string[]
+// interface EditProductFormState {
+//   errors: {
+//     name?: string[]
+//     description?: string[]
+//     variantName?: string[]
+//     variantDescription?: string[]
+//     name_fa?: string[]
+//     description_fa?: string[]
+//     variantName_fa?: string[]
+//     variantDescription_fa?: string[]
+//     images?: string[]
+//     variantImage?: string[]
+//     categoryId?: string[]
+//     subCategoryId?: string[]
+//     offerTagId?: string[]
+//     isSale?: string[]
+//     saleEndDate?: string[]
+//     brand?: string[]
+//     sku?: string[]
+//     weight?: string[]
+//     colors?: string[]
+//     sizes?: string[]
+//     product_specs?: string[]
+//     variant_specs?: string[]
+//     keywords?: string[]
+//     keywords_fa?: string[]
+//     questions?: string[]
 
-    _form?: string[]
-  }
-}
+//     _form?: string[]
+//   }
+// }
 export async function editProduct(
   formData: FormData,
   productId: string,
   path: string
-): Promise<EditProductFormState> {
+): Promise<CreateNewProductFormState> {
   const headerResponse = await headers()
   const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
-  const result = ProductEditFormSchema.safeParse({
+  const result = NewProductFormSchema.safeParse({
     name: formData.get('name'),
     description: formData.get('description'),
     variantName: formData.get('variantName'),
@@ -550,9 +568,9 @@ export async function editProduct(
     isSale: Boolean(formData.get('isSale')),
     saleEndDate: formData.get('saleEndDate'),
     brand: formData.get('brand'),
-    sku: formData.get('sku'),
-    weight: Number(formData.get('weight')),
-    keywords: formData.getAll('keywords'),
+    // sku: formData.get('sku'),
+    // weight: Number(formData.get('weight')),
+    // keywords: formData.getAll('keywords'),
     product_specs: formData
       .getAll('product_specs')
       .map((product_spec) => JSON.parse(product_spec.toString())),
@@ -562,18 +580,19 @@ export async function editProduct(
     questions: formData
       .getAll('questions')
       .map((question) => JSON.parse(question.toString())),
-    // sizes: formData.getAll('sizes').map((size) => JSON.parse(size.toString())),
+    freeShippingCountriesIds: formData.getAll('freeShippingCountriesIds'),
     // colors: formData
     //   .getAll('colors')
     //   .map((size) => JSON.parse(size.toString())),
     shippingFeeMethod: formData.get('shippingFeeMethod'),
+
     freeShippingForAllCountries: Boolean(
       formData.get('freeShippingForAllCountries')
     ),
     images: formData.getAll('images'),
     // variantImage: formData.getAll('variantImage'),
   })
-  console.log({ productId })
+  // console.log({ productId })
 
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
@@ -602,16 +621,17 @@ export async function editProduct(
     }
   }
   // console.log({ result })
-
+  let isExisting:
+    | ((Product & {
+        images: { id: string; key: string }[] | null
+      }) & { store: Store })
+    | null
   try {
-    const isExisting:
-      | (Product & {
-          images: { id: string; key: string }[] | null
-        })
-      | null = await prisma.product.findFirst({
+    isExisting = await prisma.product.findFirst({
       where: { id: productId },
       include: {
         images: { select: { id: true, key: true } },
+        store: true,
       },
     })
     if (!isExisting) {
@@ -705,6 +725,22 @@ export async function editProduct(
         shippingFeeMethod: result.data.shippingFeeMethod,
         // freeShipping:result.data.freeShippingCountriesIds?true:false,
         freeShippingForAllCountries: result.data.freeShippingForAllCountries,
+        freeShipping: result.data.freeShippingForAllCountries
+          ? undefined
+          : result.data.freeShippingCountriesIds &&
+            result.data.freeShippingCountriesIds.length > 0
+          ? {
+              create: {
+                eligibaleCountries: {
+                  create: result.data.freeShippingCountriesIds.map(
+                    (country) => ({
+                      country: { connect: { id: country.value } },
+                    })
+                  ),
+                },
+              },
+            }
+          : undefined,
       },
     })
   } catch (err: unknown) {
@@ -723,7 +759,9 @@ export async function editProduct(
     }
   }
   revalidatePath(path)
-  redirect(`/${locale}/dashboard/seller/products/${productId}/variants`)
+  redirect(
+    `/${locale}/dashboard/seller/stores/${isExisting.store.url}/products`
+  )
 }
 
 //////////////////////

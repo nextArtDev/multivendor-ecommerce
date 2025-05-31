@@ -818,10 +818,10 @@ export const NewProductFormSchema = z.object({
   freeShippingCountriesIds: z
     .array(
       z.object({
-        id: z.string().optional(),
+        // id: z.string().optional(),
         label: z.string(),
         value: z.string(),
-        disable: z.boolean().optional(),
+        // disable: z.boolean().optional(),
       })
     )
     .optional()

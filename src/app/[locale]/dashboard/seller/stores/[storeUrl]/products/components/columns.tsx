@@ -79,8 +79,8 @@ export const columns: ColumnDef<StoreProductType>[] = [
                     <NextImage
                       src={
                         row.original?.images.length > 0
-                          ? row.original.images?.[0].url
-                          : variant?.variantImage?.[0].url
+                          ? row.original.images?.[0]?.url
+                          : variant?.variantImage?.[0]?.url || ''
                       }
                       alt={`${variant.variantName} image`}
                       width={1000}

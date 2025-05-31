@@ -44,6 +44,7 @@ import {
   Category,
   Country,
   FreeShipping,
+  FreeShippingCountry,
   Image,
   OfferTag,
   Product,
@@ -90,7 +91,11 @@ interface ProductFormProps {
   data?: Partial<
     Product & { images: Image[] | null } & { specs: Spec[] | null } & {
       questions: Question[] | null
-    } & { freeShipping: FreeShipping[] | null }
+    } & {
+      freeShipping:
+        | (FreeShipping & { eligibaleCountries: FreeShippingCountry[] | null })
+        | null
+    }
   >
   categories: Category[]
   storeUrl: string
@@ -172,7 +177,7 @@ const ProductForm: FC<ProductFormProps> = ({
 
       freeShippingForAllCountries: data?.freeShippingForAllCountries,
       freeShippingCountriesIds:
-        data?.freeShipping?.map((fsh) => {
+        data?.freeShipping?.eligibaleCountries?.map((fsh) => {
           return {
             value: fsh.id,
             label: fsh.id,
@@ -210,7 +215,7 @@ const ProductForm: FC<ProductFormProps> = ({
 
         freeShippingForAllCountries: data?.freeShippingForAllCountries,
         freeShippingCountriesIds:
-          data?.freeShipping?.map((fsh) => {
+          data?.freeShipping?.eligibaleCountries?.map((fsh) => {
             return {
               value: fsh.id,
               label: fsh.id,
@@ -241,6 +246,30 @@ const ProductForm: FC<ProductFormProps> = ({
     formData.append('shippingFeeMethod', values.shippingFeeMethod || [])
     if (data?.freeShippingForAllCountries) {
       formData.append('freeShippingForAllCountries', 'true')
+    }
+    // formData.append(
+    //   'freeShippingCountriesIds',
+    //   values.freeShippingCountriesIds || []
+    // )
+    if (data?.freeShippingForAllCountries) {
+      formData.append('freeShippingForAllCountries', 'true')
+    }
+    if (
+      values.freeShippingCountriesIds &&
+      values.freeShippingCountriesIds.length > 0
+    ) {
+      values.freeShippingCountriesIds.forEach((country, index) => {
+        // Append the 'value' property of the country object
+        formData.append(
+          `freeShippingCountriesIds[${index}][value]`,
+          country.value
+        )
+        // Append the 'label' property of the country object
+        formData.append(
+          `freeShippingCountriesIds[${index}][label]`,
+          country.label
+        )
+      })
     }
 
     if (values.images && values.images.length > 0) {
