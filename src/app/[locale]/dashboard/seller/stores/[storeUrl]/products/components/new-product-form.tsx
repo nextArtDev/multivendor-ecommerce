@@ -224,7 +224,7 @@ const ProductForm: FC<ProductFormProps> = ({
   const handleSubmit = async (values: z.infer<typeof NewProductFormSchema>) => {
     const formData = new FormData()
 
-    console.log({ values })
+    // console.log({ values })
     formData.append('name', values.name)
     formData.append('description', values.description)
 

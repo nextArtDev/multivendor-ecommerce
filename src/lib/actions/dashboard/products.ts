@@ -349,7 +349,7 @@ export async function createNewProduct(
       errors: result.error.flatten().fieldErrors,
     }
   }
-  console.log(result.data)
+  // console.log(result.data)
   const session = await auth()
   if (
     !session ||

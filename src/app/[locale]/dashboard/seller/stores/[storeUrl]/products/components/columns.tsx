@@ -76,15 +76,18 @@ export const columns: ColumnDef<StoreProductType>[] = [
               ) => (
                 <div key={variant.id} className="flex flex-col gap-y-2 group">
                   <div className="relative cursor-pointer p-2">
-                    {variant?.variantImage && (
-                      <NextImage
-                        src={variant?.variantImage[0]?.url}
-                        alt={`${variant.variantName} image`}
-                        width={1000}
-                        height={1000}
-                        className="max-w-32 h-32 rounded-md object-cover shadow-sm"
-                      />
-                    )}
+                    <NextImage
+                      src={
+                        row.original?.images.length > 0
+                          ? row.original.images?.[0].url
+                          : variant?.variantImage?.[0].url
+                      }
+                      alt={`${variant.variantName} image`}
+                      width={1000}
+                      height={1000}
+                      className="max-w-32 h-32 rounded-md object-cover shadow-sm"
+                    />
+
                     <Link
                       // href={`/dashboard/seller/stores/${row.original.store.url}/products/${row.original.id}/variants/${variant.id}`}
                       href={`/dashboard/seller/stores/${row.original.store.url}/products/${row.original.id}`}
