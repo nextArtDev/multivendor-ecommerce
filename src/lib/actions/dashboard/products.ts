@@ -17,6 +17,7 @@ import { prisma } from '../../prisma'
 
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
 import {
+  NewProductFormSchema,
   ProductEditFormSchema,
   ProductFormSchema,
   VariantFormSchema,
@@ -268,6 +269,233 @@ export async function createProduct(
   }
   revalidatePath(path)
   redirect(`/${locale}/dashboard/seller/products`)
+}
+
+interface CreateNewProductFormState {
+  success?: string
+  errors: {
+    name?: string[]
+    description?: string[]
+    variantName?: string[]
+    variantDescription?: string[]
+    name_fa?: string[]
+    description_fa?: string[]
+    variantName_fa?: string[]
+    variantDescription_fa?: string[]
+    images?: string[]
+    variantImage?: string[]
+    categoryId?: string[]
+    subCategoryId?: string[]
+    offerTagId?: string[]
+    isSale?: string[]
+    saleEndDate?: string[]
+    brand?: string[]
+    sku?: string[]
+    weight?: string[]
+    colors?: string[]
+    sizes?: string[]
+    product_specs?: string[]
+    variant_specs?: string[]
+    keywords?: string[]
+    keywords_fa?: string[]
+    questions?: string[]
+
+    _form?: string[]
+  }
+}
+export async function createNewProduct(
+  formData: FormData,
+  storeUrl: string,
+  path: string
+): Promise<CreateNewProductFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
+
+  const result = NewProductFormSchema.safeParse({
+    name: formData.get('name'),
+    description: formData.get('description'),
+
+    name_fa: formData.get('name_fa'),
+    description_fa: formData.get('description_fa'),
+
+    categoryId: formData.get('categoryId'),
+    subCategoryId: formData.get('subCategoryId'),
+    offerTagId: formData.get('offerTagId'),
+
+    brand: formData.get('brand'),
+    // sku: formData.get('sku'),
+    weight: Number(formData.get('weight')),
+    keywords: formData.getAll('keywords'),
+    product_specs: formData
+      .getAll('product_specs')
+      .map((product_spec) => JSON.parse(product_spec.toString())),
+    variant_specs: formData
+      .getAll('variant_specs')
+      .map((variant_spec) => JSON.parse(variant_spec.toString())),
+    questions: formData
+      .getAll('questions')
+      .map((question) => JSON.parse(question.toString())),
+
+    shippingFeeMethod: formData.get('shippingFeeMethod'),
+    freeShippingForAllCountries: Boolean(
+      formData.get('freeShippingForAllCountries')
+    ),
+    images: formData.getAll('images'),
+  })
+
+  if (!result.success) {
+    console.log(result.error.flatten().fieldErrors)
+    return {
+      errors: result.error.flatten().fieldErrors,
+    }
+  }
+  console.log(result.data)
+  const session = await auth()
+  if (
+    !session ||
+    !session.user ||
+    !session.user.id ||
+    session.user.role !== 'SELLER'
+  ) {
+    return {
+      errors: {
+        _form: ['شما اجازه دسترسی ندارید!'],
+      },
+    }
+  }
+
+  const store = await prisma.store.findUnique({
+    where: {
+      url: storeUrl,
+      userId: session.user.id,
+    },
+  })
+  if (!store) {
+    return {
+      errors: {
+        _form: ['فروشگاه حذف شده است!'],
+      },
+    }
+  }
+
+  try {
+    const isExistingProduct = await prisma.product.findFirst({
+      where: {
+        // OR: [{ name: result.data.name }, { url: result.data.url }],
+        AND: [
+          {
+            // OR: [{ name: result.data.name }, { name_fa: result.data?.name_fa }],
+            name: result.data.name,
+          },
+        ],
+      },
+    })
+    if (isExistingProduct) {
+      return {
+        errors: {
+          _form: ['محصول با این نام موجود است!'],
+        },
+      }
+    }
+
+    const productSlug = await generateUniqueSlug(
+      slugify(result.data.name, {
+        replacement: '-',
+        lower: true,
+        trim: true,
+      }),
+      'product'
+    )
+
+    const imagesIds: string[] = []
+    for (const img of result.data?.images || []) {
+      if (img instanceof File) {
+        const buffer = Buffer.from(await img.arrayBuffer())
+        const res = await uploadFileToS3(buffer, img.name)
+
+        if (res?.imageId && typeof res.imageId === 'string') {
+          imagesIds.push(res.imageId)
+        }
+      }
+    }
+
+    const product = await prisma.product.create({
+      data: {
+        storeId: store.id,
+        categoryId: result.data.categoryId,
+        subCategoryId: result.data.subCategoryId,
+        name: result.data.name,
+        description: result.data.description,
+        name_fa: result.data?.name_fa,
+        description_fa: result.data?.description_fa,
+        slug: productSlug,
+        brand: result.data?.brand || '',
+        shippingFeeMethod: result.data.shippingFeeMethod,
+        // freeShipping:result.data.freeShippingCountriesIds?true:false,
+        freeShippingForAllCountries: result.data.freeShippingForAllCountries,
+      },
+    })
+    await prisma.product.update({
+      where: {
+        id: product.id,
+      },
+      data: {
+        images: {
+          connect: imagesIds.map((id) => ({
+            id: id,
+          })),
+        },
+      },
+    })
+
+    // Product Specs
+    let newProductSpecs
+    if (result.data.product_specs) {
+      newProductSpecs = result.data.product_specs.map((spec) => ({
+        name: spec.name,
+        value: spec.value,
+        productId: product.id,
+      }))
+    }
+
+    if (newProductSpecs) {
+      await prisma.spec.createMany({
+        data: newProductSpecs,
+      })
+    }
+
+    //  new Question
+    let newQuestions
+    if (result.data.questions) {
+      newQuestions = result.data.questions.map((question) => ({
+        question: question.question,
+        answer: question.answer,
+        productId: product.id,
+      }))
+    }
+
+    if (newQuestions) {
+      await prisma.question.createMany({
+        data: newQuestions,
+      })
+    }
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return {
+        errors: {
+          _form: [err.message],
+        },
+      }
+    } else {
+      return {
+        errors: {
+          _form: ['مشکلی پیش آمده، لطفا دوباره امتحان کنید!'],
+        },
+      }
+    }
+  }
+  revalidatePath(path)
+  redirect(`/${locale}/dashboard/seller/stores/${storeUrl}/products`)
 }
 interface EditProductFormState {
   errors: {

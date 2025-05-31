@@ -778,18 +778,7 @@ export const NewProductFormSchema = z.object({
       message: 'Product brand cannot exceed 50 characters.',
     })
     .optional(),
-  sku: z
-    .string({
-      required_error: 'Product SKU is mandatory.',
-      invalid_type_error: 'Product SKU must be a valid string.',
-    })
-    .min(6, {
-      message: 'Product SKU should be at least 6 characters long.',
-    })
-    .max(50, {
-      message: 'Product SKU cannot exceed 50 characters.',
-    })
-    .optional(),
+
   product_specs: z
     .object({
       name: z.string(),

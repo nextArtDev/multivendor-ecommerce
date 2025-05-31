@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+// import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 
 import { routing } from '@/i18n/routing'
@@ -12,15 +12,15 @@ import { Toaster } from 'sonner'
 import QueryProviders from '@/providers/query-provider'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
+// const geistSans = Geist({
+//   variable: '--font-geist-sans',
+//   subsets: ['latin'],
+// })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
+// const geistMono = Geist_Mono({
+//   variable: '--font-geist-mono',
+//   subsets: ['latin'],
+// })
 
 export const metadata: Metadata = {
   title: 'GoShop',
@@ -45,9 +45,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <AuthProvider>
         <QueryProviders>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
+          <body className={`  antialiased`}>
             <ThemeProvider
               attribute="class"
               defaultTheme="system"

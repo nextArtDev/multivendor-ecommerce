@@ -32,7 +32,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { createProduct, editProduct } from '@/lib/actions/dashboard/products'
+import {
+  createNewProduct,
+  createProduct,
+  editProduct,
+} from '@/lib/actions/dashboard/products'
 import { NewProductFormSchema } from '@/lib/schemas/dashboard'
 import { ProductWithVariantType } from '@/lib/types'
 import { usePathname } from '@/navigation'
@@ -57,6 +61,7 @@ import { getSubCategoryByCategoryId } from '@/lib/actions/dashboard/categories'
 import { useQuery } from '@tanstack/react-query'
 import InputFieldset from '@/components/dashboard/input-fieldset'
 import ClickToAddInputs from '@/components/dashboard/click-to-add'
+import RichTextEditor from '@/components/dashboard/text-editor/react-text-editor'
 
 const shippingFeeMethods = [
   {
@@ -219,7 +224,7 @@ const ProductForm: FC<ProductFormProps> = ({
   const handleSubmit = async (values: z.infer<typeof NewProductFormSchema>) => {
     const formData = new FormData()
 
-    // console.log({ data })
+    console.log({ values })
     formData.append('name', values.name)
     formData.append('description', values.description)
 
@@ -232,7 +237,6 @@ const ProductForm: FC<ProductFormProps> = ({
     formData.append('subCategoryId', values.subCategoryId)
     formData.append('offerTagId', (values.offerTagId as string) || '')
     formData.append('brand', values.brand || '')
-    formData.append('sku', values.sku || '')
 
     formData.append('shippingFeeMethod', values.shippingFeeMethod || [])
     if (data?.freeShippingForAllCountries) {
@@ -307,11 +311,6 @@ const ProductForm: FC<ProductFormProps> = ({
                 type: 'custom',
                 message: res?.errors.brand?.join(' و '),
               })
-            } else if (res?.errors?.sku) {
-              form.setError('sku', {
-                type: 'custom',
-                message: res?.errors.sku?.join(' و '),
-              })
             } else if (res?.errors?.product_specs) {
               form.setError('product_specs', {
                 type: 'custom',
@@ -340,7 +339,7 @@ const ProductForm: FC<ProductFormProps> = ({
       } else {
         startTransition(async () => {
           try {
-            const res = await createProduct(formData, storeUrl, path)
+            const res = await createNewProduct(formData, storeUrl, path)
             if (res?.errors?.name) {
               form.setError('name', {
                 type: 'custom',
@@ -385,11 +384,6 @@ const ProductForm: FC<ProductFormProps> = ({
               form.setError('brand', {
                 type: 'custom',
                 message: res?.errors.brand?.join(' و '),
-              })
-            } else if (res?.errors?.sku) {
-              form.setError('sku', {
-                type: 'custom',
-                message: res?.errors.sku?.join(' و '),
               })
             } else if (res?.errors?.product_specs) {
               form.setError('product_specs', {
@@ -506,7 +500,7 @@ const ProductForm: FC<ProductFormProps> = ({
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormControl>
-                        <JoditEditor
+                        {/* <JoditEditor
                           {...field}
                           ref={productDescEditor}
                           config={config}
@@ -514,6 +508,13 @@ const ProductForm: FC<ProductFormProps> = ({
                           onChange={(content) => {
                             form.setValue('description', content)
                           }}
+                        /> */}
+                        <RichTextEditor
+                          {...field}
+                          // config={config}
+
+                          content={field.value}
+                          onChange={field.onChange}
                         />
                         {/* <Plate
                               editor={editor}
@@ -657,20 +658,6 @@ const ProductForm: FC<ProductFormProps> = ({
                       <FormItem className="flex-1">
                         <FormControl>
                           <Input placeholder="Product brand" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    disabled={isPending}
-                    control={form.control}
-                    name="sku"
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormControl>
-                          <Input placeholder="Product sku" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
