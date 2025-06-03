@@ -112,7 +112,7 @@ const ProductForm: FC<ProductFormProps> = ({
   countries,
   // subCategories,
 }) => {
-  // console.log(data?.colors)
+  console.log(data)
 
   const path = usePathname()
 
@@ -229,7 +229,7 @@ const ProductForm: FC<ProductFormProps> = ({
   const handleSubmit = async (values: z.infer<typeof NewProductFormSchema>) => {
     const formData = new FormData()
 
-    // console.log({ values })
+    console.log({ values })
     formData.append('name', values.name)
     formData.append('description', values.description)
 
@@ -244,34 +244,46 @@ const ProductForm: FC<ProductFormProps> = ({
     formData.append('brand', values.brand || '')
 
     formData.append('shippingFeeMethod', values.shippingFeeMethod || [])
-    if (data?.freeShippingForAllCountries) {
-      formData.append('freeShippingForAllCountries', 'true')
-    }
+    // if (data?.freeShippingForAllCountries) {
+    //   formData.append('freeShippingForAllCountries', 'true')
+    // }
     // formData.append(
     //   'freeShippingCountriesIds',
     //   values.freeShippingCountriesIds || []
     // )
     if (data?.freeShippingForAllCountries) {
       formData.append('freeShippingForAllCountries', 'true')
+    } else {
+      formData.append(
+        'freeShippingForAllCountries',
+        String(values.freeShippingForAllCountries) || 'false'
+      )
     }
+    // if (
+    //   values.freeShippingCountriesIds &&
+    //   values.freeShippingCountriesIds.length > 0
+    // ) {
+    //   values.freeShippingCountriesIds.forEach((id, index) => {
+    //     const res = {
+    //       value:id.value,
+    //       label:id.label
+    //     }
+    //     // Append the 'value' property of the country object
+    //     formData.append(`freeShippingCountriesIds`, {...res})
+    //   })
+    // }
+
     if (
       values.freeShippingCountriesIds &&
       values.freeShippingCountriesIds.length > 0
     ) {
-      values.freeShippingCountriesIds.forEach((country, index) => {
-        // Append the 'value' property of the country object
+      for (let i = 0; i < values.freeShippingCountriesIds.length; i++) {
         formData.append(
-          `freeShippingCountriesIds[${index}][value]`,
-          country.value
+          'freeShippingCountriesIds',
+          values.freeShippingCountriesIds[i].value
         )
-        // Append the 'label' property of the country object
-        formData.append(
-          `freeShippingCountriesIds[${index}][label]`,
-          country.label
-        )
-      })
+      }
     }
-
     if (values.images && values.images.length > 0) {
       for (let i = 0; i < values.images.length; i++) {
         formData.append('images', values.images[i] as string | Blob)

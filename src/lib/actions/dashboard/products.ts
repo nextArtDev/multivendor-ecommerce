@@ -580,7 +580,7 @@ export async function editProduct(
     questions: formData
       .getAll('questions')
       .map((question) => JSON.parse(question.toString())),
-    freeShippingCountriesIds: formData.getAll('freeShippingCountriesIds'),
+    // freeShippingCountriesIds: formData.getAll('freeShippingCountriesIds'),
     // colors: formData
     //   .getAll('colors')
     //   .map((size) => JSON.parse(size.toString())),
@@ -592,7 +592,7 @@ export async function editProduct(
     images: formData.getAll('images'),
     // variantImage: formData.getAll('variantImage'),
   })
-  // console.log({ productId })
+  // console.log(formData.getAll('freeShippingCountriesIds'))
 
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
@@ -732,11 +732,9 @@ export async function editProduct(
           ? {
               create: {
                 eligibaleCountries: {
-                  create: result.data.freeShippingCountriesIds.map(
-                    (country) => ({
-                      country: { connect: { id: country.value } },
-                    })
-                  ),
+                  create: result.data.freeShippingCountriesIds.map((id) => ({
+                    country: { connect: { id: id.value as string } },
+                  })),
                 },
               },
             }

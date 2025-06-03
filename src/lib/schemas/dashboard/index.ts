@@ -825,10 +825,10 @@ export const NewProductFormSchema = z.object({
       })
     )
     .optional()
-    .refine(
-      (ids) => ids?.every((item) => item.label && item.value),
-      'Each country must have a valid name and ID.'
-    )
+    // .refine(
+    //   (ids) => ids?.every((item) => item.label && item.value),
+    //   'Each country must have a valid name and ID.'
+    // )
     .default([]), // use it when an array is optional
   // .object({
   //   id: z.string().optional(),
