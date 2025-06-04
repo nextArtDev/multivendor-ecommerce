@@ -52,6 +52,7 @@ export const columns: ColumnDef<StoreProductType>[] = [
     accessorKey: 'image',
     header: 'Image',
     cell: ({ row }) => {
+      console.log(row.original)
       return (
         <div className="flex flex-col gap-y-3">
           {/* Product name */}
@@ -68,15 +69,19 @@ export const columns: ColumnDef<StoreProductType>[] = [
               ) => ( */}
             <div key={row.original.id} className="flex flex-col gap-y-2 group">
               <div className="relative flex  cursor-pointer p-2">
-                {row.original?.variantImage && (
-                  <NextImage
-                    src={row.original?.variantImage[0]?.url}
-                    alt={`${row.original.variantName} image`}
-                    width={1000}
-                    height={1000}
-                    className="max-w-24 h-24 rounded-md object-cover shadow-sm"
-                  />
-                )}
+                <Link
+                  href={`/dashboard/seller/stores/${row.original.product.store.url}/products/${row.original.product.id}/variants/${row.original.id}`}
+                >
+                  {row.original?.variantImage && (
+                    <NextImage
+                      src={row.original?.variantImage[0]?.url}
+                      alt={`${row.original.variantName} image`}
+                      width={1000}
+                      height={1000}
+                      className="max-w-24 h-24 rounded-md object-cover shadow-sm"
+                    />
+                  )}
+                </Link>
                 {/* <Link
                   href={`/dashboard/seller/stores/${row.original.store.url}/products/${row.original.id}/variants/${variant.id}`}
                 >

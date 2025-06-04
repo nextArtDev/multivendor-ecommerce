@@ -39,6 +39,7 @@ import InputFieldset from '../input-fieldset'
 // import { useQueryState } from 'nuqs'
 import { DateTimePicker } from '@/components/shared/date-time-picker'
 import { TagsInput } from '@/components/shared/tag-input'
+import RichTextEditor from '../text-editor/react-text-editor'
 
 interface VariantDetailsProps {
   // data?: Product & {
@@ -62,20 +63,6 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
   const path = usePathname()
 
   const [isPending, startTransition] = useTransition()
-
-  // Jodit editor refs
-  // const productDescEditor = useRef(null)
-  const variantDescEditor = useRef(null)
-
-  // Jodit configuration
-  const { theme } = useTheme()
-
-  const config = useMemo(
-    () => ({
-      theme: theme === 'dark' ? 'dark' : 'default',
-    }),
-    [theme]
-  )
 
   // State for colors
   // const [colors, setColors] = useState<{ color: string }[]>(
@@ -208,18 +195,18 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
     }
   }, [data, form])
 
-  const handleSubmit = async (data: z.infer<typeof VariantFormSchema>) => {
+  const handleSubmit = async (values: z.infer<typeof VariantFormSchema>) => {
     const formData = new FormData()
 
     // console.log({ data })
 
-    formData.append('variantName', data.variantName)
-    formData.append('variantDescription', data.variantDescription || '')
+    formData.append('variantName', values.variantName)
+    formData.append('variantDescription', values.variantDescription || '')
 
-    formData.append('variantName_fa', data.variantName_fa || '')
-    formData.append('variantDescription_fa', data.variantDescription_fa || '')
+    formData.append('variantName_fa', values.variantName_fa || '')
+    formData.append('variantDescription_fa', values.variantDescription_fa || '')
 
-    if (data.isSale) {
+    if (values.isSale) {
       formData.append('isSale', 'true')
     }
     const saleEndDate =
@@ -233,40 +220,40 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
     // )
     formData.append('saleEndDate', saleEndDateString)
 
-    formData.append('sku', data.sku || '')
+    formData.append('sku', values.sku || '')
 
-    formData.append('weight', String(data.weight))
+    formData.append('weight', String(values.weight))
 
-    if (data.keywords && data.keywords.length > 0) {
-      for (let i = 0; i < data.keywords.length; i++) {
-        formData.append('keywords', data.keywords[i] as string | Blob)
+    if (values.keywords && values.keywords.length > 0) {
+      for (let i = 0; i < values.keywords.length; i++) {
+        formData.append('keywords', values.keywords[i] as string | Blob)
       }
     }
 
-    if (data.variantImage && data.variantImage.length > 0) {
-      for (let i = 0; i < data.variantImage.length; i++) {
-        formData.append('variantImage', data.variantImage[i] as string | Blob)
+    if (values.variantImage && values.variantImage.length > 0) {
+      for (let i = 0; i < values.variantImage.length; i++) {
+        formData.append('variantImage', values.variantImage[i] as string | Blob)
       }
     }
 
-    if (data.specs && data.specs.length > 0) {
-      data.specs.forEach((size) => {
+    if (values.specs && values.specs.length > 0) {
+      values.specs.forEach((size) => {
         formData.append('specs', JSON.stringify(size))
       })
     }
 
-    if (data.sizes && data.sizes.length > 0) {
-      data.sizes.forEach((size) => {
+    if (values.sizes && values.sizes.length > 0) {
+      values.sizes.forEach((size) => {
         formData.append('sizes', JSON.stringify(size))
       })
     }
 
-    if (data.colors && data.colors.length > 0) {
-      data.colors.forEach((color) => {
+    if (values.colors && values.colors.length > 0) {
+      values.colors.forEach((color) => {
         formData.append('colors', JSON.stringify(color))
       })
     }
-
+    console.log({ values })
     startTransition(async () => {
       if (variantId) {
         try {
@@ -481,13 +468,14 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                 <div className="w-full flex flex-col gap-y-3 xl:pl-5">
                   <ClickToAddInputs
                     details={
+                      colors
                       // data?.colors?.map((color) => {
                       //   return { color: color?.name }
                       // }) || colors
-                      data?.colors
-                        ?.map((color) => color?.name)
-                        .filter((name): name is string => !!name)
-                        .map((name) => ({ color: name })) || colors
+                      // data?.colors
+                      //   ?.map((color) => color?.name)
+                      //   .filter((name): name is string => !!name)
+                      //   .map((name) => ({ color: name })) || colors
                     }
                     setDetails={setColors}
                     initialDetail={{ color: '' }}
@@ -550,7 +538,7 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormControl>
-                        <JoditEditor
+                        {/* <JoditEditor
                           {...field}
                           ref={variantDescEditor}
                           config={config}
@@ -558,6 +546,13 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                           onChange={(content) => {
                             form.setValue('variantDescription', content)
                           }}
+                        /> */}
+                        <RichTextEditor
+                          {...field}
+                          // config={config}
+
+                          content={field.value || ''}
+                          onChange={field.onChange}
                         />
                       </FormControl>
                       <FormMessage />

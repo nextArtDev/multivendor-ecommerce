@@ -1154,7 +1154,6 @@ export async function editVariant(
 
     variantImage: formData.getAll('variantImage'),
   })
-
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors)
     return {
@@ -1290,7 +1289,7 @@ export async function editVariant(
           },
         },
       })
-
+    } else {
       const variant = await prisma.productVariant.update({
         where: { id: variantId, productId },
         data: {

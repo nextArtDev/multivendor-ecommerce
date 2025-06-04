@@ -120,6 +120,8 @@ export const getVariantByProductId = cache(
     productId: string
   ): Promise<
     | (ProductVariant & { variantImage: Image[] | null } & {
+        product: { id: string; name: string } & { store: { url: string } }
+      } & {
         colors: Color[] | null
       } & { sizes: Size[] | null } & { specs: Spec[] | null })[]
     | null
@@ -133,6 +135,17 @@ export const getVariantByProductId = cache(
         colors: true,
         sizes: true,
         specs: true,
+        product: {
+          select: {
+            id: true,
+            name: true,
+            store: {
+              select: {
+                url: true,
+              },
+            },
+          },
+        },
       },
     })
 

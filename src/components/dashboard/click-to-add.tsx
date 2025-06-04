@@ -72,6 +72,7 @@ const ClickToAddInputs = <T extends Detail>({
     if (details.length === 1) return
     // Filter out the detail at the specified index
     const updatedDetails = details.filter((_, i) => i !== index)
+    console.log(updatedDetails)
     setDetails(updatedDetails) // Update the state with the filtered details
   }
 
