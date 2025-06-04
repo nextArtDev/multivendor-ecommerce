@@ -1247,58 +1247,61 @@ export async function editVariant(
     //     }
     //   }
     // }
-    if (
-      typeof result.data.variantImage?.[0] === 'object' &&
-      result.data.variantImage[0] instanceof File
-    ) {
-      const imageIds: string[] = []
-      for (const img of result.data.variantImage) {
-        if (img instanceof File) {
-          const buffer = Buffer.from(await img.arrayBuffer())
-          const res = await uploadFileToS3(buffer, img.name)
+    // if (
+    //   typeof result.data.variantImage?.[0] === 'object' &&
+    //   result.data.variantImage[0] instanceof File
+    // ) {
+    //   const imageIds: string[] = []
+    //   for (const img of result.data.variantImage) {
+    //     if (img instanceof File) {
+    //       const buffer = Buffer.from(await img.arrayBuffer())
+    //       const res = await uploadFileToS3(buffer, img.name)
 
-          if (res?.imageId && typeof res.imageId === 'string') {
-            imageIds.push(res.imageId)
-          }
-        }
-      }
-      // console.log(res)
-      await prisma.productVariant.update({
-        where: {
-          id: variantId,
-        },
-        data: {
-          variantImage: {
-            disconnect: isExistingVariant?.variantImage?.map(
-              (image: { id: string }) => ({
-                id: image.id,
-              })
-            ),
-          },
-        },
-      })
-      await prisma.productVariant.update({
-        where: {
-          id: variantId,
-        },
-        data: {
-          variantImage: {
-            connect: imageIds.map((id) => ({
-              id: id,
-            })),
-          },
-        },
-      })
-    } else {
-      const variant = await prisma.productVariant.update({
+    //       if (res?.imageId && typeof res.imageId === 'string') {
+    //         imageIds.push(res.imageId)
+    //       }
+    //     }
+    //   }
+    //   // console.log(res)
+    //   await prisma.productVariant.update({
+    //     where: {
+    //       id: variantId,
+    //     },
+    //     data: {
+    //       variantImage: {
+    //         disconnect: isExistingVariant?.variantImage?.map(
+    //           (image: { id: string }) => ({
+    //             id: image.id,
+    //           })
+    //         ),
+    //       },
+    //     },
+    //   })
+    //   await prisma.productVariant.update({
+    //     where: {
+    //       id: variantId,
+    //     },
+    //     data: {
+    //       variantImage: {
+    //         connect: imageIds.map((id) => ({
+    //           id: id,
+    //         })),
+    //       },
+    //     },
+    //   })
+    // }
+    // OTHER UPDATES
+    await prisma.$transaction(async (tx) => {
+      const updatedVariant = await tx.productVariant.update({
         where: { id: variantId, productId },
         data: {
-          productId,
-          slug: isExistingVariant?.slug,
+          // productId, // usually not changed during variant edit
+          // slug: isExistingVariant?.slug, // slug might need careful handling if name changes
           variantName: result.data.variantName,
+          variantName_fa: result.data.variantName_fa,
           variantDescription: result.data?.variantDescription || '',
           variantDescription_fa: result.data?.variantDescription_fa || '',
-          saleEndDate: String(result.data.saleEndDate),
+          saleEndDate: String(result.data.saleEndDate), // Ensure this is a string if your schema expects it
           sku: result.data.sku ? result.data.sku : '',
           keywords: result.data.keywords?.length
             ? result.data.keywords?.join(',')
@@ -1308,55 +1311,178 @@ export async function editVariant(
             : '',
           weight: result.data.weight ? +result.data.weight : 0,
           isSale: result.data.isSale,
+          // Do NOT update variantImage here if you have separate logic for it
         },
       })
+      await tx.color.deleteMany({
+        where: { productVariantId: variantId },
+      })
+      await tx.size.deleteMany({
+        where: { productVariantId: variantId },
+      })
+      await tx.spec.deleteMany({
+        where: { variantId: variantId },
+      })
 
-      let newVariantSpecs
-      if (result.data.specs) {
-        newVariantSpecs = result.data.specs.map((spec) => ({
-          name: spec.name,
-          value: spec.value,
-          variantId: variant.id,
-        }))
+      // 3. Create new related collections based on submitted data
+      if (result.data.colors && result.data.colors.length > 0) {
+        const newColorsData = result.data.colors
+          .filter((color) => color.color && color.color.trim() !== '') // Filter out empty/invalid colors
+          .map((color) => ({
+            name: color.color,
+            productVariantId: variantId, // Use variantId directly
+          }))
+        if (newColorsData.length > 0) {
+          await tx.color.createMany({
+            data: newColorsData,
+          })
+        }
       }
 
-      if (newVariantSpecs) {
-        await prisma.spec.createMany({
-          data: newVariantSpecs,
+      if (result.data.sizes && result.data.sizes.length > 0) {
+        const newSizesData = result.data.sizes
+          .filter((size) => size.size && size.size.trim() !== '') // Filter out empty/invalid sizes
+          .map((size) => ({
+            size: size.size,
+            quantity: size.quantity,
+            price: size.price,
+            discount: size.discount,
+            productVariantId: variantId,
+          }))
+        if (newSizesData.length > 0) {
+          await tx.size.createMany({
+            data: newSizesData,
+          })
+        }
+      }
+
+      if (result.data.specs && result.data.specs.length > 0) {
+        const newSpecsData = result.data.specs
+          .filter(
+            (spec) =>
+              (spec.name && spec.name.trim() !== '') ||
+              (spec.value && spec.value.trim() !== '')
+          ) // Filter out empty/invalid specs
+          .map((spec) => ({
+            name: spec.name,
+            value: spec.value,
+            variantId: variantId, // Assuming relation name is variantId for Spec model
+          }))
+        if (newSpecsData.length > 0) {
+          await tx.spec.createMany({
+            data: newSpecsData,
+          })
+        }
+      }
+
+      // Handle variantImage updates (this seems to be what you attempted)
+      // Ensure this logic is correct and doesn't conflict with the main variant update.
+      // Your existing image logic:
+      if (
+        result.data.variantImage &&
+        result.data.variantImage.length > 0 &&
+        result.data.variantImage[0] instanceof File
+      ) {
+        const imageIds: string[] = []
+        for (const img of result.data.variantImage) {
+          if (img instanceof File) {
+            const buffer = Buffer.from(await img.arrayBuffer())
+            const res = await uploadFileToS3(buffer, img.name) // This is outside the transaction, S3 ops are hard to transact
+            if (res?.imageId && typeof res.imageId === 'string') {
+              imageIds.push(res.imageId)
+            }
+          }
+        }
+
+        // Disconnect old images
+        await tx.productVariant.update({
+          where: { id: variantId },
+          data: {
+            variantImage: {
+              set: [], // Disconnects all existing relations
+            },
+          },
         })
+        // Connect new images
+        if (imageIds.length > 0) {
+          await tx.productVariant.update({
+            where: { id: variantId },
+            data: {
+              variantImage: {
+                connect: imageIds.map((id) => ({ id: id })),
+              },
+            },
+          })
+        }
       }
+      // --- END: Modification for Colors, Sizes, Specs ---
+    })
+    // const variant = await prisma.productVariant.update({
+    //   where: { id: variantId, productId },
+    //   data: {
+    //     productId,
+    //     slug: isExistingVariant?.slug,
+    //     variantName: result.data.variantName,
+    //     variantDescription: result.data?.variantDescription || '',
+    //     variantDescription_fa: result.data?.variantDescription_fa || '',
+    //     saleEndDate: String(result.data.saleEndDate),
+    //     sku: result.data.sku ? result.data.sku : '',
+    //     keywords: result.data.keywords?.length
+    //       ? result.data.keywords?.join(',')
+    //       : '',
+    //     keywords_fa: result.data.keywords_fa?.length
+    //       ? result.data.keywords_fa?.join(',')
+    //       : '',
+    //     weight: result.data.weight ? +result.data.weight : 0,
+    //     isSale: result.data.isSale,
+    //   },
+    // })
 
-      let newColors
-      if (result.data.colors) {
-        newColors = result.data.colors.map((color) => ({
-          name: color.color,
-          productVariantId: variant.id,
-        }))
-      }
+    // let newVariantSpecs
+    // if (result.data.specs) {
+    //   newVariantSpecs = result.data.specs.map((spec) => ({
+    //     name: spec.name,
+    //     value: spec.value,
+    //     variantId: variant.id,
+    //   }))
+    // }
 
-      if (newColors) {
-        await prisma.color.createMany({
-          data: newColors,
-        })
-      }
-      //  new Size
-      let newSizes
-      if (result.data.sizes) {
-        newSizes = result.data.sizes.map((size) => ({
-          size: size.size,
-          quantity: size.quantity,
-          price: size.price,
-          discount: size.discount,
-          productVariantId: variant.id,
-        }))
-      }
+    // if (newVariantSpecs) {
+    //   await prisma.spec.createMany({
+    //     data: newVariantSpecs,
+    //   })
+    // }
 
-      if (newSizes) {
-        await prisma.size.createMany({
-          data: newSizes,
-        })
-      }
-    }
+    // let newColors
+    // if (result.data.colors) {
+    //   newColors = result.data.colors.map((color) => ({
+    //     name: color.color,
+    //     productVariantId: variant.id,
+    //   }))
+    // }
+
+    // if (newColors) {
+    //   await prisma.color.createMany({
+    //     data: newColors,
+    //   })
+    // }
+    // //  new Size
+    // let newSizes
+    // if (result.data.sizes) {
+    //   newSizes = result.data.sizes.map((size) => ({
+    //     size: size.size,
+    //     quantity: size.quantity,
+    //     price: size.price,
+    //     discount: size.discount,
+    //     productVariantId: variant.id,
+    //   }))
+    // }
+
+    // if (newSizes) {
+    //   await prisma.size.createMany({
+    //     data: newSizes,
+    //   })
+    // }
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
