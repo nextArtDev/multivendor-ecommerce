@@ -1,136 +1,179 @@
-// React, Next.js
-import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
-import Image from 'next/image'
+'use client'
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 
-// Import of the image shown when there are no images available
-// import NoImageImg from '../../../../public/assets/images/no_image_2.png'
+import { FileInput, FileUploader } from '../ui/file-upload'
+import { Image } from '@prisma/client'
+import ImagesPreviewGrid from './images-preview-grid_'
 
-// Utils
-import { getDominantColors, getGridClassName } from '@/lib/dashborad-utils'
-
-//Icons
-import { Trash } from 'lucide-react'
-import ColorPalette from './color-palette'
-import { cn } from '@/lib/utils'
-
-interface ImagesPreviewGridProps {
-  images: { url: string }[] // Array of image URLs
-  onRemove: (value: string) => void // Callback function when an image is removed
-  colors?: { color: string }[] // List of colors from form
-  setColors: Dispatch<SetStateAction<{ color: string }[]>> // Setter function for colors
+const dropZoneConfig = {
+  maxFiles: 5,
+  maxSize: 1024 * 1024 * 4,
+  multiple: true,
+}
+interface ImageInputProps {
+  colors?: { color: string }[]
+  setColors: Dispatch<SetStateAction<{ color: string }[]>>
+  name: string
+  label: string
+  accept?: string
 }
 
-const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
-  images,
-  onRemove,
+export interface ImageFile {
+  url: string
+  file?: File
+}
+
+interface ImageInputProps {
+  colors?: { color: string }[]
+  setColors: React.Dispatch<React.SetStateAction<{ color: string }[]>>
+  name: string
+  label: string
+  accept?: string
+  initialDataImages?: Partial<Image>[] | null
+}
+
+export function ImageInput({
   colors,
   setColors,
-}) => {
-  // Calculate the number of images
-  const imagesLength = images.length
-  //   console.log({ images })
+  name,
+  label,
+  initialDataImages,
+}: ImageInputProps) {
+  const { setValue, watch } = useFormContext()
+  const form = useFormContext()
+  const [files, setFiles] = useState<File[]>([])
+  const [watchedFiles, setWatchedFiles] = useState(watch(name) || [])
+  // const watchedFiles = watch(name) || []
 
-  // Get the grid class name based on the number of images
-  const GridClassName = getGridClassName(imagesLength)
+  // console.log({ watchedFiles })
+  // const initialUrls =
+  //   initialDataImages &&
+  //   (initialDataImages.map((img) => img.url).filter(Boolean) as string[])
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files?.length) return
 
-  // Extract images colors
-  const [colorPalettes, setColorPalettes] = useState<string[][]>([])
-  useEffect(() => {
-    const fetchColors = async () => {
-      const palettes = await Promise.all(
-        images.map(async (img) => {
-          try {
-            const colors = await getDominantColors(img.url)
-            return colors
-          } catch {
-            return []
-          }
-        })
-      )
-      setColorPalettes(palettes)
-    }
+    const newFiles = Array.from(event.target.files)
+    const updatedFiles = [...files, ...newFiles]
+    setFiles(updatedFiles)
 
-    if (imagesLength > 0) {
-      fetchColors()
-    }
-  }, [images, imagesLength])
+    // Create preview URLs and update form value immediately
+    const imageUrls = updatedFiles.map((file) => ({
+      url: URL.createObjectURL(file),
+      file: file, // Keep reference to the original file
+    }))
 
-  // If there are no images, display a placeholder image
-  if (imagesLength === 0) {
-    return (
-      <div>
-        {/* <Image
-          src={NoImageImg}
-          alt="No images available"
-          width={500}
-          height={600}
-          className="rounded-md"
-        /> */}
-        No image
-      </div>
-    )
-  } else {
-    // If there are images, display the images in a grid
-    return (
-      <div className="max-w-7xl">
-        <div
-          className={cn(
-            'grid h-[800px] overflow-hidden bg-white rounded-md',
-            GridClassName
-          )}
-        >
-          {images.map((img, i) => (
-            <div
-              key={i}
-              className={cn(
-                'relative group h-full w-full border border-gray-300',
-                `grid_${imagesLength}_image_${i + 1}`,
-                {
-                  'h-[266.66px]': images.length === 6,
-                }
-              )}
-            >
-              {/* Image */}
-              <Image
-                src={img.url}
-                alt=""
-                width={800}
-                height={800}
-                className="w-full h-full object-cover object-top"
-              />
-              {/* Actions */}
-              <div
-                className={cn(
-                  'absolute top-0 left-0 right-0 bottom-0 hidden group-hover:flex bg-white/55 cursor-pointer  items-center justify-center flex-col gap-y-3 transition-all duration-500',
-                  {
-                    '!pb-[40%]': imagesLength === 1,
-                  }
-                )}
-              >
-                {/* Color palette (Extract colors) */}
-                <ColorPalette
-                  colors={colors}
-                  setColors={setColors}
-                  extractedColors={colorPalettes[i]}
-                />
-                {/* Delete Button */}
-                <button
-                  className="Btn"
-                  type="button"
-                  onClick={() => onRemove(img.url)}
-                >
-                  <div className="sign">
-                    <Trash size={18} />
-                  </div>
-                  <div className="text">Delete</div>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
+    setValue(name, imageUrls, { shouldValidate: true })
+    setWatchedFiles(imageUrls)
   }
-}
 
-export default ImagesPreviewGrid
+  // const handleRemove = (urlToRemove: string) => {
+  //   const updatedFiles = watchedFiles.filter(
+  //     (file: { url: string }) => file.url !== urlToRemove
+  //   )
+  //   setValue(name, updatedFiles, { shouldValidate: true })
+
+  //   // Update files state to match
+  //   const newFiles = files.filter((file) => {
+  //     const fileUrl = URL.createObjectURL(file)
+  //     URL.revokeObjectURL(fileUrl) // Clean up the URL
+  //     return fileUrl !== urlToRemove
+  //   })
+  //   console.log({ newFiles })
+  //   setFiles(newFiles)
+  // }
+
+  // Clean up URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      files.forEach((file) => {
+        const url = URL.createObjectURL(file)
+        URL.revokeObjectURL(url)
+      })
+    }
+  }, [])
+
+  return (
+    <div>
+      <FormField
+        control={form.control}
+        name={name}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{label}</FormLabel>
+            <FormControl>
+              <div className="relative">
+                <FileUploader
+                  value={field.value || []}
+                  onValueChange={field.onChange}
+                  onChange={handleFileChange}
+                  dropzoneOptions={dropZoneConfig}
+                  className="relative bg-background rounded-lg p-2"
+                >
+                  {watchedFiles.length > 0 ? (
+                    <div className="flex flex-col gap-y-2 xl:flex-row">
+                      <ImagesPreviewGrid
+                        images={watchedFiles || initialDataImages}
+                        onRemove={(url) => {
+                          const updatedImages = watchedFiles.filter(
+                            (img: { url: string }) => img.url !== url
+                          )
+                          setWatchedFiles(updatedImages)
+                          field.onChange(updatedImages)
+                        }}
+                        colors={colors}
+                        setColors={setColors}
+                      />
+                    </div>
+                  ) : (
+                    <FileInput className="outline-dashed outline-1 outline-foreground p-5">
+                      <div className="flex items-center justify-center flex-col pt-3 pb-4 w-full">
+                        <FileSvgDraw />
+                      </div>
+                    </FileInput>
+                  )}
+                </FileUploader>
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  )
+}
+const FileSvgDraw = () => {
+  return (
+    <>
+      <svg
+        className="w-8 h-8 mb-3 text-gray-500 dark:text-gray-400"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 20 16"
+      >
+        <path
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+        />
+      </svg>
+      <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+        <span className="font-semibold">Click to upload</span>
+        &nbsp; or drag and drop
+      </p>
+      <p className="text-xs text-gray-500 dark:text-gray-400">
+        SVG, PNG, JPG or GIF
+      </p>
+    </>
+  )
+}
