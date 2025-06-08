@@ -330,9 +330,7 @@ export async function createNewProduct(
     product_specs: formData
       .getAll('product_specs')
       .map((product_spec) => JSON.parse(product_spec.toString())),
-    variant_specs: formData
-      .getAll('variant_specs')
-      .map((variant_spec) => JSON.parse(variant_spec.toString())),
+
     questions: formData
       .getAll('questions')
       .map((question) => JSON.parse(question.toString())),
@@ -466,23 +464,19 @@ export async function createNewProduct(
       },
     })
 
-    // Product Specs
-    let newProductSpecs
+    let newSpecs
     if (result.data.product_specs) {
-      newProductSpecs = result.data.product_specs.map((spec) => ({
+      newSpecs = result.data.product_specs.map((spec) => ({
         name: spec.name,
         value: spec.value,
         productId: product.id,
       }))
     }
-
-    if (newProductSpecs) {
+    if (newSpecs) {
       await prisma.spec.createMany({
-        data: newProductSpecs,
+        data: newSpecs,
       })
     }
-
-    //  new Question
     let newQuestions
     if (result.data.questions) {
       newQuestions = result.data.questions.map((question) => ({
@@ -491,7 +485,6 @@ export async function createNewProduct(
         productId: product.id,
       }))
     }
-
     if (newQuestions) {
       await prisma.question.createMany({
         data: newQuestions,
@@ -741,6 +734,33 @@ export async function editProduct(
           : undefined,
       },
     })
+
+    let newSpecs
+    if (result.data.product_specs) {
+      newSpecs = result.data.product_specs.map((spec) => ({
+        name: spec.name,
+        value: spec.value,
+        productId: productId,
+      }))
+    }
+    if (newSpecs) {
+      await prisma.spec.createMany({
+        data: newSpecs,
+      })
+    }
+    let newQuestions
+    if (result.data.questions) {
+      newQuestions = result.data.questions.map((question) => ({
+        question: question.question,
+        answer: question.answer,
+        productId: productId,
+      }))
+    }
+    if (newQuestions) {
+      await prisma.question.createMany({
+        data: newQuestions,
+      })
+    }
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {
