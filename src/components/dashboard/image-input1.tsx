@@ -126,7 +126,7 @@ ImageInputProps) {
               <FormLabel>{label}</FormLabel>
               <FormControl>
                 <FileUploader
-                  value={field.value ? field.value.map((f) => f.file) : []} // FileUploader might expect File[]
+                  value={field.value ? field.value?.map((f) => f.file) : []} // FileUploader might expect File[]
                   onValueChange={(files: File[] | null) => {
                     // Assuming onValueChange gives File[]
                     if (files && files.length > 0) {
@@ -149,7 +149,7 @@ ImageInputProps) {
                       initialDataImages={initialDataImages} // For comparison or displaying alongside new
                       onRemove={(urlToRemove: string) => {
                         const updatedImages = imagesForPreview.filter(
-                          (img) => img.url !== urlToRemove
+                          (img: ImageFileWithValue) => img.url !== urlToRemove
                         )
                         field.onChange(updatedImages) // Update RHF state
                         if (urlToRemove.startsWith('blob:')) {

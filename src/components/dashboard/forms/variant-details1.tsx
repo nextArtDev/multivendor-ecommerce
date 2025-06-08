@@ -33,7 +33,7 @@ import { Color, Image, ProductVariant, Size, Spec } from '@prisma/client'
 import { NumberInput } from '@tremor/react'
 import { useTheme } from 'next-themes'
 import { FC, useEffect, useMemo, useRef, useState, useTransition } from 'react'
-import ClickToAddInputs from '../click-to-add'
+
 import { ImageInput } from '../image-input'
 import InputFieldset from '../input-fieldset'
 // import { useQueryState } from 'nuqs'

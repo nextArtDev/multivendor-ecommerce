@@ -12,8 +12,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import JoditEditor from 'jodit-react'
-import { useForm } from 'react-hook-form'
+
+import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
 
@@ -40,488 +40,388 @@ import InputFieldset from '../input-fieldset'
 import { DateTimePicker } from '@/components/shared/date-time-picker'
 import { TagsInput } from '@/components/shared/tag-input'
 import RichTextEditor from '../text-editor/react-text-editor'
+import ClickToAddInputsRHF from '../click-to-add'
+
+// Define the type for the items in the 'colors' field array directly or infer from Zod
+export type VariantColorFormItem = { id?: string; color: string }
 
 interface VariantDetailsProps {
-  // data?: Product & {
-  //   variants: (ProductVariant & { images: Image[] } & { sizes: Size[] } & {
-  //     colors: Color[]
-  //   })[]
-  // } & { category: { id: string } } & { store: { id: string } } & {
-  //   cover: Image[] | null
-  // }
-  data?:
-    | ProductVariant & { variantImage: Image[] | null } & {
-        colors: Color[] | null
-      } & { sizes: Size[] | null } & { specs: Spec[] | null }
-
+  data?: ProductVariant & { variantImage: Image[] | null } & {
+    colors: Color[] | null
+  } & { sizes: Size[] | null } & { specs: Spec[] | null }
   productId: string
 }
 
 const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
-  // console.log(data?.colors)
   const variantId = data?.id
   const path = usePathname()
-
   const [isPending, startTransition] = useTransition()
-
-  // State for colors
-  // const [colors, setColors] = useState<{ color: string }[]>(
-  //   data?.colors || [{ color: '' }]
-  // )
-  const [colors, setColors] = useState<{ color: string }[]>(
-    data?.colors
-      ? data.colors
-          .filter(
-            (color): color is NonNullable<typeof color> => color !== undefined
-          )
-          .map(({ name }) => ({ color: name }))
-      : [{ color: '' }]
-  )
-
-  // Temporary state for images
-  // const [images, setImages] = useState<{ url: string }[]>([])
-
-  // State for sizes
-  const [sizes, setSizes] = useState<
-    { size: string; price: number; quantity: number; discount: number }[]
-  >(
-    data?.sizes
-      ? data.sizes
-          .filter(
-            (size): size is NonNullable<typeof size> => size !== undefined
-          )
-          .map(({ size, price, quantity, discount }) => ({
-            size,
-            price,
-            quantity,
-            discount,
-          }))
-      : [{ size: '', quantity: 1, price: 1000, discount: 0 }]
-  )
-
-  // State for product specs
-  // const [productSpecs, setProductSpecs] = useState<
-  //   { name: string; value: string }[]
-  // >(data?.product_specs || [{ name: '', value: '' }])
-
-  // State for product variant specs
-  // const [variantSpecs, setVariantSpecs] = useState<
-  //   { name: string; value: string }[]
-  // >(data?.variantSpecs, setVariantSpecs || [{ name: '', value: '' }])
-  const [variantSpecs, setVariantSpecs] = useState<
-    { name: string; value: string }[]
-  >(
-    data?.specs
-      ? data?.specs
-          .filter(
-            (specs): specs is NonNullable<typeof specs> => specs !== undefined
-          )
-          .map(({ name, value }) => ({ name, value }))
-      : [{ name: '', value: '' }]
-  )
 
   const form = useForm<z.infer<typeof VariantFormSchema>>({
     resolver: zodResolver(VariantFormSchema),
     defaultValues: {
-      variantName: data?.variantName,
+      variantName: data?.variantName ?? '',
       variantDescription: data?.variantDescription || '',
       variantName_fa: data?.variantName_fa || '',
       variantDescription_fa: data?.variantDescription_fa || '',
-      variantImage: data?.variantImage || [],
-      keywords: [data?.keywords],
-      keywords_fa: [data?.keywords_fa || ''],
-      sku: data?.sku,
-      // colors: data?.colors,
-      colors: data?.colors?.map((clr) => {
-        return {
-          color: clr?.name,
-        }
-      }),
-      sizes: data?.sizes
-        ? data.sizes.map(({ size, quantity, price, discount }) => ({
-            size,
-            quantity,
-            price,
-            discount,
-          }))
-        : undefined,
-      specs: data?.specs ? data.specs.map((spec) => spec) : undefined,
-
+      variantImage:
+        data?.variantImage?.map((img) => ({
+          url: img.url,
+          file: undefined,
+          id: img.id,
+        })) || [], // Adapt structure if needed
+      keywords: data?.keywords ? data.keywords.split(',') : [],
+      keywords_fa: data?.keywords_fa ? data.keywords_fa.split(',') : [],
+      sku: data?.sku ?? '',
+      colors: data?.colors?.map((clr) => ({ color: clr.name })) ?? [
+        { color: '' },
+      ],
+      sizes: data?.sizes?.map(({ size, price, quantity, discount }) => ({
+        size,
+        price,
+        quantity,
+        discount,
+      })) ?? [{ size: '', quantity: 1, price: 1000, discount: 0 }],
+      specs: data?.specs?.map((spec) => ({
+        name: spec.name,
+        value: spec.value,
+      })) ?? [{ name: '', value: '' }],
       isSale: data?.isSale || false,
-      weight: data?.weight,
-      saleEndDate:
-        data?.saleEndDate || new Date(new Date().setHours(0, 0, 0, 0)),
+      weight: data?.weight ?? 0,
+      saleEndDate: data?.saleEndDate
+        ? new Date(data.saleEndDate)
+        : new Date(new Date().setHours(0, 0, 0, 0)),
     },
   })
 
-  const errors = form.formState.errors
-  console.log({ errors })
+  const {
+    fields: colorFields,
+    append: appendColor,
+    remove: removeColor,
+  } = useFieldArray({
+    control: form.control,
+    name: 'colors',
+  })
 
-  // // Loading status based on form submission
-  // const isPending = form.formState.isSubmitting
+  const {
+    fields: sizeFields,
+    append: appendSize,
+    remove: removeSize,
+  } = useFieldArray({
+    control: form.control,
+    name: 'sizes',
+  })
+
+  const {
+    fields: specFields,
+    append: appendSpec,
+    remove: removeSpec,
+  } = useFieldArray({
+    control: form.control,
+    name: 'specs',
+  })
 
   useEffect(() => {
     if (data) {
       form.reset({
-        variantName: data?.variantName,
-        variantDescription: data?.variantDescription || '',
-        variantName_fa: data?.variantName_fa || '',
-        variantDescription_fa: data?.variantDescription_fa || '',
-        variantImage: data?.variantImage || [],
-
-        sku: data?.sku,
-        // colors: data?.colors,
-        colors: data?.colors?.map((clr) => {
-          return {
-            color: clr?.name,
-          }
-        }),
-        sizes: data?.sizes
-          ? data.sizes.map(({ size, quantity, price, discount }) => ({
-              size,
-              quantity,
-              price,
-              discount,
-            }))
-          : undefined,
-        specs: data?.specs ? data.specs.map((spec) => spec) : undefined,
-        keywords: data?.keywords.split(','),
-        keywords_fa: data?.keywords_fa?.split(',') || [],
-        isSale: data?.isSale || false,
-        weight: data?.weight,
-        saleEndDate:
-          data?.saleEndDate || new Date(new Date().setHours(0, 0, 0, 0)),
+        variantName: data.variantName ?? '',
+        variantDescription: data.variantDescription || '',
+        variantName_fa: data.variantName_fa || '',
+        variantDescription_fa: data.variantDescription_fa || '',
+        variantImage:
+          data.variantImage?.map((img) => ({
+            url: img.url,
+            file: undefined,
+            id: img.id,
+          })) || [],
+        sku: data.sku ?? '',
+        colors: data.colors?.map((clr) => ({ color: clr.name })) ?? [],
+        sizes:
+          data.sizes?.map(({ size, quantity, price, discount }) => ({
+            size,
+            quantity,
+            price,
+            discount,
+          })) ?? [],
+        specs:
+          data.specs?.map((spec) => ({ name: spec.name, value: spec.value })) ??
+          [],
+        keywords: data.keywords ? data.keywords.split(',') : [],
+        keywords_fa: data.keywords_fa ? data.keywords_fa.split(',') : [],
+        isSale: data.isSale || false,
+        weight: data.weight ?? 0,
+        saleEndDate: data.saleEndDate
+          ? new Date(data.saleEndDate)
+          : new Date(new Date().setHours(0, 0, 0, 0)),
+      })
+    } else {
+      form.reset({
+        variantName: '',
+        variantDescription: '',
+        variantName_fa: '',
+        variantDescription_fa: '',
+        variantImage: [],
+        sku: '',
+        colors: [{ color: '' }],
+        sizes: [{ size: '', quantity: 1, price: 1000, discount: 0 }],
+        specs: [{ name: '', value: '' }],
+        keywords: [],
+        keywords_fa: [],
+        isSale: false,
+        weight: 0,
+        saleEndDate: new Date(new Date().setHours(0, 0, 0, 0)),
       })
     }
-  }, [data, form])
+  }, [data, form.reset])
 
   const handleSubmit = async (values: z.infer<typeof VariantFormSchema>) => {
     const formData = new FormData()
 
-    // console.log({ data })
-
     formData.append('variantName', values.variantName)
     formData.append('variantDescription', values.variantDescription || '')
-
     formData.append('variantName_fa', values.variantName_fa || '')
     formData.append('variantDescription_fa', values.variantDescription_fa || '')
 
-    if (values.isSale) {
-      formData.append('isSale', 'true')
-    }
-    const saleEndDate =
-      data?.saleEndDate || new Date(new Date().setHours(0, 0, 0, 0))
-
-    const saleEndDateString =
-      saleEndDate instanceof Date ? saleEndDate.toISOString() : saleEndDate
-    // formData.append(
-    //   'saleEndDate',
-    //   data?.saleEndDate || new Date(new Date().setHours(0, 0, 0, 0))
-    // )
-    formData.append('saleEndDate', saleEndDateString)
+    if (values.isSale) formData.append('isSale', 'true')
+    const saleEndDateValue =
+      values.saleEndDate || new Date(new Date().setHours(0, 0, 0, 0))
+    formData.append(
+      'saleEndDate',
+      saleEndDateValue instanceof Date
+        ? saleEndDateValue.toISOString()
+        : saleEndDateValue
+    )
 
     formData.append('sku', values.sku || '')
+    formData.append('weight', String(values.weight || 0))
 
-    formData.append('weight', String(values.weight))
+    values.keywords?.forEach((kw) => formData.append('keywords', kw))
+    values.keywords_fa?.forEach((kw) => formData.append('keywords_fa', kw))
 
-    if (values.keywords && values.keywords.length > 0) {
-      for (let i = 0; i < values.keywords.length; i++) {
-        formData.append('keywords', values.keywords[i] as string | Blob)
-      }
-    }
-
+    // Handle images: RHF stores {url, file, id}
+    // Server action needs to differentiate between new files and existing image URLs/IDs
+    // values.variantImage?.forEach((imgObject, index) => {
+    //   if (imgObject instanceof File) {
+    //     formData.append('variantImage', imgObject?.file) // Send new files
+    //   } else if (imgObject?.url && !imgObject?.file && imgObject.id) {
+    //     // This indicates an existing image. Your server action needs to know how to handle this.
+    //     // Maybe send existing image IDs separately if you're not replacing all.
+    //     // For simplicity, if your server action expects File objects or replaces all, this is fine.
+    //     // If server action handles {url, id} structure for existing, then:
+    //     // formData.append(`variantImageExisting[${index}]`, JSON.stringify({id: imgObject.id, url: imgObject.url}));
+    //   }
+    // })
     if (values.variantImage && values.variantImage.length > 0) {
       for (let i = 0; i < values.variantImage.length; i++) {
         formData.append('variantImage', values.variantImage[i] as string | Blob)
       }
     }
 
-    if (values.specs && values.specs.length > 0) {
-      values.specs.forEach((size) => {
-        formData.append('specs', JSON.stringify(size))
-      })
-    }
-
-    if (values.sizes && values.sizes.length > 0) {
-      values.sizes.forEach((size) => {
-        formData.append('sizes', JSON.stringify(size))
-      })
-    }
-
-    if (values.colors && values.colors.length > 0) {
-      values.colors.forEach((color) => {
+    values.colors?.forEach((color) => {
+      if (color.color && color.color.trim() !== '') {
         formData.append('colors', JSON.stringify(color))
-      })
-    }
-    console.log({ values })
+      }
+    })
+    values.sizes?.forEach((size) => {
+      if (size.size && size.size.trim() !== '') {
+        formData.append('sizes', JSON.stringify(size))
+      }
+    })
+    values.specs?.forEach((spec) => {
+      if (
+        (spec.name && spec.name.trim() !== '') ||
+        (spec.value && spec.value.trim() !== '')
+      ) {
+        formData.append('specs', JSON.stringify(spec))
+      }
+    })
+
     startTransition(async () => {
-      if (variantId) {
-        try {
-          const res = await editVariant(formData, variantId, productId, path)
-          if (res?.errors?.variantName) {
-            form.setError('variantName', {
-              type: 'custom',
-              message: res?.errors.variantName?.join(' و '),
-            })
-          } else if (res?.errors?.variantDescription) {
-            form.setError('variantDescription', {
-              type: 'custom',
-              message: res?.errors.variantDescription?.join(' و '),
-            })
-          } else if (res?.errors?.variantName_fa) {
-            form.setError('variantName_fa', {
-              type: 'custom',
-              message: res?.errors.variantName_fa?.join(' و '),
-            })
-          } else if (res?.errors?.variantDescription_fa) {
-            form.setError('variantDescription_fa', {
-              type: 'custom',
-              message: res?.errors.variantDescription_fa?.join(' و '),
-            })
-          } else if (res?.errors?.variantImage) {
-            form.setError('variantImage', {
-              type: 'custom',
-              message: res?.errors.variantImage?.join(' و '),
-            })
-          } else if (res?.errors?.sku) {
-            form.setError('sku', {
-              type: 'custom',
-              message: res?.errors.sku?.join(' و '),
-            })
-          } else if (res?.errors?.colors) {
-            form.setError('colors', {
-              type: 'custom',
-              message: res?.errors.colors?.join(' و '),
-            })
-          } else if (res?.errors?.sizes) {
-            form.setError('sizes', {
-              type: 'custom',
-              message: res?.errors.sizes?.join(' و '),
-            })
-          } else if (res?.errors?.specs) {
-            form.setError('specs', {
-              type: 'custom',
-              message: res?.errors.specs?.join(' و '),
-            })
-          } else if (res?.errors?.isSale) {
-            form.setError('isSale', {
-              type: 'custom',
-              message: res?.errors.isSale?.join(' و '),
-            })
-          } else if (res?.errors?.weight) {
-            form.setError('weight', {
-              type: 'custom',
-              message: res?.errors.weight?.join(' و '),
-            })
-          } else if (res?.errors?.saleEndDate) {
-            form.setError('saleEndDate', {
-              type: 'custom',
-              message: res?.errors.saleEndDate?.join(' و '),
-            })
-          } else if (res?.errors?._form) {
-            toast.error(res?.errors._form?.join(' و '))
+      try {
+        const action = variantId ? editVariant : createNewVariant
+        const response = variantId
+          ? // @ts-ignore
+            await action(formData, variantId, productId, path)
+          : // @ts-ignore
+            await action(formData, productId, path)
+
+        if (response?.errors) {
+          if (response.errors._form) {
+            toast.error(response.errors._form.join(' و '))
           }
-        } catch (error) {
-          // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
-          if (
-            !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
-          ) {
-            toast.error('مشکلی پیش آمده.')
-          }
+          ;(
+            Object.keys(response.errors) as Array<keyof typeof response.errors>
+          ).forEach((key) => {
+            if (key !== '_form' && response.errors![key]) {
+              // For array fields, RHF might need errors like 'colors.root' or 'colors[0].color'
+              // Adjust if your server action provides indexed errors for arrays.
+              form.setError(key as any, {
+                type: 'custom',
+                message: response.errors![key]?.join(' و '),
+              })
+            }
+          })
+        } else if (response?.success || !response?.errors) {
+          // Success is implicit if no errors and redirect happens, or if success message is present
+          toast.success(
+            response?.success ||
+              (variantId ? 'Variant updated!' : 'Variant created!')
+          )
+          // Redirect is handled by server action
         }
-      } else {
-        try {
-          const res = await createNewVariant(formData, productId, path)
-          if (res?.errors?.variantName) {
-            form.setError('variantName', {
-              type: 'custom',
-              message: res?.errors.variantName?.join(' و '),
-            })
-          } else if (res?.errors?.variantDescription) {
-            form.setError('variantDescription', {
-              type: 'custom',
-              message: res?.errors.variantDescription?.join(' و '),
-            })
-          } else if (res?.errors?.variantName_fa) {
-            form.setError('variantName_fa', {
-              type: 'custom',
-              message: res?.errors.variantName_fa?.join(' و '),
-            })
-          } else if (res?.errors?.variantDescription_fa) {
-            form.setError('variantDescription_fa', {
-              type: 'custom',
-              message: res?.errors.variantDescription_fa?.join(' و '),
-            })
-          } else if (res?.errors?.variantImage) {
-            form.setError('variantImage', {
-              type: 'custom',
-              message: res?.errors.variantImage?.join(' و '),
-            })
-          } else if (res?.errors?.sku) {
-            form.setError('sku', {
-              type: 'custom',
-              message: res?.errors.sku?.join(' و '),
-            })
-          } else if (res?.errors?.colors) {
-            form.setError('colors', {
-              type: 'custom',
-              message: res?.errors.colors?.join(' و '),
-            })
-          } else if (res?.errors?.sizes) {
-            form.setError('sizes', {
-              type: 'custom',
-              message: res?.errors.sizes?.join(' و '),
-            })
-          } else if (res?.errors?.specs) {
-            form.setError('specs', {
-              type: 'custom',
-              message: res?.errors.specs?.join(' و '),
-            })
-          } else if (res?.errors?.isSale) {
-            form.setError('isSale', {
-              type: 'custom',
-              message: res?.errors.isSale?.join(' و '),
-            })
-          } else if (res?.errors?.weight) {
-            form.setError('weight', {
-              type: 'custom',
-              message: res?.errors.weight?.join(' و '),
-            })
-          } else if (res?.errors?.saleEndDate) {
-            form.setError('saleEndDate', {
-              type: 'custom',
-              message: res?.errors.saleEndDate?.join(' و '),
-            })
-          } else if (res?.errors?._form) {
-            toast.error(res?.errors._form?.join(' و '))
-          }
-        } catch (error) {
-          // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
-          if (
-            !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
-          ) {
-            toast.error('مشکلی پیش آمده.')
-          }
+      } catch (error) {
+        if (
+          !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
+        ) {
+          toast.error('An unexpected error occurred.')
+          console.error(error)
         }
       }
     })
-    // }
-    // } catch {
-    //   toast.error('مشکلی پیش آمده، لطفا دوباره امتحان کنید!')
-    // }
   }
 
-  useEffect(() => {
-    form.setValue('colors', colors)
-    form.setValue('sizes', sizes)
-    form.setValue('specs', variantSpecs)
-  }, [colors, form, sizes, variantSpecs])
-  // console.log(form.watch().keywords)
-  // console.log('form sizes', form.watch().sizes)
-  // console.log('form colors', form.watch().colors)
-  // console.log(
-  //   'form colors',
-  //   form.watch().colors?.map((clr) => clr.color)
-  // )
-  // console.log('saleEndDate', form.watch().saleEndDate)
-  // console.log('form description', form.watch().product_specs)
-  // console.log('form description', form.watch().variant_specs)
-  // console.log('form isSale', form.watch().isSale)
-  // console.log('form sku', form.watch().sku)
-  // // console.log('form questions', form.watch().questions)
-  // console.log('form saleEndDate', form.watch().saleEndDate)
-  // console.log(
-  //   'form freeShippingCountriesIds',
-  //   form.watch().freeShippingCountriesIds
-  // )
-  // const initialValue = [
-  //   { type: 'p', children: [{ text: '' }] },
-  // ]
-  // const editor = usePlateEditor({
-  //   value: initialValue,
-  //   plugins: [...editorPlugins],
-  // })
+  const addMainVariantColor = (newColorValue: string) => {
+    const exists = colorFields.some((cf) => cf.color === newColorValue)
+    if (!exists && newColorValue && newColorValue.trim() !== '') {
+      appendColor({ color: newColorValue })
+    } else if (exists) {
+      toast.info(`Color ${newColorValue} already exists.`)
+    }
+  }
+
   return (
     <AlertDialog>
+      {' '}
+      {/* Assuming AlertDialog is used as a general wrapper or for potential modals */}
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>{`Edit variant ${data?.variantName}`}</CardTitle>
+          <CardTitle>
+            {variantId
+              ? `Edit Variant: ${data?.variantName || ''}`
+              : 'Create New Variant'}
+          </CardTitle>
           <CardDescription>
-            {data?.productId && data.id
-              ? `Update ${data?.variantName} variant information.`
-              : ' Lets create a variant. You can edit variant later from the variant page.'}
+            {variantId
+              ? `Update information for ${data?.variantName || 'the variant'}.`
+              : 'Provide details for the new variant.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-4"
+              className="space-y-6" // Increased spacing
             >
-              <div className="flex flex-col gap-y-6 xl:flex-row">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ImageInput
                   name="variantImage"
-                  label="Variant Image"
-                  colors={colors}
-                  setColors={setColors}
+                  label="Variant Images"
+                  initialDataImages={data?.variantImage}
+                  mainVariantColors={
+                    colorFields as unknown as FieldArrayWithId<
+                      any,
+                      'colors',
+                      'id'
+                    >[]
+                  }
+                  addMainVariantColor={addMainVariantColor}
                 />
-                <div className="w-full flex flex-col gap-y-3 xl:pl-5">
-                  <ClickToAddInputs
-                    details={
-                      colors
-                      // data?.colors?.map((color) => {
-                      //   return { color: color?.name }
-                      // }) || colors
-                      // data?.colors
-                      //   ?.map((color) => color?.name)
-                      //   .filter((name): name is string => !!name)
-                      //   .map((name) => ({ color: name })) || colors
+                <div className="space-y-4">
+                  <ClickToAddInputsRHF
+                    fields={
+                      colorFields as unknown as FieldArrayWithId<
+                        any,
+                        'colors',
+                        'id'
+                      >[]
                     }
-                    setDetails={setColors}
-                    initialDetail={{ color: '' }}
+                    name="colors"
+                    control={form.control}
+                    register={form.register}
+                    setValue={form.setValue}
+                    getValues={form.getValues}
+                    onAppend={() => appendColor({ color: '' })}
+                    onRemove={removeColor}
+                    initialDetailSchema={{ color: '' }}
                     header="Colors"
                     colorPicker
                   />
-                  {errors.colors && (
+                  {form.formState.errors.colors && (
                     <span className="text-sm font-medium text-destructive">
-                      {errors.colors.message}
+                      {form.formState.errors.colors.message ||
+                        (form.formState.errors.colors as any)?.root?.message}
                     </span>
                   )}
                 </div>
               </div>
-              {/* sizes */}
-              <InputFieldset label="Sizes,  Prices, Disocunts">
-                <div className="w-full flex flex-col gap-y-3">
-                  <ClickToAddInputs
-                    details={sizes}
-                    setDetails={setSizes}
-                    initialDetail={{
+
+              <InputFieldset label="Sizes, Prices, Discounts">
+                <ClickToAddInputsRHF
+                  fields={
+                    sizeFields as unknown as FieldArrayWithId<
+                      any,
+                      'sizes',
+                      'id'
+                    >[]
+                  }
+                  name="sizes"
+                  control={form.control}
+                  register={form.register}
+                  setValue={form.setValue}
+                  getValues={form.getValues}
+                  onAppend={() =>
+                    appendSize({
                       size: '',
                       quantity: 1,
                       price: 1000,
                       discount: 0,
-                    }}
-                    containerClassName="flex-1"
-                    inputClassName="w-full"
-                  />
-                  {errors.sizes && (
-                    <span className="text-sm font-medium text-destructive">
-                      {errors.sizes.message}
-                    </span>
-                  )}
-                </div>
+                    })
+                  }
+                  onRemove={removeSize}
+                  initialDetailSchema={{
+                    size: '',
+                    quantity: 1,
+                    price: 1000,
+                    discount: 0,
+                  }}
+                />
+                {form.formState.errors.sizes && (
+                  <span className="text-sm font-medium text-destructive">
+                    {form.formState.errors.sizes.message ||
+                      (form.formState.errors.sizes as any)?.root?.message}
+                  </span>
+                )}
               </InputFieldset>
-              {/* Name   */}
-              <InputFieldset label="Name">
-                <div className="flex flex-col lg:flex-row gap-4">
+
+              <InputFieldset label="Names">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
-                    disabled={isPending}
                     control={form.control}
                     name="variantName"
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem>
+                        <FormLabel>Variant Name (English)</FormLabel>
                         <FormControl>
-                          <Input placeholder="Variant name" {...field} />
+                          <Input
+                            placeholder="e.g., Red T-Shirt Large"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="variantName_fa"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Variant Name (Farsi)</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="مثال: تیشرت قرمز بزرگ"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -529,28 +429,32 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                   />
                 </div>
               </InputFieldset>
-              {/* Product and variant description editors (tabs) */}
-              <InputFieldset label="Description">
+
+              <InputFieldset label="Descriptions">
                 <FormField
-                  disabled={isPending}
                   control={form.control}
                   name="variantDescription"
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem>
+                      <FormLabel>Description (English)</FormLabel>
                       <FormControl>
-                        {/* <JoditEditor
-                          {...field}
-                          ref={variantDescEditor}
-                          config={config}
-                          value={form.getValues().variantDescription || ''}
-                          onChange={(content) => {
-                            form.setValue('variantDescription', content)
-                          }}
-                        /> */}
                         <RichTextEditor
-                          {...field}
-                          // config={config}
-
+                          content={field.value || ''}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="variantDescription_fa"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description (Farsi)</FormLabel>
+                      <FormControl>
+                        <RichTextEditor
                           content={field.value || ''}
                           onChange={field.onChange}
                         />
@@ -560,30 +464,32 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                   )}
                 />
               </InputFieldset>
-              {/* Category - SubCategory - offer*/}
 
-              {/* Brand, Sku, Weight */}
-              <InputFieldset label={'Sku, Weight'}>
-                <div className="flex flex-col lg:flex-row gap-4">
+              <InputFieldset label="SKU & Weight">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
-                    disabled={isPending}
                     control={form.control}
                     name="sku"
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem>
+                        <FormLabel>SKU</FormLabel>
                         <FormControl>
-                          <Input placeholder="Product sku" {...field} />
+                          <Input
+                            placeholder="Stock Keeping Unit"
+                            {...field}
+                            value={field.value || ''}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
-                    disabled={isPending}
                     control={form.control}
                     name="weight"
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem>
+                        <FormLabel>Weight (kg)</FormLabel>
                         <FormControl>
                           <NumberInput
                             defaultValue={field.value}
@@ -600,29 +506,9 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                   />
                 </div>
               </InputFieldset>
-              {/* Variant image - Keywords*/}
-              <div className="flex items-center gap-10 py-14">
-                {/* Variant image */}
-                {/* <div className="w-60 h-60">
-                  <InputFileUpload
-                    className="w-full"
-                    // initialDataImages={
-                    //   data?.variantImage ? data?.variantImage : []
-                    // }
-                    initialDataImages={
-                      data?.variantImage
-                        ? data.variantImage.filter(
-                            (image): image is NonNullable<typeof image> =>
-                              image !== undefined
-                          )
-                        : []
-                    }
-                    name="variantImage"
-                    multiple={false}
-                    label="VariantImage"
-                  />
-                </div> */}
-                <div className="w-full flex-1 space-y-3">
+
+              <InputFieldset label="Keywords">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="keywords"
@@ -640,30 +526,51 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                       </FormItem>
                     )}
                   />
-                </div>
-              </div>
-              {/* Product and variant specs*/}
-              <InputFieldset label="specs" description={''}>
-                <div className="w-full flex flex-col gap-y-3">
-                  <ClickToAddInputs
-                    details={variantSpecs}
-                    setDetails={setVariantSpecs}
-                    initialDetail={{
-                      name: '',
-                      value: '',
-                    }}
-                    containerClassName="flex-1"
-                    inputClassName="w-full"
+                  <FormField
+                    control={form.control}
+                    name="keywords_fa"
+                    render={({ field }) => (
+                      <FormItem className="relative flex-1">
+                        <FormLabel>variant Keywords</FormLabel>
+                        <FormControl>
+                          <TagsInput
+                            maxItems={10}
+                            value={field?.value || []}
+                            onValueChange={field.onChange}
+                            placeholder="اضافه کردن تا ۱۰ کلمه کلیدی"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
                   />
-                  {errors.specs && (
-                    <span className="text-sm font-medium text-destructive">
-                      {errors.specs.message}
-                    </span>
-                  )}
                 </div>
               </InputFieldset>
 
-              {/* Is On Sale */}
+              <InputFieldset label="Specifications">
+                <ClickToAddInputsRHF
+                  fields={
+                    specFields as unknown as FieldArrayWithId<
+                      any,
+                      'specs',
+                      'id'
+                    >[]
+                  }
+                  name="specs"
+                  control={form.control}
+                  register={form.register}
+                  setValue={form.setValue}
+                  getValues={form.getValues}
+                  onAppend={() => appendSpec({ name: '', value: '' })}
+                  onRemove={removeSpec}
+                  initialDetailSchema={{ name: '', value: '' }}
+                />
+                {form.formState.errors.specs && (
+                  <span className="text-sm font-medium text-destructive">
+                    {form.formState.errors.specs.message ||
+                      (form.formState.errors.specs as any)?.root?.message}
+                  </span>
+                )}
+              </InputFieldset>
 
               <InputFieldset
                 label="Sale"
@@ -690,16 +597,19 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                       <DateTimePicker name="saleEndDate" />
                     ) : null}
                   </>
-                  {/* <span>Yes</span> */}
                 </div>
               </InputFieldset>
 
-              <Button type="submit" disabled={isPending}>
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="w-full md:w-auto"
+              >
                 {isPending
-                  ? 'loading...'
-                  : data?.productId && data.id
-                  ? 'Save product information'
-                  : 'Create product'}
+                  ? 'Saving...'
+                  : variantId
+                  ? 'Update Variant'
+                  : 'Create Variant'}
               </Button>
             </form>
           </Form>

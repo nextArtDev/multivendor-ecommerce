@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import JoditEditor from 'jodit-react'
-import { useForm } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
 
@@ -63,6 +63,7 @@ import { useQuery } from '@tanstack/react-query'
 import InputFieldset from '@/components/dashboard/input-fieldset'
 import ClickToAddInputs from '@/components/dashboard/click-to-add'
 import RichTextEditor from '@/components/dashboard/text-editor/react-text-editor'
+import ClickToAddInputsRHF from '@/components/dashboard/click-to-add'
 
 const shippingFeeMethods = [
   {
@@ -112,52 +113,38 @@ const ProductForm: FC<ProductFormProps> = ({
   countries,
   // subCategories,
 }) => {
-  console.log(data)
+  // console.log(data)
 
   const path = usePathname()
 
   const [isPending, startTransition] = useTransition()
 
-  // Jodit editor refs
-  const productDescEditor = useRef(null)
-  const variantDescEditor = useRef(null)
-
-  // Jodit configuration
-  const { theme } = useTheme()
-
-  const config = useMemo(
-    () => ({
-      theme: theme === 'dark' ? 'dark' : 'default',
-    }),
-    [theme]
-  )
-
-  const [productSpecs, setProductSpecs] = useState<
-    { name: string; value: string }[]
-  >(
-    data?.specs
-      ? data?.specs
-          .filter(
-            (specs): specs is NonNullable<typeof specs> => specs !== undefined
-          )
-          .map(({ name, value }) => ({ name, value }))
-      : [{ name: '', value: '' }]
-  )
-  const [questions, setQuestions] = useState<
-    { question: string; answer: string }[]
-  >(
-    data?.questions
-      ? data.questions
-          .filter(
-            (questions): questions is NonNullable<typeof questions> =>
-              questions !== undefined
-          )
-          .map(({ question, answer }) => ({
-            question,
-            answer,
-          }))
-      : [{ question: '', answer: '' }]
-  )
+  // const [productSpecs, setProductSpecs] = useState<
+  //   { name: string; value: string }[]
+  // >(
+  //   data?.specs
+  //     ? data?.specs
+  //         .filter(
+  //           (specs): specs is NonNullable<typeof specs> => specs !== undefined
+  //         )
+  //         .map(({ name, value }) => ({ name, value }))
+  //     : [{ name: '', value: '' }]
+  // )
+  // const [questions, setQuestions] = useState<
+  //   { question: string; answer: string }[]
+  // >(
+  //   data?.questions
+  //     ? data.questions
+  //         .filter(
+  //           (questions): questions is NonNullable<typeof questions> =>
+  //             questions !== undefined
+  //         )
+  //         .map(({ question, answer }) => ({
+  //           question,
+  //           answer,
+  //         }))
+  //     : [{ question: '', answer: '' }]
+  // )
 
   const form = useForm<z.infer<typeof NewProductFormSchema>>({
     resolver: zodResolver(NewProductFormSchema),
@@ -172,8 +159,16 @@ const ProductForm: FC<ProductFormProps> = ({
       subCategoryId: data?.subCategoryId,
       brand: data?.brand,
 
-      product_specs: data?.specs || [],
-      questions: data?.questions || [],
+      // product_specs: data?.specs || [],
+      // questions: data?.questions || [],
+      product_specs: data?.specs?.map((spec) => ({
+        name: spec.name,
+        value: spec.value,
+      })) ?? [{ name: '', value: '' }],
+      questions: data?.questions?.map((question) => ({
+        question: question.question,
+        answer: question.answer,
+      })) ?? [{ question: '', answer: '' }],
 
       freeShippingForAllCountries: data?.freeShippingForAllCountries,
       freeShippingCountriesIds:
@@ -187,13 +182,30 @@ const ProductForm: FC<ProductFormProps> = ({
     },
   })
 
+  const {
+    fields: specFields,
+    append: appendSpec,
+    remove: removeSpec,
+  } = useFieldArray({
+    control: form.control,
+    name: 'product_specs',
+  })
+  const {
+    fields: questionFields,
+    append: appendQuestion,
+    remove: removeQuestion,
+  } = useFieldArray({
+    control: form.control,
+    name: 'questions',
+  })
+
   const { data: SubCategories, isPending: isPendingCategory } = useQuery({
     queryKey: ['subCateByCat', form.watch().categoryId],
     queryFn: () => getSubCategoryByCategoryId(form.watch().categoryId),
   })
 
   const errors = form.formState.errors
-
+  console.log({ errors })
   useEffect(() => {
     if (data) {
       form.reset({
@@ -209,9 +221,15 @@ const ProductForm: FC<ProductFormProps> = ({
         subCategoryId: data?.subCategoryId,
         brand: data?.brand,
 
-        product_specs: data?.specs || [],
+        product_specs:
+          data.specs?.map((spec) => ({ name: spec.name, value: spec.value })) ??
+          [],
 
-        questions: data?.questions || [],
+        questions:
+          data?.questions?.map((q) => ({
+            question: q.question,
+            answer: q.answer,
+          })) ?? [],
 
         freeShippingForAllCountries: data?.freeShippingForAllCountries,
         freeShippingCountriesIds:
@@ -292,12 +310,21 @@ const ProductForm: FC<ProductFormProps> = ({
 
     if (values.questions && values.questions.length > 0) {
       values.questions.forEach((questions) => {
-        formData.append('questions', JSON.stringify(questions))
+        if (
+          questions.question.trim() !== '' ||
+          questions.answer.trim() !== ''
+        ) {
+          formData.append('questions', JSON.stringify(questions))
+        }
       })
     }
+
     if (values.product_specs && values.product_specs.length > 0) {
-      values.product_specs.forEach((size) => {
-        formData.append('product_specs', JSON.stringify(size))
+      values.product_specs.forEach((spec) => {
+        if (spec.name.trim() !== '' || spec.value.trim() !== '') {
+          // Ensure non-empty product_specs
+          formData.append('product_specs', JSON.stringify(spec))
+        }
       })
     }
 
@@ -468,10 +495,10 @@ const ProductForm: FC<ProductFormProps> = ({
     form.setValue('freeShippingCountriesIds', updatedValues)
   }
 
-  useEffect(() => {
-    form.setValue('product_specs', productSpecs)
-    form.setValue('questions', questions)
-  }, [form, productSpecs, questions])
+  // useEffect(() => {
+  //   form.setValue('product_specs', productSpecs)
+  //   form.setValue('questions', questions)
+  // }, [form, productSpecs, questions])
 
   return (
     <AlertDialog>
@@ -715,13 +742,16 @@ const ProductForm: FC<ProductFormProps> = ({
                 }
               >
                 <div className="w-full flex flex-col gap-y-3">
-                  <ClickToAddInputs
-                    details={productSpecs}
-                    setDetails={setProductSpecs}
-                    initialDetail={{
-                      name: '',
-                      value: '',
-                    }}
+                  <ClickToAddInputsRHF
+                    fields={specFields}
+                    name="product_specs"
+                    control={form.control}
+                    register={form.register}
+                    setValue={form.setValue}
+                    getValues={form.getValues}
+                    onAppend={() => appendSpec({ name: '', value: '' })}
+                    onRemove={removeSpec}
+                    initialDetailSchema={{ name: '', value: '' }}
                     containerClassName="flex-1"
                     inputClassName="w-full"
                   />
@@ -736,13 +766,24 @@ const ProductForm: FC<ProductFormProps> = ({
 
               <InputFieldset label="Questions & Answers">
                 <div className="w-full flex flex-col gap-y-3">
-                  <ClickToAddInputs
-                    details={questions}
-                    setDetails={setQuestions}
-                    initialDetail={{
-                      question: '',
-                      answer: '',
-                    }}
+                  <ClickToAddInputsRHF
+                    fields={questionFields}
+                    name="questions"
+                    control={form.control}
+                    register={form.register}
+                    setValue={form.setValue}
+                    getValues={form.getValues}
+                    onAppend={() =>
+                      appendQuestion({ question: '', answer: '' })
+                    }
+                    onRemove={removeQuestion}
+                    initialDetailSchema={{ question: '', answer: '' }}
+                    // details={questions}
+                    // setDetails={setQuestions}
+                    // initialDetail={{
+                    //   question: '',
+                    //   answer: '',
+                    // }}
                     containerClassName="flex-1"
                     inputClassName="w-full"
                   />

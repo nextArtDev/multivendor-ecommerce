@@ -1,50 +1,54 @@
-// React, Next.js
-import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
-import Image from 'next/image'
-
-// Import of the image shown when there are no images available
-// import NoImageImg from '../../../../public/assets/images/no_image_2.png'
-
-// Utils
-import { getDominantColors, getGridClassName } from '@/lib/dashborad-utils'
-
-//Icons
+// components/images-preview-grid.tsx (adjust path)
+'use client'
+import { FC, useEffect, useState } from 'react'
+import NextImage from 'next/image' // Renamed to avoid conflict if you have a local Image type
+import { getDominantColors, getGridClassName } from '@/lib/dashborad-utils' // Adjust path
 import { Trash } from 'lucide-react'
-import ColorPalette from './color-palette'
+import ColorPalette from './color-palette' // Adjust path
 import { cn } from '@/lib/utils'
+import { FieldArrayWithId } from 'react-hook-form'
+import { ImageFileWithValue } from './image-input' // Import the shared interface
+
+// Assuming your main form Zod schema is available
+// import { VariantFormSchema } from '@/lib/schemas/dashboard';
+// import { z } from 'zod';
+// type YourMainFormSchemaType = z.infer<typeof VariantFormSchema>;
+type YourMainFormSchemaType = any // Replace with actual inferred type
 
 interface ImagesPreviewGridProps {
-  images: { url: string }[] // Array of image URLs
-  onRemove: (value: string) => void // Callback function when an image is removed
-  colors?: { color: string }[] // List of colors from form
-  setColors: Dispatch<SetStateAction<{ color: string }[]>> // Setter function for colors
+  images: ImageFileWithValue[] // Use the new interface
+  onRemove: (url: string) => void
+  mainVariantColors: FieldArrayWithId<YourMainFormSchemaType, 'colors', 'id'>[]
+  addMainVariantColor: (colorValue: string) => void
+  initialDataImages?: any // Type this appropriately if used for comparison
 }
 
 const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
   images,
   onRemove,
-  colors,
-  setColors,
+  mainVariantColors,
+  addMainVariantColor,
 }) => {
-  // Calculate the number of images
   const imagesLength = images.length
-  //   console.log({ images })
-
-  // Get the grid class name based on the number of images
   const GridClassName = getGridClassName(imagesLength)
-
-  // Extract images colors
   const [colorPalettes, setColorPalettes] = useState<string[][]>([])
+
   useEffect(() => {
     const fetchColors = async () => {
       const palettes = await Promise.all(
         images.map(async (img) => {
-          try {
-            const colors = await getDominantColors(img.url)
-            return colors
-          } catch {
-            return []
+          // Only try to get dominant colors if it's a new file (blob URL)
+          // or if you have a way to fetch existing image data for color extraction
+          if (img.url && img.url.startsWith('blob:')) {
+            try {
+              const colors = await getDominantColors(img.url)
+              return colors
+            } catch (error) {
+              console.error('Error fetching dominant colors:', error)
+              return []
+            }
           }
+          return [] // Return empty for existing images or if URL is missing
         })
       )
       setColorPalettes(palettes)
@@ -52,85 +56,74 @@ const ImagesPreviewGrid: FC<ImagesPreviewGridProps> = ({
 
     if (imagesLength > 0) {
       fetchColors()
+    } else {
+      setColorPalettes([]) // Clear palettes if no images
     }
   }, [images, imagesLength])
 
-  // If there are no images, display a placeholder image
   if (imagesLength === 0) {
     return (
-      <div>
-        {/* <Image
-          src={NoImageImg}
-          alt="No images available"
-          width={500}
-          height={600}
-          className="rounded-md"
-        /> */}
-        No image
-      </div>
-    )
-  } else {
-    // If there are images, display the images in a grid
-    return (
-      <div className="max-w-7xl">
-        <div
-          className={cn(
-            'grid h-[800px] overflow-hidden bg-white rounded-md',
-            GridClassName
-          )}
-        >
-          {images.map((img, i) => (
-            <div
-              key={i}
-              className={cn(
-                'relative group h-full w-full border border-gray-300',
-                `grid_${imagesLength}_image_${i + 1}`,
-                {
-                  'h-[266.66px]': images.length === 6,
-                }
-              )}
-            >
-              {/* Image */}
-              <Image
-                src={img.url}
-                alt=""
-                width={800}
-                height={800}
-                className="w-full h-full object-cover object-top"
-              />
-              {/* Actions */}
-              <div
-                className={cn(
-                  'absolute top-0 left-0 right-0 bottom-0 hidden group-hover:flex bg-white/55 cursor-pointer  items-center justify-center flex-col gap-y-3 transition-all duration-500',
-                  {
-                    '!pb-[40%]': imagesLength === 1,
-                  }
-                )}
-              >
-                {/* Color palette (Extract colors) */}
-                <ColorPalette
-                  colors={colors}
-                  setColors={setColors}
-                  extractedColors={colorPalettes[i]}
-                />
-                {/* Delete Button */}
-                <button
-                  className="Btn"
-                  type="button"
-                  onClick={() => onRemove(img.url)}
-                >
-                  <div className="sign">
-                    <Trash size={18} />
-                  </div>
-                  <div className="text">Delete</div>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="text-center py-10 text-muted-foreground">
+        No images selected.
       </div>
     )
   }
+
+  return (
+    <div className="w-full">
+      {' '}
+      {/* Ensure ImagesPreviewGrid takes space */}
+      <div
+        className={cn(
+          'grid bg-white rounded-md overflow-hidden max-h-[600px]', // Added max-h
+          GridClassName
+        )}
+      >
+        {images.map((img, i) => (
+          <div
+            key={img.id || img.url} // Use id for existing images, url for new
+            className={cn(
+              'relative group h-full w-full border border-gray-200 dark:border-gray-700',
+              `grid_${imagesLength}_image_${i + 1}`,
+              // Adjust height for specific grid counts if necessary
+              { 'min-h-[150px] max-h-[200px]': imagesLength > 1 }, // Example dynamic height
+              { 'min-h-[200px] max-h-[400px]': imagesLength === 1 }
+            )}
+            style={{ aspectRatio: '1 / 1' }} // Maintain aspect ratio
+          >
+            <NextImage
+              src={img.url}
+              alt={`Preview ${i + 1}`}
+              layout="fill" // Use fill layout
+              objectFit="cover" // Ensure image covers the area
+              className="transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-end p-2 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              {colorPalettes[i] && colorPalettes[i].length > 0 && (
+                <div className="mb-auto mt-2">
+                  {' '}
+                  {/* Pushes palette to top */}
+                  <ColorPalette
+                    extractedColors={colorPalettes[i]}
+                    mainVariantColors={mainVariantColors}
+                    addMainVariantColor={addMainVariantColor}
+                  />
+                </div>
+              )}
+              <button
+                className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors absolute top-2 right-2"
+                type="button"
+                onClick={() => onRemove(img.url)}
+                title="Remove image"
+              >
+                <Trash size={16} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default ImagesPreviewGrid

@@ -43,7 +43,7 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
     {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       children,
-      value,
+      value = [''],
       onValueChange,
       placeholder,
       maxItems,
@@ -265,7 +265,7 @@ export const TagsInput = React.forwardRef<HTMLDivElement, TagsInputProps>(
             className
           )}
         >
-          {value.map((item, index) => (
+          {value?.map((item, index) => (
             <Badge
               tabIndex={activeIndex !== -1 ? 0 : activeIndex}
               key={item}
