@@ -43,7 +43,7 @@ export default function OfferTagsLinks({
         {offerTags.slice(0, splitPoint).map((tag, i) => (
           <Link
             key={tag.id}
-            href={`/browse?offer=${tag.url}`}
+            href={`/goshop/browse?offer=${tag.url}`}
             className={cn(
               'font-bold text-center bg-foreground/30 backdrop-blur-sm px-4 leading-10 rounded-[20px] hover:backdrop-blur-lg ',
               {

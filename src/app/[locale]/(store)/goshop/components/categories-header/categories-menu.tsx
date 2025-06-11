@@ -89,7 +89,7 @@ export default function CategoriesMenu({
           {categories.map((category) => (
             <Link
               key={category.id}
-              href={`/browse?category=${category.url}`}
+              href={`/goshop/browse?category=${category.url}`}
               className=" "
             >
               <li className="relative flex items-center m-0 p-3 pl-6 hover:bg-foreground/30 backdrop-blur-lg">

@@ -55,7 +55,7 @@ const HomePage = async () => {
     return {
       title: category.name,
       link: { href: category.id, text: category.name },
-      items: category.subCategories?.map((sub) => {
+      items: category?.subCategories?.map((sub) => {
         return {
           name: sub.name,
           items: sub,

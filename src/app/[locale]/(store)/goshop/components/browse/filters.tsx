@@ -7,6 +7,7 @@ import ColorFilter from './filters/color/color-filter'
 import { FiltersQueryType } from '../../types'
 import { getAllCategoriesWillStoreUrl } from '@/lib/queries/dashboard'
 import { getAllOfferTags } from '@/lib/queries/dashboard/tags'
+import { notFound } from 'next/navigation'
 
 export default async function ProductFilters({
   queries,
@@ -15,7 +16,11 @@ export default async function ProductFilters({
   queries: FiltersQueryType
   storeUrl?: string
 }) {
-  const categories = await getAllCategoriesWillStoreUrl({ storeUrl })
+  // if (!storeUrl) return notFound()
+  let categories
+  if (storeUrl) {
+    const categories = await getAllCategoriesWillStoreUrl(storeUrl)
+  }
   const offers = await getAllOfferTags(storeUrl)
 
   return (
@@ -24,7 +29,7 @@ export default async function ProductFilters({
       {/* Filters */}
       <div className="border-t w-40 md:w-44">
         <PriceFilter />
-        <CategoryFilter categories={categories} />
+        {storeUrl && categories && <CategoryFilter categories={categories} />}
         <ColorFilter queries={queries} storeUrl={storeUrl} />
         <OfferFilter offers={offers} />
         <SizeFilter queries={queries} storeUrl={storeUrl} />

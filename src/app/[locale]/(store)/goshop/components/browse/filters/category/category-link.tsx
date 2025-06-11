@@ -69,7 +69,7 @@ export default function CategoryLink({
         </div>
         {expand && (
           <>
-            {category.subCategories.map((sub) => (
+            {category?.subCategories.map((sub) => (
               <section key={sub.id} className="pl-5 mt-2 leading-5 relative">
                 <label
                   htmlFor={sub.id}
