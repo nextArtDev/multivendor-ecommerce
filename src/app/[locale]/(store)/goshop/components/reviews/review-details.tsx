@@ -74,7 +74,7 @@ export default function ReviewDetails({
       // Setting default form values from data (if available)
       variantName: data?.variant || activeVariant?.variantName,
       variantImage:
-        data?.variantImage?.[0]?.url || activeVariant?.variantImage?.[0].url,
+        data?.variantImage?.[0]?.url || activeVariant?.variantImage?.[0]?.url,
       // variantImage: activeVariant?.variantImage,
       //   ? activeVariant.variantImage.map((image) => ({ url: image.url }))
       //   : [],

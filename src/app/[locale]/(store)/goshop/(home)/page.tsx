@@ -7,7 +7,7 @@ import { Prisma } from '@prisma/client'
 import ProductList from '../components/product/product-list'
 
 const GoshopHomePage = async () => {
-  const products = await getProducts({}, '')
+  const products = await getProducts()
   // console.log(
   //   products.products.flatMap((p) => p.variantImages.flatMap((i) => i.image))
   // )

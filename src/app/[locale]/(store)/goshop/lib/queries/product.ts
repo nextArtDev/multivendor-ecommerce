@@ -25,6 +25,7 @@ export type VariantSimplified = {
 }
 export type SortOrder = 'asc' | 'desc'
 
+// getFilteredProducts
 export const getProducts = async (
   filters: any = {},
   sortBy = '',
@@ -263,7 +264,7 @@ export const getProducts = async (
     // Extract variant images for the product
     const variantImages: VariantImageType[] = filteredVariants.map(
       (variant) => ({
-        url: `/product/${product.slug}/${variant.slug}`,
+        url: `/goshop/product/${product.slug}/${variant.slug}`,
         image: variant.variantImage
           ? variant.variantImage[0]
           : product.images?.[0],

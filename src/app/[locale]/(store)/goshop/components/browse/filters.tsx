@@ -19,7 +19,7 @@ export default async function ProductFilters({
   // if (!storeUrl) return notFound()
   let categories
   if (storeUrl) {
-    const categories = await getAllCategoriesWillStoreUrl(storeUrl)
+    categories = await getAllCategoriesWillStoreUrl(storeUrl)
   }
   const offers = await getAllOfferTags(storeUrl)
 

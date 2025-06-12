@@ -76,7 +76,7 @@ const ProductPageContainer: FC<Props> = ({
     name: productData.name,
     variantName: variantName,
     images: images,
-    variantImage: variantImage[0].url,
+    variantImage: variantImage[0]?.url,
     quantity: 1,
     price: 0,
     sizeId: sizeId || '',

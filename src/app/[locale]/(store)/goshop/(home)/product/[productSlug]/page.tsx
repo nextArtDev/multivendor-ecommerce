@@ -91,12 +91,14 @@ export default async function ProductPage({
             subCategoryId={data.subCategoryId}
           />
           <Separator className="mt-6" />
-          <ProductReviews
-            product={data}
-            rating={data.rating}
-            variant={data.variants}
-            numReviews={data._count.reviews}
-          />
+          {!!data._count.reviews && (
+            <ProductReviews
+              product={data}
+              rating={data.rating}
+              variant={data.variants}
+              numReviews={data._count.reviews}
+            />
+          )}
 
           <Separator className="mt-6" />
 
