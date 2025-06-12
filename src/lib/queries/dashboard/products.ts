@@ -201,3 +201,43 @@ export const getProductById = cache(
     return product
   }
 )
+
+export const getVariantBySlugAndProductId = cache(
+  (
+    productId: string,
+    slug: string
+  ): Promise<
+    | (ProductVariant & { variantImage: Image[] | null } & {
+        product: { id: string; name: string } & { store: { url: string } }
+      } & {
+        colors: Color[] | null
+      } & { sizes: Size[] | null } & { specs: Spec[] | null })
+    | null
+  > => {
+    const variant = prisma.productVariant.findFirst({
+      where: {
+        productId,
+        slug,
+      },
+      include: {
+        variantImage: true,
+        colors: true,
+        sizes: true,
+        specs: true,
+        product: {
+          select: {
+            id: true,
+            name: true,
+            store: {
+              select: {
+                url: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    return variant
+  }
+)

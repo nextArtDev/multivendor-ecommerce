@@ -9,15 +9,15 @@ import { VariantImageType } from '../../types'
 interface Props {
   images: VariantImageType[]
   variants: VariantSimplified[]
-  setVariant: Dispatch<SetStateAction<VariantSimplified>>
-  selectedVariant: VariantSimplified
+  // setVariant: Dispatch<SetStateAction<VariantSimplified>>
+  selectedVariantSlug: string
 }
 
 const VariantSwitcher: FC<Props> = ({
   images,
   variants,
-  setVariant,
-  selectedVariant,
+  // setVariant,
+  selectedVariantSlug,
 }) => {
   return (
     <div>
@@ -29,9 +29,10 @@ const VariantSwitcher: FC<Props> = ({
               key={index}
               href={img.url}
               className={cn('p-0.5 rounded-full border-2 border-transparent', {
-                'border-border': variants[index] === selectedVariant,
+                'border-border':
+                  variants[index].variantSlug === selectedVariantSlug,
               })}
-              onMouseEnter={() => setVariant(variants[index])}
+              // onMouseEnter={() => setVariant(variants[index])}
             >
               <NextImage
                 src={img.image.url}
