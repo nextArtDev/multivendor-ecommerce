@@ -264,7 +264,7 @@ export const getProducts = async (
     // Extract variant images for the product
     const variantImages: VariantImageType[] = filteredVariants.map(
       (variant) => ({
-        url: `/goshop/product/${product.slug}/${variant.slug}`,
+        url: `/goshop/product/${product.slug}?variant=${variant.slug}`,
         image: variant.variantImage
           ? variant.variantImage[0]
           : product.images?.[0],
@@ -397,7 +397,7 @@ export const getRelatedProducts = async (
     // Extract variant images for the product
     const variantImages: VariantImageType[] = filteredVariants.map(
       (variant) => ({
-        url: `/goshop/product/${product.slug}/${variant.slug}`,
+        url: `/goshop/product/${product.slug}?variant=${variant.slug}`,
         image: variant.variantImage
           ? variant.variantImage[0]
           : product.images[0],

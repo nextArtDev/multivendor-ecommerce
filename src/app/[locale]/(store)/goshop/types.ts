@@ -213,3 +213,8 @@ export type FiltersQueryType = {
 export type CatgegoryWithSubsType = Category & {
   subCategories: SubCategory[]
 }
+
+export type VariantImageType = {
+  url: string
+  image: Image
+}

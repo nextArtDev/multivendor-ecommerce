@@ -1,12 +1,13 @@
 import { cn } from '@/lib/utils'
-import { Image } from '@prisma/client'
+
 import NextImage from 'next/image'
 import Link from 'next/link'
 import { Dispatch, FC, SetStateAction } from 'react'
 import { VariantSimplified } from '../../lib/queries/product'
+import { VariantImageType } from '../../types'
 
 interface Props {
-  images: Image[]
+  images: VariantImageType[]
   variants: VariantSimplified[]
   setVariant: Dispatch<SetStateAction<VariantSimplified>>
   selectedVariant: VariantSimplified
@@ -33,7 +34,7 @@ const VariantSwitcher: FC<Props> = ({
               onMouseEnter={() => setVariant(variants[index])}
             >
               <NextImage
-                src={img.url}
+                src={img.image.url}
                 alt=""
                 width={100}
                 height={100}

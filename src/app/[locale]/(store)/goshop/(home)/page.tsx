@@ -9,6 +9,9 @@ import ProductList from '../components/product/product-list'
 const GoshopHomePage = async () => {
   const products = await getProducts()
   // console.log(
+  //   products.products.map((p) => p.variants.map((variant) => variant))
+  // )
+  // console.log(
   //   products.products.flatMap((p) => p.variantImages.flatMap((i) => i.image))
   // )
   // console.log(products.products.flatMap((p) => p.images.map((i) => i.url)))

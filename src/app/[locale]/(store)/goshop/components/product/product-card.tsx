@@ -22,9 +22,10 @@ import ProductPrice from './product-price'
 import { toggleWishlistItem } from '../../lib/queries/user'
 
 export default function ProductCard({ product }: { product: ProductType }) {
-  const { name, slug, rating, sales, images, variants, id } = product
+  const { name, slug, rating, sales, images, variants, variantImages, id } =
+    product
   const [variant, setVariant] = useState<VariantSimplified>(variants[0])
-  const { variantSlug, variantName, images: variantImages, sizes } = variant
+  const { variantSlug, variantName, sizes } = variant
 
   const handleAddToWishlist = async () => {
     try {
