@@ -36,7 +36,7 @@ interface Props {
   // setVariant: Dispatch<SetStateAction<ProductVariantDataType>>
   quantity: number
   sizeId: string | undefined
-  setSizeId: Dispatch<SetStateAction<string>>
+  // setSizeId: Dispatch<SetStateAction<string>>
   handleChange: (property: keyof CartProductType, value: unknown) => void
   setActiveImage: Dispatch<SetStateAction<{ url: string } | null>>
   variantSlug: string
@@ -46,7 +46,7 @@ const ProductInfo: FC<Props> = ({
   productData,
   quantity,
   sizeId,
-  setSizeId,
+  // setSizeId,
   handleChange,
   setActiveImage,
   variant,
@@ -162,7 +162,8 @@ const ProductInfo: FC<Props> = ({
               slug={variantSlug}
               setActiveImage={setActiveImage}
               handleChange={handleChange}
-              setSizeId={setSizeId}
+              sizeId={sizeId}
+              // setSizeId={setSizeId}
               // setVariant={setVariant}
             />
           )}
@@ -176,7 +177,7 @@ const ProductInfo: FC<Props> = ({
         <SizeSelector
           sizes={variant.sizes}
           sizeId={sizeId}
-          setSizeId={setSizeId}
+          // setSizeId={setSizeId}
           handleChange={handleChange}
         />
       </div>

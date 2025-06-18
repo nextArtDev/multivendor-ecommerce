@@ -12,7 +12,8 @@ interface Props {
   slug: string
   setActiveImage: Dispatch<SetStateAction<{ url: string } | null>>
   handleChange: (property: keyof CartProductType, value: unknown) => void
-  setSizeId: Dispatch<SetStateAction<string>>
+  sizeId?: string
+  // setSizeId: Dispatch<SetStateAction<string>>
   // setVariant: Dispatch<SetStateAction<ProductVariantDataType>>
 }
 
@@ -21,11 +22,13 @@ const ProductVariantSelector: FC<Props> = ({
   slug,
   setActiveImage,
   handleChange,
-  setSizeId,
+  sizeId,
+  // setSizeId,
   // setVariant,
 }) => {
   const [variantSlug, setVariantSlug] = useQueryState('variant')
-  console.log({ variantSlug })
+  // const [sizeId, setSizeId] = useQueryState('size')
+  // console.log({ variantSlug })
   const pathname = usePathname()
   const { replace } = useRouter()
   const searchParams = useSearchParams()
@@ -36,12 +39,18 @@ const ProductVariantSelector: FC<Props> = ({
     // setVariant(variant)
     setVariantSlug(variant.slug)
     setActiveImage(variant.variantImage[0])
-    if (variant.sizes.length === 1) {
-      setSizeId(variant.sizes[0].id)
-    } else {
-      setSizeId('')
-    }
+
+    // if (variant.sizes.length === 1) {
+    //   // setSizeId(sizeId || variant.sizes[0].id)
+    //   sizeId ===
+    // } else {
+    //   // setSizeId('')
+    // }
     params.set('variant', variant.slug)
+    params.set(
+      'sizeId',
+      variant.sizes.length === 1 ? variant.sizes[0].id : sizeId || ''
+    )
     replace(`${pathname}?${params.toString()}`, {
       scroll: false,
     })

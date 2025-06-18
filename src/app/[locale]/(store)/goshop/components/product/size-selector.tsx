@@ -2,44 +2,46 @@ import { Size } from '@prisma/client'
 // import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Dispatch, FC, SetStateAction, useEffect } from 'react'
 import { CartProductType } from '../../types'
+import { useQueryState } from 'nuqs'
+import { useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from '@/navigation'
 
 interface Props {
   sizes: Size[]
   sizeId: string | undefined
   handleChange: (property: keyof CartProductType, value: unknown) => void
-  setSizeId: Dispatch<SetStateAction<string>>
+  // setSizeId: Dispatch<SetStateAction<string>>
 }
 
 const SizeSelector: FC<Props> = ({
   sizeId,
-  setSizeId,
+  // setSizeId,
   sizes,
   handleChange,
 }) => {
-  // const pathname = usePathname()
-  // const { replace, refresh } = useRouter()
-  // const searchParams = useSearchParams()
-  // const params = new URLSearchParams(searchParams)
+  const pathname = usePathname()
+  const { replace } = useRouter()
+  const searchParams = useSearchParams()
+  // const sizeId = searchParams.get('sizeId')
+  const params = new URLSearchParams(searchParams)
 
-  useEffect(() => {
-    if (sizeId) {
-      const search_size = sizes.find((s) => s.id === sizeId)
-      if (search_size) {
-        handleCartProductToBeAddedChange(search_size)
-      }
-    } else {
-    }
-  }, [sizeId, sizes])
+  const search_size = sizes.find((s) => s.id === sizeId)
 
   const handleSelectSize = (size: Size) => {
-    setSizeId(size.id)
-    handleCartProductToBeAddedChange(size)
+    params.set('sizeId', size.id || sizeId || '')
+    replace(`${pathname}?${params.toString()}`, {
+      scroll: false,
+    })
+
+    handleChange('sizeId', sizeId)
+    handleChange('size', search_size)
+    // handleCartProductToBeAddedChange(size)
   }
 
-  const handleCartProductToBeAddedChange = (size: Size) => {
-    handleChange('sizeId', size.id)
-    handleChange('size', size.size)
-  }
+  // const handleCartProductToBeAddedChange = (size: Size) => {
+  //   handleChange('sizeId', sizeId)
+  //   handleChange('size', size.size)
+  // }
 
   return (
     <div className="flex flex-wrap gap-4">

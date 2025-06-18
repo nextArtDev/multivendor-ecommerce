@@ -34,15 +34,19 @@ export default async function ProductPage({
   params: Promise<{ productSlug: string }>
   searchParams: Promise<{
     variant: string
+    sizeId: string
   }>
 }) {
   const productSlug = (await params).productSlug
   const searchParamsVariant = (await searchParams).variant
+  const searchParamsSizeId = (await searchParams).sizeId
 
   const data = await retrieveProductDetailsOptimized(productSlug)
-  // console.log({ data })
-  const variant = data?.variants.find((v) => v.slug === searchParamsVariant)
-  // console.log({ variant })
+  // console.log('data?.variants?.[0]', data?.variants?.[0])
+  const variant =
+    data?.variants.find((v) => v.slug === searchParamsVariant) ||
+    data?.variants?.[0]
+  // console.log('vslug', variant.slug)
   const specs = {
     product: data.specs,
     variant: variant?.specs,
@@ -81,7 +85,8 @@ export default async function ProductPage({
       <div className="p-4 2xl:px-28 overflow-x-hidden mx-auto">
         <ProductPageContainer
           productData={data}
-          variantSlug={searchParamsVariant}
+          variantSlug={variant.slug}
+          sizeId={searchParamsSizeId || variant.sizes?.[0].id}
           userCountry={userCountry}
         >
           <Separator />

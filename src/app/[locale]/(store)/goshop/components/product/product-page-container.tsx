@@ -31,12 +31,14 @@ interface Props {
   productData: ProductDataType
   children: ReactNode
   variantSlug: string
+  sizeId: string
   userCountry: Country
 }
 
 const ProductPageContainer: FC<Props> = ({
   productData,
   variantSlug,
+  sizeId,
   children,
   userCountry,
 }) => {
@@ -50,6 +52,7 @@ const ProductPageContainer: FC<Props> = ({
   // )
   // console.log({ variant })
   const variant = variants.find((v) => v.slug === variantSlug) || variants[0]
+  // variant.sizes.length === 1 ? variant.sizes[0].id : ''
   // useEffect(() => {
   //   const variant = variants.find((v) => v.slug === variantSlug) || variants[0]
   //   if (variant) {
@@ -57,9 +60,8 @@ const ProductPageContainer: FC<Props> = ({
   //   }
   // }, [variantSlug])
 
-  const [sizeId, setSizeId] = useState(
-    variant.sizes.length === 1 ? variant.sizes[0].id : ''
-  )
+  // const [sizeId, setSizeId] = useState(
+  // )
 
   const { id: variantId, variantName, variantImage, weight, sizes } = variant
 
@@ -80,7 +82,7 @@ const ProductPageContainer: FC<Props> = ({
     variantImage: variantImage[0]?.url,
     quantity: 1,
     price: 0,
-    sizeId: sizeId || '',
+    sizeId: variant.sizes.length === 1 ? variant.sizes[0].id : sizeId,
     size: '',
     stock: 1,
     weight: weight,
@@ -92,6 +94,7 @@ const ProductPageContainer: FC<Props> = ({
     deliveryTimeMax: 0,
     isFreeShipping: false,
   }
+  // console.log('sizse', data.sizeId)
 
   // useState hook to manage the product's state in the cart
   const [productToBeAddedToCart, setProductToBeAddedToCart] =
@@ -257,7 +260,7 @@ const ProductPageContainer: FC<Props> = ({
             variant={variant}
             variantSlug={variantSlug}
             sizeId={sizeId}
-            setSizeId={setSizeId}
+            // setSizeId={setSizeId}
             handleChange={handleChange}
             setActiveImage={setActiveImage}
             // setVariant={setVariant}
