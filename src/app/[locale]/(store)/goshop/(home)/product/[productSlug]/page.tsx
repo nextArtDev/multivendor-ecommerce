@@ -41,8 +41,8 @@ export default async function ProductPage({
 
   const data = await retrieveProductDetailsOptimized(productSlug)
   // console.log({ data })
-  const variant = data.variants.find((v) => v.slug === searchParamsVariant)
-  // console.log({ data })
+  const variant = data?.variants.find((v) => v.slug === searchParamsVariant)
+  // console.log({ variant })
   const specs = {
     product: data.specs,
     variant: variant?.specs,

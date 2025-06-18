@@ -33,7 +33,7 @@ import ProductPrice from './product-price'
 interface Props {
   productData: ProductDataType
   variant: ProductVariantDataType
-  setVariant: Dispatch<SetStateAction<ProductVariantDataType>>
+  // setVariant: Dispatch<SetStateAction<ProductVariantDataType>>
   quantity: number
   sizeId: string | undefined
   setSizeId: Dispatch<SetStateAction<string>>
@@ -51,7 +51,7 @@ const ProductInfo: FC<Props> = ({
   setActiveImage,
   variant,
   variantSlug,
-  setVariant,
+  // setVariant,
 }) => {
   // Check if productData exists, return null if it's missing (prevents rendering when there's no data)
   if (!productData) return null
@@ -159,11 +159,11 @@ const ProductInfo: FC<Props> = ({
           {variants.length > 0 && (
             <ProductVariantSelector
               variants={variants}
-              slug={variant.slug}
+              slug={variantSlug}
               setActiveImage={setActiveImage}
               handleChange={handleChange}
               setSizeId={setSizeId}
-              setVariant={setVariant}
+              // setVariant={setVariant}
             />
           )}
         </div>

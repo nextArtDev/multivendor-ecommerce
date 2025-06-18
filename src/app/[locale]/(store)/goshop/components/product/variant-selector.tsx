@@ -13,7 +13,7 @@ interface Props {
   setActiveImage: Dispatch<SetStateAction<{ url: string } | null>>
   handleChange: (property: keyof CartProductType, value: unknown) => void
   setSizeId: Dispatch<SetStateAction<string>>
-  setVariant: Dispatch<SetStateAction<ProductVariantDataType>>
+  // setVariant: Dispatch<SetStateAction<ProductVariantDataType>>
 }
 
 const ProductVariantSelector: FC<Props> = ({
@@ -22,9 +22,10 @@ const ProductVariantSelector: FC<Props> = ({
   setActiveImage,
   handleChange,
   setSizeId,
-  setVariant,
+  // setVariant,
 }) => {
   const [variantSlug, setVariantSlug] = useQueryState('variant')
+  console.log({ variantSlug })
   const pathname = usePathname()
   const { replace } = useRouter()
   const searchParams = useSearchParams()

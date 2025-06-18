@@ -40,21 +40,22 @@ const ProductPageContainer: FC<Props> = ({
   children,
   userCountry,
 }) => {
-  const searchParams = useSearchParams()
-  const variantSlugParam = searchParams.get('variant')
+  // const searchParams = useSearchParams()
+  // const variantSlugParam = searchParams.get('variant')
 
   const { id, slug, variants, images } = productData
 
-  const [variant, setVariant] = useState<ProductVariantDataType>(
-    variants.find((v) => v.slug === variantSlug) || variants[0]
-  )
-
-  useEffect(() => {
-    const variant = variants.find((v) => v.slug === variantSlug)
-    if (variant) {
-      setVariant(variant)
-    }
-  }, [variantSlug])
+  // const [variant, setVariant] = useState<ProductVariantDataType>(
+  //   variants.find((v) => v.slug === variantSlug) || variants[0]
+  // )
+  // console.log({ variant })
+  const variant = variants.find((v) => v.slug === variantSlug) || variants[0]
+  // useEffect(() => {
+  //   const variant = variants.find((v) => v.slug === variantSlug) || variants[0]
+  //   if (variant) {
+  //     setVariant(variant)
+  //   }
+  // }, [variantSlug])
 
   const [sizeId, setSizeId] = useState(
     variant.sizes.length === 1 ? variant.sizes[0].id : ''
@@ -72,7 +73,7 @@ const ProductPageContainer: FC<Props> = ({
     productId: id,
     variantId,
     productSlug: slug,
-    variantSlug: variant.slug,
+    variantSlug,
     name: productData.name,
     variantName: variantName,
     images: images,
@@ -116,7 +117,7 @@ const ProductPageContainer: FC<Props> = ({
       productId: id,
       variantId,
       productSlug: slug,
-      variantSlug: variant.slug,
+      variantSlug,
       name: productData.name,
       variantName: variantName,
       images: images,
@@ -259,7 +260,7 @@ const ProductPageContainer: FC<Props> = ({
             setSizeId={setSizeId}
             handleChange={handleChange}
             setActiveImage={setActiveImage}
-            setVariant={setVariant}
+            // setVariant={setVariant}
             quantity={productToBeAddedToCart.quantity}
           />
           {/* Shipping details - buy actions buttons */}
