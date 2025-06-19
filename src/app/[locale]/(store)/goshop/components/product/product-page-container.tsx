@@ -21,6 +21,7 @@ import { useSearchParams } from 'next/navigation'
 import { Rating } from '@/components/shared/rating'
 import { useCartStore } from '@/cart-store/useCartStore'
 import useFromStore from '@/hooks/useFromStore'
+import { usePathname, useRouter } from '@/navigation'
 
 // import { useCartStore } from '@/cart-store/useCartStore'
 // import useFromStore from '@/hooks/useFromStore'
@@ -44,6 +45,10 @@ const ProductPageContainer: FC<Props> = ({
 }) => {
   // const searchParams = useSearchParams()
   // const variantSlugParam = searchParams.get('variant')
+  const pathname = usePathname()
+  const { replace } = useRouter()
+  const searchParams = useSearchParams()
+  const params = new URLSearchParams(searchParams)
 
   const { id, slug, variants, images } = productData
 
@@ -52,6 +57,12 @@ const ProductPageContainer: FC<Props> = ({
   // )
   // console.log({ variant })
   const variant = variants.find((v) => v.slug === variantSlug) || variants[0]
+  useEffect(() => {
+    params.set('variant', variant.slug)
+    replace(`${pathname}?${params.toString()}`, {
+      scroll: false,
+    })
+  }, [variantSlug])
   // variant.sizes.length === 1 ? variant.sizes[0].id : ''
   // useEffect(() => {
   //   const variant = variants.find((v) => v.slug === variantSlug) || variants[0]

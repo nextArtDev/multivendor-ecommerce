@@ -26,6 +26,7 @@ import StoreCard from '../../../components/store/store-card'
 import StoreProducts from '../../../components/product/store-products'
 import ProductReviews from '../../../components/reviews/product-reviews'
 import { Rating } from '@/components/shared/rating'
+import { redirect } from '@/navigation'
 
 export default async function ProductPage({
   params,
@@ -51,6 +52,7 @@ export default async function ProductPage({
     product: data.specs,
     variant: variant?.specs,
   }
+  if (!data) return redirect('/goshop')
 
   // Get cookies from the store
   const cookieStore = await cookies()
