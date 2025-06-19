@@ -37,7 +37,7 @@ const Select: FC<Props> = ({
     setIsOpen(false)
   }
   return (
-    <div className="relative min-w-48 w-full z-50">
+    <div className="relative min-w-48 w-full z-50 ">
       <div>
         <div className="relative">
           {activeVariant?.image && (
@@ -67,15 +67,13 @@ const Select: FC<Props> = ({
         </div>
       </div>
       {isOpen && (
-        <div className="absolute top-16 w-full left-0 rounded-xl border  p-4 bg-white shadow-lg">
-          <p className="font-semibold text-xs text-[#5D5D5F]">
-            {subPlaceholder}
-          </p>
+        <div className="absolute top-16 w-full left-0 rounded-xl border  p-4   shadow-lg">
+          <p className="font-semibold text-xs  ">{subPlaceholder}</p>
           <ul className="flex gap-2 flex-col mt-2">
             {options.map((option, index) => (
               <li
                 key={index}
-                className="flex items-center gap-x-2 px-2 cursor-pointer text-sm hover:bg-green-100 py-2 rounded-lg"
+                className="flex items-center gap-x-2 px-2 cursor-pointer text-sm   py-2 rounded-lg"
                 onMouseDown={() => handleOptionClick(option.value)}
               >
                 {option.image && (

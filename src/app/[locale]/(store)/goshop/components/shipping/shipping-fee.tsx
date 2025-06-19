@@ -1,12 +1,12 @@
-import { Check } from "lucide-react";
-import { FC } from "react";
+import { Check } from 'lucide-react'
+import { FC } from 'react'
 
 interface Props {
-  method: string;
-  fee: number;
-  extraFee: number;
-  weight: number;
-  quantity: number;
+  method: string
+  fee: number
+  extraFee: number
+  weight: number
+  quantity: number
 }
 
 const ProductShippingFee: FC<Props> = ({
@@ -17,7 +17,7 @@ const ProductShippingFee: FC<Props> = ({
   weight,
 }) => {
   switch (method) {
-    case "ITEM":
+    case 'ITEM':
       return (
         <div className="w-full pb-1">
           {/* Notes */}
@@ -44,12 +44,12 @@ const ProductShippingFee: FC<Props> = ({
               {fee === extraFee || extraFee === 0 ? (
                 <tr
                   className="grid gap-x-1 text-xs px-4"
-                  style={{ gridTemplateColumns: "4fr 1fr" }}
+                  style={{ gridTemplateColumns: '4fr 1fr' }}
                 >
-                  <td className="w-full bg-gray-50 px-2 py-0.5 rounded-sm">
+                  <td className="w-full bg-muted px-2 py-0.5 rounded-sm">
                     Fee per item
                   </td>
-                  <td className="w-full bg-gray-50 px-2 py-0.5 rounded-sm">
+                  <td className="w-full bg-muted px-2 py-0.5 rounded-sm">
                     ${fee}
                   </td>
                 </tr>
@@ -57,24 +57,24 @@ const ProductShippingFee: FC<Props> = ({
                 <div className="space-y-1">
                   <tr
                     className="grid gap-x-1 text-xs px-4"
-                    style={{ gridTemplateColumns: "4fr 1fr" }}
+                    style={{ gridTemplateColumns: '4fr 1fr' }}
                   >
-                    <td className="w-full bg-gray-50 px-2 py-0.5 rounded-sm">
+                    <td className="w-full bg-muted px-2 py-0.5 rounded-sm">
                       Fee for First Item
                     </td>
-                    <td className="w-full bg-gray-50 px-2 py-0.5 rounded-sm">
+                    <td className="w-full bg-muted px-2 py-0.5 rounded-sm">
                       ${fee}
                     </td>
                   </tr>
 
                   <tr
                     className="grid gap-x-1 text-xs px-4"
-                    style={{ gridTemplateColumns: "4fr 1fr" }}
+                    style={{ gridTemplateColumns: '4fr 1fr' }}
                   >
-                    <td className="w-full bg-gray-50 px-2 py-0.5 rounded-sm">
+                    <td className="w-full bg-muted px-2 py-0.5 rounded-sm">
                       Fee for Each Additional Item
                     </td>
-                    <td className="w-full bg-gray-50 px-2 py-0.5 rounded-sm ">
+                    <td className="w-full bg-muted px-2 py-0.5 rounded-sm ">
                       ${extraFee}
                     </td>
                   </tr>
@@ -84,10 +84,10 @@ const ProductShippingFee: FC<Props> = ({
             <tbody>
               <tr
                 className="grid gap-x-1 text-xs px-4 mt-1"
-                style={{ gridTemplateColumns: "4fr 1fr" }}
+                style={{ gridTemplateColumns: '4fr 1fr' }}
               >
-                <td className="w-full bg-gray-50 px-2 py-0.5 ">Quantity</td>
-                <td className="w-full bg-gray-50 px-2 py-0.5 ">x{quantity}</td>
+                <td className="w-full bg-muted px-2 py-0.5 ">Quantity</td>
+                <td className="w-full bg-muted px-2 py-0.5 ">x{quantity}</td>
               </tr>
               <tr className="flex gap-x-1 text-xs px-4 mt-1 text-center font-semibold">
                 <td className="w-full bg-black text-white px-1 py-1">
@@ -106,9 +106,9 @@ const ProductShippingFee: FC<Props> = ({
             </tbody>
           </table>
         </div>
-      );
-      break;
-    case "WEIGHT":
+      )
+      break
+    case 'WEIGHT':
       return (
         <div className="w-full pb-1">
           {/* Notes */}
@@ -124,12 +124,12 @@ const ProductShippingFee: FC<Props> = ({
             <thead className="w-full">
               <tr
                 className="grid gap-x-1 text-xs px-4"
-                style={{ gridTemplateColumns: "4fr 1fr" }}
+                style={{ gridTemplateColumns: '4fr 1fr' }}
               >
-                <td className="w-full bg-gray-50 px-2 py-0.5 rounded-sm">
+                <td className="w-full bg-muted px-2 py-0.5 rounded-sm">
                   Fee per kg (1kg = 2,205lbs)
                 </td>
-                <td className="w-full bg-gray-50 px-2 py-0.5 rounded-sm">
+                <td className="w-full bg-muted px-2 py-0.5 rounded-sm">
                   ${fee}
                 </td>
               </tr>
@@ -137,17 +137,17 @@ const ProductShippingFee: FC<Props> = ({
             <tbody>
               <tr
                 className="grid gap-x-1 text-xs px-4 mt-1"
-                style={{ gridTemplateColumns: "4fr 1fr" }}
+                style={{ gridTemplateColumns: '4fr 1fr' }}
               >
-                <td className="w-full bg-gray-50 px-2 py-0.5 ">Quantity</td>
-                <td className="w-full bg-gray-50 px-2 py-0.5 ">x{quantity}</td>
+                <td className="w-full bg-muted px-2 py-0.5 ">Quantity</td>
+                <td className="w-full bg-muted px-2 py-0.5 ">x{quantity}</td>
               </tr>
               <tr
                 className="grid gap-x-1 text-xs px-4 mt-1"
-                style={{ gridTemplateColumns: "4fr 1fr" }}
+                style={{ gridTemplateColumns: '4fr 1fr' }}
               >
-                <td className="w-full bg-gray-50 px-2 py-0.5 ">Weight</td>
-                <td className="w-full bg-gray-50 px-2 py-0.5 ">{weight}kg</td>
+                <td className="w-full bg-muted px-2 py-0.5 ">Weight</td>
+                <td className="w-full bg-muted px-2 py-0.5 ">{weight}kg</td>
               </tr>
               <tr className="flex gap-x-1 text-xs px-4 mt-1 text-center font-semibold">
                 <td className="w-full bg-black text-white px-1 py-1">
@@ -160,9 +160,9 @@ const ProductShippingFee: FC<Props> = ({
             </tbody>
           </table>
         </div>
-      );
-      break;
-    case "FIXED":
+      )
+      break
+    case 'FIXED':
       return (
         <div className="w-full pb-1">
           {/* Notes */}
@@ -178,12 +178,10 @@ const ProductShippingFee: FC<Props> = ({
             <thead className="w-full">
               <tr
                 className="grid gap-x-1 text-xs px-4"
-                style={{ gridTemplateColumns: "4fr 1fr" }}
+                style={{ gridTemplateColumns: '4fr 1fr' }}
               >
-                <td className="w-full bg-gray-50 px-2 py-0.5 rounded-sm">
-                  Fee
-                </td>
-                <td className="w-full bg-gray-50 px-2 py-0.5 rounded-sm">
+                <td className="w-full bg-muted px-2 py-0.5 rounded-sm">Fee</td>
+                <td className="w-full bg-muted px-2 py-0.5 rounded-sm">
                   ${fee}
                 </td>
               </tr>
@@ -191,10 +189,10 @@ const ProductShippingFee: FC<Props> = ({
             <tbody>
               <tr
                 className="grid gap-x-1 text-xs px-4 mt-1"
-                style={{ gridTemplateColumns: "4fr 1fr" }}
+                style={{ gridTemplateColumns: '4fr 1fr' }}
               >
-                <td className="w-full bg-gray-50 px-2 py-0.5 ">Quantity</td>
-                <td className="w-full bg-gray-50 px-2 py-0.5 ">x{quantity}</td>
+                <td className="w-full bg-muted px-2 py-0.5 ">Quantity</td>
+                <td className="w-full bg-muted px-2 py-0.5 ">x{quantity}</td>
               </tr>
               <tr className="flex gap-x-1 text-xs px-4 mt-1 text-center font-semibold">
                 <td className="w-full bg-black text-white px-1 py-1">
@@ -206,12 +204,12 @@ const ProductShippingFee: FC<Props> = ({
             </tbody>
           </table>
         </div>
-      );
-      break;
+      )
+      break
     default:
-      return null;
-      break;
+      return null
+      break
   }
-};
+}
 
-export default ProductShippingFee;
+export default ProductShippingFee

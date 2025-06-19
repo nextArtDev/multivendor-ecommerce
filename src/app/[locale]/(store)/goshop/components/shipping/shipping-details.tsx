@@ -47,7 +47,7 @@ const ShippingDetails: FC<Props> = ({
         break
     }
   }, [quantity, shippingDetails])
-  console.log('qty', quantity)
+  // console.log('qty', quantity)
 
   const {
     // deliveryTimeMax = 0,

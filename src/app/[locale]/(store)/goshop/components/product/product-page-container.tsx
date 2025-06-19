@@ -110,10 +110,6 @@ const ProductPageContainer: FC<Props> = ({
     deliveryTimeMax: 0,
     isFreeShipping: false,
   }
-  console.log(
-    'variant.sizes.find(s=>s.id===updatedSizeId||sizeId).size ',
-    variant.sizes.find((s) => s.id === updatedSizeId || sizeId)?.size
-  )
 
   // useState hook to manage the product's state in the cart
   const [productToBeAddedToCart, setProductToBeAddedToCart] =
@@ -257,7 +253,7 @@ const ProductPageContainer: FC<Props> = ({
     }
   }, [])
 
-  console.log('stock', productToBeAddedToCart)
+  // console.log('stock', productToBeAddedToCart)
 
   return (
     <div className="relative">

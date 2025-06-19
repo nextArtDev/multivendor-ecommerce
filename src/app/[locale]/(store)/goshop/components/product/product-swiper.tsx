@@ -41,9 +41,10 @@ export default function ProductSwiper({
                 }
               )}
               onMouseEnter={() => setActiveImage(img)}
+              onClick={() => setActiveImage(img)}
             >
               <Image
-                src={img.url}
+                src={img.url ? img.url : '/assets/icons/logo-6.png'}
                 alt={''}
                 width={80}
                 height={80}
@@ -55,7 +56,7 @@ export default function ProductSwiper({
         {/* Image view */}
         <div className="relative rounded-lg overflow-hidden flex flex-grow ">
           <ImageZoom
-            src={activeImage ? activeImage.url : ''}
+            src={activeImage ? activeImage.url : '/assets/icons/logo-6.png'}
             zoom={200}
             className="!w-full rounded-lg flex flex-grow h-fit"
           />
