@@ -47,6 +47,17 @@ export default async function ProductPage({
   const variant =
     data?.variants.find((v) => v.slug === searchParamsVariant) ||
     data?.variants?.[0]
+
+  // const sizeId =
+  //   data?.variants.find(
+  //     (v) =>
+  //       v.sizes.map((s) => s.id === searchParamsSizeId)
+  //   ) || data?.variants?.[0]
+  const sizeId =
+    variant.sizes.find((s) => s.id === searchParamsSizeId)?.id ||
+    variant.sizes?.[0].id ||
+    searchParamsSizeId
+
   // console.log('vslug', variant.slug)
   const specs = {
     product: data.specs,
@@ -88,7 +99,8 @@ export default async function ProductPage({
         <ProductPageContainer
           productData={data}
           variantSlug={variant.slug}
-          sizeId={searchParamsSizeId || variant.sizes?.[0].id}
+          // sizeId={searchParamsSizeId || variant.sizes?.[0].id}
+          sizeId={sizeId}
           userCountry={userCountry}
         >
           <Separator />

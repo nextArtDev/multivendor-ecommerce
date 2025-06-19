@@ -46,7 +46,7 @@ const ProductPageContainer: FC<Props> = ({
   // const searchParams = useSearchParams()
   // const variantSlugParam = searchParams.get('variant')
   const pathname = usePathname()
-  const { replace } = useRouter()
+  const { replace, refresh } = useRouter()
   const searchParams = useSearchParams()
   const params = new URLSearchParams(searchParams)
 
@@ -56,13 +56,17 @@ const ProductPageContainer: FC<Props> = ({
   //   variants.find((v) => v.slug === variantSlug) || variants[0]
   // )
   // console.log({ variant })
+  let updatedSizeId
   const variant = variants.find((v) => v.slug === variantSlug) || variants[0]
   useEffect(() => {
     params.set('variant', variant.slug)
+    params.set('sizeId', sizeId)
     replace(`${pathname}?${params.toString()}`, {
       scroll: false,
     })
+    return () => refresh()
   }, [variantSlug])
+  updatedSizeId = searchParams.get('sizeId')
   // variant.sizes.length === 1 ? variant.sizes[0].id : ''
   // useEffect(() => {
   //   const variant = variants.find((v) => v.slug === variantSlug) || variants[0]
@@ -73,7 +77,7 @@ const ProductPageContainer: FC<Props> = ({
 
   // const [sizeId, setSizeId] = useState(
   // )
-
+  // console.log({ productToBeAddedToCart })
   const { id: variantId, variantName, variantImage, weight, sizes } = variant
 
   // useState hook to manage the active image being displayed, initialized to the first image in the array
@@ -93,7 +97,8 @@ const ProductPageContainer: FC<Props> = ({
     variantImage: variantImage[0]?.url,
     quantity: 1,
     price: 0,
-    sizeId: variant.sizes.length === 1 ? variant.sizes[0].id : sizeId,
+    // sizeId: variant.sizes.length === 1 ? variant.sizes[0].id : sizeId,
+    sizeId: updatedSizeId || sizeId,
     size: '',
     stock: 1,
     weight: weight,
@@ -105,7 +110,10 @@ const ProductPageContainer: FC<Props> = ({
     deliveryTimeMax: 0,
     isFreeShipping: false,
   }
-  // console.log('sizse', data.sizeId)
+  console.log(
+    'variant.sizes.find(s=>s.id===updatedSizeId||sizeId).size ',
+    variant.sizes.find((s) => s.id === updatedSizeId || sizeId)?.size
+  )
 
   // useState hook to manage the product's state in the cart
   const [productToBeAddedToCart, setProductToBeAddedToCart] =
@@ -138,6 +146,9 @@ const ProductPageContainer: FC<Props> = ({
       variantImage: variantImage[0].url,
       stock: variant.sizes.find((s) => s.id === sizeId)?.quantity || 1,
       weight: weight,
+      sizeId: updatedSizeId || sizeId,
+      size:
+        variant.sizes.find((s) => s.id === updatedSizeId || sizeId)?.size ?? '',
     }))
   }, [
     id,
@@ -246,7 +257,7 @@ const ProductPageContainer: FC<Props> = ({
     }
   }, [])
 
-  // console.log('stock', productToBeAddedToCart.stock)
+  console.log('stock', productToBeAddedToCart)
 
   return (
     <div className="relative">
@@ -303,7 +314,7 @@ const ProductPageContainer: FC<Props> = ({
               handleChange={handleChange}
               maxQty={maxQty}
               // maxQty={10}
-              sizeId={sizeId}
+              sizeId={updatedSizeId || sizeId}
               sizes={sizes}
             />
           </div>

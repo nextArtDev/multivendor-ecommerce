@@ -20,13 +20,19 @@ const SizeSelector: FC<Props> = ({
   handleChange,
 }) => {
   const pathname = usePathname()
-  const { replace } = useRouter()
+  const { replace, refresh } = useRouter()
   const searchParams = useSearchParams()
   // const sizeId = searchParams.get('sizeId')
   const params = new URLSearchParams(searchParams)
 
   const search_size = sizes.find((s) => s.id === sizeId)
-
+  useEffect(() => {
+    params.get('sizeId')
+    replace(`${pathname}?${params.toString()}`, {
+      scroll: false,
+    })
+    return () => refresh()
+  }, [searchParams])
   const handleSelectSize = (size: Size) => {
     params.set('sizeId', size.id || sizeId || '')
     replace(`${pathname}?${params.toString()}`, {
