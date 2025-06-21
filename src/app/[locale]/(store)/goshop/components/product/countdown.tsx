@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { FC, useEffect, useState } from 'react'
 
@@ -59,55 +60,47 @@ const Countdown: FC<Props> = ({ targetDate, home_style }) => {
       })}
     >
       <div
-        className={cn('inline-block text-xs', {
+        className={cn('inline-block bg-secondary rounded-md px-1.5 py-2', {
           'text-2xl font-bold': home_style,
         })}
       >
-        <span className="mr-1">Ends in:</span>
-        <div className="inline-block">
-          <span
-            className={cn(
-              'bg-muted-foreground text-background   min-w-5 p-0 rounded-[2px] inline-block min-h-4 text-center',
-              {
-                'p-2   mr-1': home_style,
-              }
-            )}
+        <span className="mr-1  font-bold ">Ends in:</span>
+        <div className="inline-block ">
+          <Badge
+            variant={'destructive'}
+            className={cn('  ', {
+              'p-2   mr-1': home_style,
+            })}
           >
             {timeLeft.days.toString().padStart(2, '0')}
-          </span>
-          <span className="mx-1">:</span>
-          <span
-            className={cn(
-              'bg-muted-foreground text-background   min-w-5 p-0 rounded-[2px] inline-block min-h-4 text-center',
-              {
-                'p-2   mr-1': home_style,
-              }
-            )}
+          </Badge>
+          <span className="mx-1 font-bold text-red-800 ">:</span>
+          <Badge
+            variant={'destructive'}
+            className={cn('  ', {
+              'p-2   mr-1': home_style,
+            })}
           >
             {timeLeft.hours.toString().padStart(2, '0')}
-          </span>
-          <span className="mx-1">:</span>
-          <span
-            className={cn(
-              'bg-muted-foreground text-background   min-w-5 p-0 rounded-[2px] inline-block min-h-4 text-center',
-              {
-                'p-2  mr-1': home_style,
-              }
-            )}
+          </Badge>
+          <span className="mx-1 font-bold text-red-800 ">:</span>
+          <Badge
+            variant={'destructive'}
+            className={cn('  ', {
+              'p-2  mr-1': home_style,
+            })}
           >
             {timeLeft.minutes.toString().padStart(2, '0')}
-          </span>
-          <span className="mx-1">:</span>
-          <span
-            className={cn(
-              'bg-muted-foreground text-background   min-w-5 p-0 rounded-[2px] inline-block min-h-4 text-center',
-              {
-                'p-2  mr-1': home_style,
-              }
-            )}
+          </Badge>
+          <span className="mx-1 font-bold text-red-800 ">:</span>
+          <Badge
+            variant={'destructive'}
+            className={cn('  ', {
+              'p-2  mr-1': home_style,
+            })}
           >
             {timeLeft.seconds.toString().padStart(2, '0')}
-          </span>
+          </Badge>
         </div>
       </div>
     </div>

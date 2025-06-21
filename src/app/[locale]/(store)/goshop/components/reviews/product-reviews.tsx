@@ -74,7 +74,11 @@ const ProductReviews: FC<Props> = ({
   const hasImages = searchParams.get('hasImages')
   const page = Number(searchParams.get('page'))
   const FilterRating = Number(searchParams.get('rating'))
-
+  // console.log({ sorter })
+  // console.log({ hasImages })
+  // console.log({ page })
+  // console.log({ FilterRating })
+  // console.log({})
   const sort = { orderBy: sorter as 'latest' | 'oldest' | 'highest' }
   const filters = {
     rating: FilterRating ? +FilterRating : undefined,
