@@ -14,6 +14,7 @@ import {
 import { Province } from '@prisma/client'
 import { getCityById, getCityByProvinceId } from '@/lib/actions/province'
 import { getDistance, isPointWithinRadius } from 'geolib'
+import { cn } from '@/lib/utils'
 
 interface ProvinceCityProps {
   isPending?: boolean
@@ -22,6 +23,7 @@ interface ProvinceCityProps {
   // cityName: string
   // cityLabel?: string
   provinces: Province[]
+  className?: string
 }
 
 const ProvinceCity: FC<ProvinceCityProps> = ({
@@ -30,6 +32,7 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
   provinces,
   // provinceName,
   // cityName,
+  className,
 }) => {
   // online :https://iran-locations-api.ir/api/v1/fa/states
   const form = useFormContext()
@@ -80,7 +83,7 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
   // console.log({ isThePointWithinRadius })
 
   return (
-    <div>
+    <div className={cn('w-full h-full relative', className)}>
       <InputFieldset label={provinceLabel || 'انتخاب شهر'}>
         <div className="flex gap-4">
           <FormField

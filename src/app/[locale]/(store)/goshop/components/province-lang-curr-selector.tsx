@@ -16,6 +16,7 @@ import ProvinceSelector, {
 import { useRouter } from 'next/navigation'
 import { SelectMenuOption } from '../../../../../components/shared/country-selector'
 import { Province } from '@prisma/client'
+import SelectProvinceForm from '@/components/shared/select-province-form'
 
 export default function ProvinceLanguageCurrencySelector({
   userProvince,
@@ -38,6 +39,7 @@ export default function ProvinceLanguageCurrencySelector({
         name: provinceData.name,
         // code: provinceData.id.toString(),
         id: provinceData.id,
+
         // region: '',
       }
       try {
@@ -87,7 +89,7 @@ export default function ProvinceLanguageCurrencySelector({
           <div className="mt-4 leading-6 text-[20px] font-bold">Ship to</div>
           <div className="mt-2">
             <div className="relative rounded-lg">
-              <ProvinceSelector
+              {/* <ProvinceSelector
                 id={'cities'}
                 open={show}
                 onToggle={() => setshow(!show)}
@@ -97,7 +99,8 @@ export default function ProvinceLanguageCurrencySelector({
                     (option) => option.name === userProvince?.name
                   ) as SelectCityMenuOption) || cities[0]
                 }
-              />
+              /> */}
+              <SelectProvinceForm />
               <div>
                 <div className="mt-4 leading-6 text-[20px] font-bold">
                   Language
