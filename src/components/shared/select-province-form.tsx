@@ -28,7 +28,7 @@ export default function SelectProvinceForm({
 }) {
   const initialData = userProvince?.split('-')
 
-  console.log(initialData)
+  // console.log(initialData)
   // const cities
   const [_, startTransition] = useTransition()
 
@@ -48,7 +48,7 @@ export default function SelectProvinceForm({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
   async function onSubmit(values: z.infer<typeof cookieFormSchema>) {
-    console.log({ values })
+    // console.log({ values })
     const formData = new FormData()
 
     formData.append('cityId', values.cityId)

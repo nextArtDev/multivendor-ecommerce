@@ -41,23 +41,26 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
   className,
 }) => {
   // online :https://iran-locations-api.ir/api/v1/fa/states
+
+  const [initialProvince, initialCity] = initialData?.split('-')
+
   const form = useFormContext()
-  if (initialData) {
-    const [{ data: initialProvince }, { data: initialCity }] = useQueries({
-      queries: [
-        {
-          queryKey: ['initialProvince'],
-          queryFn: () => getProvinceById(initialData[0]),
-          // staleTime: Infinity,
-        },
-        {
-          queryKey: ['initialCityById'],
-          queryFn: () => getCityById(initialData[1], initialData[0]),
-          // staleTime: Infinity,
-        },
-      ],
-    })
-  }
+  // if (initialData) {
+  //   const [{ data: initialProvince }, { data: initialCity }] = useQueries({
+  //     queries: [
+  //       {
+  //         queryKey: ['initialProvince'],
+  //         queryFn: () => getProvinceById(initialData[0]),
+  //         // staleTime: Infinity,
+  //       },
+  //       {
+  //         queryKey: ['initialCityById'],
+  //         queryFn: () => getCityById(initialData[1], initialData[0]),
+  //         // staleTime: Infinity,
+  //       },
+  //     ],
+  //   })
+  // }
   const [{ data: cities, isPending: isPendingProvince }, { data: city }] =
     useQueries({
       queries: [
@@ -68,8 +71,7 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
         },
         {
           queryKey: ['cityById', form.watch().cityId],
-          queryFn: () =>
-            getCityById(form.watch().cityId, form.watch().provinceId),
+          queryFn: () => getCityById(form.watch().cityId),
           // staleTime: Infinity,
         },
       ],
@@ -120,14 +122,12 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
                   }
                   onValueChange={field.onChange}
                   value={field.value}
-                  defaultValue={field.value}
+                  defaultValue={initialProvince ? initialProvince : field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        defaultValue={
-                          initialData?.[0] ? initialData?.[0] : field.value?.[0]
-                        }
+                        defaultValue={field.value?.[0]}
                         placeholder="Select a Province"
                       />
                     </SelectTrigger>
@@ -159,14 +159,12 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
                   }
                   onValueChange={field.onChange}
                   value={field.value}
-                  defaultValue={field.value}
+                  defaultValue={initialCity ? initialCity : field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        defaultValue={
-                          initialData?.[1] ? initialData?.[1] : field.value?.[0]
-                        }
+                        defaultValue={field.value?.[0]}
                         placeholder="Select a City"
                       />
                     </SelectTrigger>
