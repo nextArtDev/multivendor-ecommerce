@@ -20,6 +20,7 @@ import { useRouter } from '@/navigation'
 import { CartProductType, ShippingDetailsType } from '../../types'
 import {
   FreeShippingWithCountriesAndCitiesType,
+  getCityShippingDetails,
   getShippingDetails,
 } from '@/components/amazon/lib/queries/product'
 import { toast } from 'sonner'
@@ -78,17 +79,49 @@ export default function ProductPageActions({
         freeShipping,
         freeShippingForAllCountries
       )
-      setShippingDetails(data)
+
+      if (data) {
+        setShippingDetails(data)
+        handleChange('shippingMethod', data.shippingFeeMethod)
+        handleChange('deliveryTimeMax', data.deliveryTimeMax)
+        handleChange('deliveryTimeMin', data.deliveryTimeMin)
+        handleChange('shippingFee', data.shippingFee)
+        handleChange('extraShippingFee', data.extraShippingFee)
+        handleChange('isFreeShipping', data.isFreeShipping)
+        handleChange('shippingService', data.shippingService)
+      } else {
+        setShippingDetails(null)
+      }
       setLoading(false)
-      handleChange('shippingMethod', data.shippingFeeMethod)
-      handleChange('deliveryTimeMax', data.deliveryTimeMax)
-      handleChange('deliveryTimeMin', data.deliveryTimeMin)
-      handleChange('shippingFee', data.shippingFee)
-      handleChange('extraShippingFee', data.extraShippingFee)
-      handleChange('isFreeShipping', data.isFreeShipping)
-      handleChange('shippingService', data.shippingService)
     }
     getShippingDetailsHandler()
+  }, [userCountry])
+
+  useEffect(() => {
+    const getCityShippingDetailsHandler = async () => {
+      const cityData = await getCityShippingDetails(
+        shippingFeeMethod,
+        userProvince,
+        store,
+        freeShipping,
+        freeShippingForAllCountries
+      )
+      console.log({ cityData })
+      if (cityData) {
+        setShippingDetails(cityData)
+        handleChange('shippingMethod', cityData.shippingFeeMethod)
+        handleChange('deliveryTimeMax', cityData.deliveryTimeMax)
+        handleChange('deliveryTimeMin', cityData.deliveryTimeMin)
+        handleChange('shippingFee', cityData.shippingFee)
+        handleChange('extraShippingFee', cityData.extraShippingFee)
+        handleChange('isFreeShipping', cityData.isFreeShipping)
+        handleChange('shippingService', cityData.shippingService)
+      } else {
+        setShippingDetails(null)
+      }
+      setLoading(false)
+    }
+    getCityShippingDetailsHandler()
   }, [userCountry])
 
   const handleAddToCart = () => {
