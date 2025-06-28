@@ -29,14 +29,16 @@ const Header = async () => {
   }
 
   const userProvinceCookie = cookieStore.get('userProvince')
-  let userProvince: Partial<Province> = {
-    name: 'اصفهان',
-    // province: '',
-    id: 3,
-    // region: '',
-  }
+  console.log({ userProvinceCookie })
+  // let userProvince: Partial<Province> = {
+  //   name: 'اصفهان-اصفهان',
+  //   // province: '',
+  //   id: 3,
+  //   // region: '',
+  // }
+  let userProvince = `117-1078`
   if (userProvinceCookie) {
-    userProvince = JSON.parse(userProvinceCookie.value) as Partial<Province>
+    userProvince = JSON.parse(userProvinceCookie.value)
   }
 
   return (

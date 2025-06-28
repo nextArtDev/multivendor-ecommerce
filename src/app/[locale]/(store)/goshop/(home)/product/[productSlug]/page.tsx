@@ -68,7 +68,7 @@ export default async function ProductPage({
   // Get cookies from the store
   const cookieStore = await cookies()
   const userCountryCookie = cookieStore.get('userCountry')
-  // console.log({ userCountryCookie })
+  const userProvinceCookie = cookieStore.get('userProvince')
   // Set default country if cookie is missing
   let userCountry: Country = {
     name: 'United States',
@@ -81,6 +81,20 @@ export default async function ProductPage({
   if (userCountryCookie) {
     userCountry = JSON.parse(userCountryCookie.value) as Country
   }
+  // let userProvince = {
+  //   // name: 'United States',
+  //   // city: '',
+  //   // code: 'US',
+  //   // region: '',
+
+  // }
+  let userProvince = `117-1078`
+
+  // If cookie exists, update the user country
+  if (userProvinceCookie) {
+    userProvince = JSON.parse(userProvinceCookie.value)
+  }
+  console.log(userProvinceCookie, userProvince)
 
   const storeData = {
     id: data.store.id,
@@ -102,6 +116,7 @@ export default async function ProductPage({
           // sizeId={searchParamsSizeId || variant.sizes?.[0].id}
           sizeId={sizeId}
           userCountry={userCountry}
+          userProvince={userProvince}
         >
           <Separator />
           <RelatedProducts

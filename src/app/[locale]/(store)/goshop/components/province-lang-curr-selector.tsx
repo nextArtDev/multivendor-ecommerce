@@ -21,17 +21,18 @@ import SelectProvinceForm from '@/components/shared/select-province-form'
 export default function ProvinceLanguageCurrencySelector({
   userProvince,
 }: {
-  userProvince: Partial<Province>
+  userProvince: string
 }) {
   // Router hook for navigation
   const router = useRouter()
 
   // State to manage countries dropdown visibility
-  const [show, setshow] = useState(false)
+  // const [show, setshow] = useState(false)
 
   const handleProvinceClick = async (province: string) => {
     // Find the province data based on the selected province name
     // const provinceData = countries.find((c) => c.name === province)
+    // const provinceData = cities.find((c) => c.name === province)
     const provinceData = cities.find((c) => c.name === province)
 
     if (provinceData) {
@@ -69,7 +70,7 @@ export default function ProvinceLanguageCurrencySelector({
           <div className="ml-1">
             <span className="block text-xs leading-3 mt-2">
               {/* {userProvince.name}/EN/ */}
-              {userProvince.name}
+              {/* {userProvince.name} */}
             </span>
             <b className="text-xs font-bold ">
               USD
@@ -100,7 +101,7 @@ export default function ProvinceLanguageCurrencySelector({
                   ) as SelectCityMenuOption) || cities[0]
                 }
               /> */}
-              <SelectProvinceForm />
+              <SelectProvinceForm userProvince={userProvince} />
               <div>
                 <div className="mt-4 leading-6 text-[20px] font-bold">
                   Language

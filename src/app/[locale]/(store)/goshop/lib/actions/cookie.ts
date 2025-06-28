@@ -44,9 +44,10 @@ export async function setCityCookie(
     })
 
     const cookieStore = await cookies()
-    const userLocation = `${province?.name}-${city?.name}`
+    // const userLocation = `${province?.name}-${city?.name}`
+    const userLocation = `${province?.id}-${city?.id}`
     // Set the cookie directly
-    console.log({ userLocation })
+    // console.log({ userLocation })
     cookieStore.set('userProvince', JSON.stringify(userLocation), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

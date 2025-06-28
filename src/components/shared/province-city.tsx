@@ -12,7 +12,11 @@ import {
   SelectValue,
 } from '../ui/select'
 import { Province } from '@prisma/client'
-import { getCityById, getCityByProvinceId } from '@/lib/actions/province'
+import {
+  getCityById,
+  getCityByProvinceId,
+  getProvinceById,
+} from '@/lib/actions/province'
 import { getDistance, isPointWithinRadius } from 'geolib'
 import { cn } from '@/lib/utils'
 
@@ -24,19 +28,36 @@ interface ProvinceCityProps {
   // cityLabel?: string
   provinces: Province[]
   className?: string
+  initialData?: string
 }
 
 const ProvinceCity: FC<ProvinceCityProps> = ({
   isPending = false,
   provinceLabel,
   provinces,
+  initialData,
   // provinceName,
   // cityName,
   className,
 }) => {
   // online :https://iran-locations-api.ir/api/v1/fa/states
   const form = useFormContext()
-
+  if (initialData) {
+    const [{ data: initialProvince }, { data: initialCity }] = useQueries({
+      queries: [
+        {
+          queryKey: ['initialProvince'],
+          queryFn: () => getProvinceById(initialData[0]),
+          // staleTime: Infinity,
+        },
+        {
+          queryKey: ['initialCityById'],
+          queryFn: () => getCityById(initialData[1], initialData[0]),
+          // staleTime: Infinity,
+        },
+      ],
+    })
+  }
   const [{ data: cities, isPending: isPendingProvince }, { data: city }] =
     useQueries({
       queries: [
@@ -47,7 +68,8 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
         },
         {
           queryKey: ['cityById', form.watch().cityId],
-          queryFn: () => getCityById(form.watch().cityId),
+          queryFn: () =>
+            getCityById(form.watch().cityId, form.watch().provinceId),
           // staleTime: Infinity,
         },
       ],
@@ -103,7 +125,9 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        defaultValue={field.value?.[0]}
+                        defaultValue={
+                          initialData?.[0] ? initialData?.[0] : field.value?.[0]
+                        }
                         placeholder="Select a Province"
                       />
                     </SelectTrigger>
@@ -140,7 +164,9 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        defaultValue={field.value?.[0]}
+                        defaultValue={
+                          initialData?.[1] ? initialData?.[1] : field.value?.[0]
+                        }
                         placeholder="Select a City"
                       />
                     </SelectTrigger>

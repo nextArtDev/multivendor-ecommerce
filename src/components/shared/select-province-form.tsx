@@ -22,11 +22,14 @@ export const cookieFormSchema = z.object({
 })
 
 export default function SelectProvinceForm({
-  provinces,
+  userProvince,
 }: {
-  provinces?: Province[]
+  userProvince?: string
 }) {
-  // console.log({ provinces })
+  const initialData = userProvince?.split('-')
+
+  console.log(initialData)
+  // const cities
   const [_, startTransition] = useTransition()
 
   const { data, isPending } = useQuery({
@@ -95,6 +98,7 @@ export default function SelectProvinceForm({
                 provinceLabel=""
                 provinces={data}
                 className="w-full h-full relative"
+                initialData={userProvince}
               />
             )}
           </div>

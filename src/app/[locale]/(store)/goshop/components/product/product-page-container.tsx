@@ -34,6 +34,7 @@ interface Props {
   variantSlug: string
   sizeId: string
   userCountry: Country
+  userProvince: string
 }
 
 const ProductPageContainer: FC<Props> = ({
@@ -42,6 +43,7 @@ const ProductPageContainer: FC<Props> = ({
   sizeId,
   children,
   userCountry,
+  userProvince,
 }) => {
   // const searchParams = useSearchParams()
   // const variantSlugParam = searchParams.get('variant')
@@ -301,6 +303,7 @@ const ProductPageContainer: FC<Props> = ({
               shippingFeeMethod={productData.shippingFeeMethod}
               store={productData.store}
               userCountry={userCountry}
+              userProvince={userProvince}
               weight={variant.weight}
               freeShippingForAllCountries={
                 productData.freeShippingForAllCountries

@@ -39,6 +39,7 @@ export default function ProductPageActions({
   freeShippingForAllCountries,
   store,
   userCountry,
+  userProvince,
   productToBeAddedToCart,
   weight,
   isProductValid,
@@ -49,6 +50,7 @@ export default function ProductPageActions({
 }: {
   shippingFeeMethod: string
   userCountry: { name: string; code: string; city: string }
+  userProvince: string
   store: Store
   freeShippingForAllCountries: boolean
   freeShipping: FreeShippingWithCountriesAndCitiesType | null
