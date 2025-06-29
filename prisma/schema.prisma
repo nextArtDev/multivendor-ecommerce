@@ -401,7 +401,7 @@ model FreeShipping {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  freeShippingCity FreeShippingCity[] @relation("FreeShippingCities")
+  eligibleCities FreeShippingCity[] @relation("FreeShippingCities")
 }
 
 model FreeShippingCountry {

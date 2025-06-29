@@ -73,6 +73,8 @@ const ProvinceCity: FC<ProvinceCityProps> = ({
           queryKey: ['cityById', form.watch().cityId],
           queryFn: () => getCityById(initialCity || form.watch().cityId),
           // staleTime: Infinity,
+
+          enabled: !!form.watch().provinceId,
         },
       ],
     })
