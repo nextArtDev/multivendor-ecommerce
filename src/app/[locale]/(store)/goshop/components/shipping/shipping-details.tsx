@@ -5,11 +5,14 @@ import { FC, useEffect, useState } from 'react'
 import ProductShippingFee from './shipping-fee'
 
 import { BarLoader, MoonLoader } from 'react-spinners'
-import { ShippingDetailsType } from '../../types'
+import {
+  ShippingDetailsType,
+  ShippingProvinceCityDetailsType,
+} from '../../types'
 import { getShippingDatesRange } from '../../lib/utils'
 
 interface Props {
-  shippingDetails: ShippingDetailsType | null
+  shippingDetails: ShippingProvinceCityDetailsType | null
   quantity: number
   weight: number
   loading: boolean // Added loading prop

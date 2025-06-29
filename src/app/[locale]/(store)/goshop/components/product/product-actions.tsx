@@ -17,7 +17,11 @@ import { cn } from '@/lib/utils'
 // import { useCartStore } from '@/cart-store/useCartStore'
 
 import { useRouter } from '@/navigation'
-import { CartProductType, ShippingDetailsType } from '../../types'
+import {
+  CartProductType,
+  ShippingDetailsType,
+  ShippingProvinceCityDetailsType,
+} from '../../types'
 import {
   FreeShippingWithCountriesAndCitiesType,
   getCityShippingDetails,
@@ -68,34 +72,32 @@ export default function ProductPageActions({
   const addToCart = useCartStore((state) => state.addToCart)
   const [loading, setLoading] = useState(true)
   const [shippingDetails, setShippingDetails] =
-    useState<ShippingDetailsType | null>(null)
+    useState<ShippingProvinceCityDetailsType | null>(null)
 
-  useEffect(() => {
-    const getShippingDetailsHandler = async () => {
-      const data = await getShippingDetails(
-        shippingFeeMethod,
-        userCountry,
-        store,
-        freeShipping,
-        freeShippingForAllCountries
-      )
+  // useEffect(() => {
+  //   const getShippingDetailsHandler = async () => {
+  //     const data = await getShippingDetails(
+  //       shippingFeeMethod,
+  //       userCountry,
+  //       store,
+  //       freeShipping,
+  //       freeShippingForAllCountries
+  //     )
 
-      if (data) {
-        setShippingDetails(data)
-        handleChange('shippingMethod', data.shippingFeeMethod)
-        handleChange('deliveryTimeMax', data.deliveryTimeMax)
-        handleChange('deliveryTimeMin', data.deliveryTimeMin)
-        handleChange('shippingFee', data.shippingFee)
-        handleChange('extraShippingFee', data.extraShippingFee)
-        handleChange('isFreeShipping', data.isFreeShipping)
-        handleChange('shippingService', data.shippingService)
-      } else {
-        setShippingDetails(null)
-      }
-      setLoading(false)
-    }
-    getShippingDetailsHandler()
-  }, [userCountry])
+  //     if (data) {
+  //       setShippingDetails(data)
+  //       handleChange('shippingMethod', data.shippingFeeMethod)
+  //       handleChange('deliveryTimeMax', data.deliveryTimeMax)
+  //       handleChange('deliveryTimeMin', data.deliveryTimeMin)
+  //       handleChange('shippingFee', data.shippingFee)
+  //       handleChange('extraShippingFee', data.extraShippingFee)
+  //       handleChange('isFreeShipping', data.isFreeShipping)
+  //       handleChange('shippingService', data.shippingService)
+  //     }
+  //     setLoading(false)
+  //   }
+  //   getShippingDetailsHandler()
+  // }, [userCountry])
 
   useEffect(() => {
     const getCityShippingDetailsHandler = async () => {
@@ -106,7 +108,6 @@ export default function ProductPageActions({
         freeShipping,
         freeShippingForAllCountries
       )
-      console.log({ cityData })
       if (cityData) {
         setShippingDetails(cityData)
         handleChange('shippingMethod', cityData.shippingFeeMethod)
@@ -116,13 +117,12 @@ export default function ProductPageActions({
         handleChange('extraShippingFee', cityData.extraShippingFee)
         handleChange('isFreeShipping', cityData.isFreeShipping)
         handleChange('shippingService', cityData.shippingService)
-      } else {
-        setShippingDetails(null)
       }
       setLoading(false)
     }
     getCityShippingDetailsHandler()
-  }, [userCountry])
+  }, [userProvince])
+  console.log({ shippingDetails })
 
   const handleAddToCart = () => {
     if (maxQty <= 0) return
@@ -138,6 +138,9 @@ export default function ProductPageActions({
     <div className=" bg-background/50 backdrop-blur-md border rounded-md overflow-hidden overflow-y-auto p-4 pb-0">
       <>
         <ShipTo
+          // userProvince={userProvince}
+          cityName={shippingDetails?.cityName}
+          provinceName={shippingDetails?.provinceName}
           countryCode={userCountry.code}
           countryName={userCountry.name}
           city={userCountry.city}

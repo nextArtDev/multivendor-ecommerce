@@ -94,7 +94,7 @@ export default async function ProductPage({
   if (userProvinceCookie) {
     userProvince = JSON.parse(userProvinceCookie.value)
   }
-  // console.log(userProvinceCookie, userProvince)
+  console.log(userProvinceCookie, userProvince)
 
   const storeData = {
     id: data.store.id,

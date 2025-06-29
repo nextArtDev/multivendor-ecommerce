@@ -87,6 +87,21 @@ export type ShippingDetailsType = {
   shippingService: string
   returnPolicy: string
 }
+export type ShippingProvinceCityDetailsType = {
+  shippingFeeMethod: string
+  shippingService: string
+  shippingFee: number
+  deliveryTimeMin: number
+  deliveryTimeMax: number
+  returnPolicy: string
+  provinceCode: string
+  provinceName: string
+  cityCode: string
+  cityName: string
+
+  extraShippingFee: number
+  isFreeShipping: boolean
+}
 
 export type UserShippingAddressType = ShippingAddress & {
   country: Country

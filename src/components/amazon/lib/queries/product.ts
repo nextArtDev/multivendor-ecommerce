@@ -228,6 +228,9 @@ export const getCityShippingDetails = async (
   const [provinceId, cityId] = userProvince.split('-')
   const city = await getCityById(cityId)
   const province = await getProvinceById(provinceId)
+
+  // console.log('city.name', city?.name)
+  // console.log('province.name', province?.name)
   if (!city || !province) return
   let shippingDetails = {
     shippingFeeMethod,
@@ -256,7 +259,6 @@ export const getCityShippingDetails = async (
   //     code: userCity.code,
   //   },
   // })
-
   if (city && province) {
     // Retrieve shipping rate for the country
     const shippingRate = await prisma.shippingRate.findFirst({
@@ -351,4 +353,12 @@ export const getCityShippingDetails = async (
     cityName: city?.name,
     isFreeShipping: freeShippingForAllCountries,
   }
+}
+
+export const userProvinceByProvinceCityIds = async (userProvince: string) => {
+  const [provinceId, cityId] = userProvince.split('-')
+  const city = await getCityById(cityId)
+  const province = await getProvinceById(provinceId)
+  if (!city || !province) return null
+  return { city, province }
 }
