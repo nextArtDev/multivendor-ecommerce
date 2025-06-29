@@ -225,12 +225,13 @@ export const getCityShippingDetails = async (
   // freeShippingForAllCities: boolean
 ) => {
   // Default shipping details
+  console.log('userProvinceByProvinceCityIds', userProvince)
   const [provinceId, cityId] = userProvince.split('-')
   const city = await getCityById(cityId)
+  console.log('city.name', city?.name)
   const province = await getProvinceById(provinceId)
 
-  // console.log('city.name', city?.name)
-  // console.log('province.name', province?.name)
+  console.log('province.name', province?.name)
   if (!city || !province) return
   let shippingDetails = {
     shippingFeeMethod,

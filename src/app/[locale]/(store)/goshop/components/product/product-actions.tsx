@@ -34,6 +34,7 @@ import ReturnPrivacySecurityCard from '../shipping/returns-security-privacy-card
 import QuantitySelector from './quantity-selector'
 import SocialShare from '../social-share'
 import { useCartStore } from '@/cart-store/useCartStore'
+import { useQuery } from '@tanstack/react-query'
 type HandleChangeType = <T extends keyof CartProductType>(
   property: T,
   value: CartProductType[T]
@@ -70,7 +71,7 @@ export default function ProductPageActions({
   const { push } = useRouter()
   // Get the store action to add items to cart
   const addToCart = useCartStore((state) => state.addToCart)
-  const [loading, setLoading] = useState(true)
+  // const [loading, setLoading] = useState(true)
   const [shippingDetails, setShippingDetails] =
     useState<ShippingProvinceCityDetailsType | null>(null)
 
@@ -98,31 +99,107 @@ export default function ProductPageActions({
   //   }
   //   getShippingDetailsHandler()
   // }, [userCountry])
-
-  useEffect(() => {
-    const getCityShippingDetailsHandler = async () => {
-      const cityData = await getCityShippingDetails(
+  const {
+    data: shippingDetailData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: [
+      'cityShippingDetails',
+      shippingFeeMethod,
+      userProvince,
+      store,
+      freeShipping,
+      freeShippingForAllCountries,
+    ],
+    queryFn: async () =>
+      await getCityShippingDetails(
         shippingFeeMethod,
         userProvince,
         store,
         freeShipping,
         freeShippingForAllCountries
-      )
-      if (cityData) {
-        setShippingDetails(cityData)
-        handleChange('shippingMethod', cityData.shippingFeeMethod)
-        handleChange('deliveryTimeMax', cityData.deliveryTimeMax)
-        handleChange('deliveryTimeMin', cityData.deliveryTimeMin)
-        handleChange('shippingFee', cityData.shippingFee)
-        handleChange('extraShippingFee', cityData.extraShippingFee)
-        handleChange('isFreeShipping', cityData.isFreeShipping)
-        handleChange('shippingService', cityData.shippingService)
-      }
-      setLoading(false)
+      ),
+    // enabled: !!userProvince,
+    select: (data) => {
+      // Transform data if needed
+      return data
+    },
+  })
+
+  useEffect(() => {
+    if (shippingDetailData) {
+      setShippingDetails(shippingDetailData)
+      handleChange('shippingMethod', shippingDetailData.shippingFeeMethod)
+      handleChange('deliveryTimeMax', shippingDetailData.deliveryTimeMax)
+      handleChange('deliveryTimeMin', shippingDetailData.deliveryTimeMin)
+      handleChange('shippingFee', shippingDetailData.shippingFee)
+      handleChange('extraShippingFee', shippingDetailData.extraShippingFee)
+      handleChange('isFreeShipping', shippingDetailData.isFreeShipping)
+      handleChange('shippingService', shippingDetailData.shippingService)
     }
-    getCityShippingDetailsHandler()
-  }, [userProvince])
-  console.log({ shippingDetails })
+    // If you want to handle loading state, you can do so here as well
+    // setLoading(false)
+  }, [shippingDetailData])
+
+  // useEffect(() => {
+  //   if (data) {
+  //     handleChange('shippingMethod', data.shippingFeeMethod)
+  //     handleChange('deliveryTimeMax', data.deliveryTimeMax)
+  //     handleChange('deliveryTimeMin', data.deliveryTimeMin)
+  //     handleChange('shippingFee', data.shippingFee)
+  //     handleChange('extraShippingFee', data.extraShippingFee)
+  //     handleChange('isFreeShipping', data.isFreeShipping)
+  //     handleChange('shippingService', data.shippingService)
+  //   }
+  // }, [data, handleChange])
+  // const {
+  //   data: variant,
+  //   isLoading,
+  //   isError,
+  //   error,
+  //   refetch,
+  // } = useQuery({
+  //   queryKey: ['get-city-shipping', userProvince],
+  //   queryFn: async () =>
+  //     await getCityShippingDetails(
+  //       shippingFeeMethod,
+  //       userProvince,
+  //       store,
+  //       freeShipping,
+  //       freeShippingForAllCountries
+  //     ),
+
+  //   // enabled: !!variantSlugParam && !!product.id, // Only run query if we have required params
+  //   retry: 3, // Retry failed requests 3 times
+  //   staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+  //   gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+  // })
+
+  // useEffect(() => {
+  //   const getCityShippingDetailsHandler = async () => {
+  //     const cityData = await getCityShippingDetails(
+  //       shippingFeeMethod,
+  //       userProvince,
+  //       store,
+  //       freeShipping,
+  //       freeShippingForAllCountries
+  //     )
+  //     if (cityData) {
+  //       setShippingDetails(cityData)
+  //       handleChange('shippingMethod', cityData.shippingFeeMethod)
+  //       handleChange('deliveryTimeMax', cityData.deliveryTimeMax)
+  //       handleChange('deliveryTimeMin', cityData.deliveryTimeMin)
+  //       handleChange('shippingFee', cityData.shippingFee)
+  //       handleChange('extraShippingFee', cityData.extraShippingFee)
+  //       handleChange('isFreeShipping', cityData.isFreeShipping)
+  //       handleChange('shippingService', cityData.shippingService)
+  //     }
+  //     setLoading(false)
+  //   }
+  //   getCityShippingDetailsHandler()
+  // }, [userProvince])
+  console.log({ shippingDetailData })
 
   const handleAddToCart = () => {
     if (maxQty <= 0) return
@@ -151,12 +228,12 @@ export default function ProductPageActions({
             countryName={userCountry.name}
             quantity={productToBeAddedToCart.quantity}
             weight={weight}
-            loading={loading}
+            loading={isLoading}
           />
         </div>
         <ReturnPrivacySecurityCard
           returnPolicy={shippingDetails?.returnPolicy}
-          loading={loading}
+          loading={isLoading}
         />
       </>
       <div className="mt-5  bottom-0 pb-4 space-y-3 sticky">

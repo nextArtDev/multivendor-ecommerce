@@ -19,7 +19,7 @@ export const getCityByProvinceId = async (provinceId: string) => {
   }
 }
 
-export const getCityById = async (cityId: string, provinceId?: string) => {
+export const getCityById = async (cityId: string) => {
   try {
     const city = await prisma.city.findFirst({
       where: {
@@ -34,13 +34,14 @@ export const getCityById = async (cityId: string, provinceId?: string) => {
   }
 }
 export const getProvinceById = async (provinceId: string) => {
+  console.log('query provinceId', provinceId)
   try {
     const province = await prisma.province.findFirst({
       where: {
         id: +provinceId,
       },
     })
-
+    console.log('query province', province)
     return province
   } catch (error) {
     console.log(error)
