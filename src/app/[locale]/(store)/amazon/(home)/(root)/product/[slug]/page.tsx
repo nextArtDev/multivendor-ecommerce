@@ -81,7 +81,7 @@ export default async function ProductDetails(props: {
       },
     },
   })
-  console.log(product?.variants?.[0].colors.map((col) => col.name)[0])
+  // console.log(product?.variants?.[0].colors.map((col) => col.name)[0])
   if (!product) return notFound()
   //   const relatedProducts = await getRelatedProductsByCategory({
   //     category: product.category,

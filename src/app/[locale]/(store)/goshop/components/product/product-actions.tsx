@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 // import QuantitySelector from './quantity-selector'
 // import ReturnPrivacySecurityCard from './returns-security-privacy-card'
 // import ShipTo from './shipping/ship-to'
@@ -112,15 +112,15 @@ export default function ProductPageActions({
       freeShipping,
       freeShippingForAllCountries,
     ],
-    queryFn: async () =>
-      await getCityShippingDetails(
+    queryFn: () =>
+      getCityShippingDetails(
         shippingFeeMethod,
         userProvince,
         store,
         freeShipping,
         freeShippingForAllCountries
       ),
-    // enabled: !!userProvince,
+    enabled: !!userProvince,
     select: (data) => {
       // Transform data if needed
       return data
@@ -199,7 +199,7 @@ export default function ProductPageActions({
   //   }
   //   getCityShippingDetailsHandler()
   // }, [userProvince])
-  console.log({ shippingDetailData })
+  // console.log({ shippingDetailData })
 
   const handleAddToCart = () => {
     if (maxQty <= 0) return
@@ -236,6 +236,7 @@ export default function ProductPageActions({
           loading={isLoading}
         />
       </>
+
       <div className="mt-5  bottom-0 pb-4 space-y-3 sticky">
         {sizeId && (
           <div className="w-full flex justify-end mt-4">
@@ -254,7 +255,7 @@ export default function ProductPageActions({
           disabled={!isProductValid}
           onClick={() => handleBuy()}
           className={cn(
-            'relative w-full py-2.5 min-w-20 bg-background hover:bg-muted   h-11 rounded-3xl leading-6 inline-block font-bold whitespace-nowrap border border-border cursor-pointer transition-all duration-300 ease-bezier-1 select-none',
+            'relative disabled:bg-muted disabled:shadow-none disabled:text-background w-full py-2.5 min-w-20 bg-secondary shadow-md text-orange-500 shadow-orange-500/90 hover:bg-orange-500/90 hover:shadow-sm  hover:text-background h-11 rounded-3xl leading-6 inline-block font-bold whitespace-nowrap border border-border cursor-pointer transition-all duration-300 ease-bezier-1 select-none',
             {
               'cursor-not-allowed': !isProductValid || maxQty <= 0,
             }

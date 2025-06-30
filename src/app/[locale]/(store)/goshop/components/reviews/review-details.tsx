@@ -97,7 +97,7 @@ export default function ReviewDetails({
 
   // Submit handler for form submission
   const handleSubmit = async (data: z.infer<typeof AddReviewSchema>) => {
-    console.log({ data })
+    // console.log({ data })
     const formData = new FormData()
 
     formData.append('variant', data.variantName)

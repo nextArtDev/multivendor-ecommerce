@@ -67,7 +67,7 @@ const CouponDetails: FC<CouponDetailProps> = ({ data, storeUrl }) => {
   const handleSubmit = async (data: z.infer<typeof CouponFormSchema>) => {
     const formData = new FormData()
 
-    console.log({ data })
+    // console.log({ data })
     const startDate =
       data?.startDate || new Date(new Date().setHours(0, 0, 0, 0))
 

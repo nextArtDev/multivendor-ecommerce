@@ -28,7 +28,7 @@ const ShipTo: FC<Props> = ({
 
         <span className="text-main-secondary text-sm cursor-pointer max-w-[200px] overflow-hidden pl-0.5 text-ellipsis whitespace-nowrap">
           {cityName} , {provinceName}
-          {countryCode}
+          {/* {countryCode} */}
         </span>
       </div>
     </div>
