@@ -9,6 +9,7 @@ export default function RelatedProductSkeleton() {
         height={190}
         width={200}
         // backgroundColor="#f5f5f5"
+        backgroundColor="var(--muted)"
         className="rounded-md "
       >
         <rect
@@ -23,7 +24,8 @@ export default function RelatedProductSkeleton() {
         height={190}
         width={200}
         // backgroundColor="#f5f5f5"
-        className="rounded-md"
+        backgroundColor="var(--muted)"
+        className="rounded-md bg-muted"
       >
         <rect
           x="0"
@@ -37,7 +39,8 @@ export default function RelatedProductSkeleton() {
         width={200}
         height={190}
         // backgroundColor="#f5f5f5"
-        className="rounded-md"
+        backgroundColor="var(--muted)"
+        className="rounded-md bg-muted"
       >
         <rect
           x="0"
@@ -51,7 +54,8 @@ export default function RelatedProductSkeleton() {
         height={190}
         width={200}
         // backgroundColor="#f5f5f5"
-        className="rounded-md"
+        backgroundColor="var(--muted)"
+        className="rounded-md bg-muted"
       >
         <rect
           x="0"
@@ -65,7 +69,8 @@ export default function RelatedProductSkeleton() {
         height={190}
         width={200}
         // backgroundColor="#f5f5f5"
-        className="rounded-md"
+
+        className="rounded-md bg-muted"
       >
         <rect
           x="0"
@@ -79,7 +84,7 @@ export default function RelatedProductSkeleton() {
         height={190}
         width={200}
         // backgroundColor="#f5f5f5"
-        className="rounded-md"
+        className="rounded-md bg-muted"
       >
         <rect
           x="0"
