@@ -44,21 +44,21 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <AuthProvider>
-        <QueryProviders>
-          <body className={`  antialiased`}>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
+        <body className={`  antialiased`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <QueryProviders>
               <NextIntlClientProvider messages={messages}>
                 <NuqsAdapter>{children}</NuqsAdapter>
                 <Toaster />
               </NextIntlClientProvider>
-            </ThemeProvider>
-          </body>
-        </QueryProviders>
+            </QueryProviders>
+          </ThemeProvider>
+        </body>
       </AuthProvider>
     </html>
   )

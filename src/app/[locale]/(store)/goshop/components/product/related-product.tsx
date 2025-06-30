@@ -72,8 +72,10 @@ export default function RelatedProducts({
         <div>
           <RelatedProductSkeleton />
         </div>
-      ) : (
+      ) : !!products ? (
         <ProductList products={products} />
+      ) : (
+        isError && <></>
       )}
     </div>
   )

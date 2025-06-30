@@ -52,11 +52,11 @@ const SpecTable = ({
           })}
         >
           <div className="float-left text-sm leading-7 relative flex items-center">
-            <div className="p-4   min-w-44">
-              <span className="leading-5">{spec.name}</span>
+            <div className="p-4 rounded-md  min-w-44">
+              <span className="leading-5 ">{spec.name}</span>
             </div>
-            <div className="w-full p-4  bg-background  flex-1 break-words leading-5">
-              <span className="leading-5 w-full flex-1 ">{spec.value}</span>
+            <div className="w-full p-4  bg-background rounded-md flex-1 break-words leading-5">
+              <span className="leading-5 w-full flex-1  ">{spec.value}</span>
             </div>
           </div>
         </li>
