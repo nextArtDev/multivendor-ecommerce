@@ -74,7 +74,9 @@ export const getProductFilteredReviews = async (
     console.log(error)
   }
 }
-
+export type ProductFilteredReviewType = Prisma.PromiseReturnType<
+  typeof getProductFilteredReviews
+>
 export const getRatingStatistics = async (productId: string) => {
   const ratingStats = await prisma.review.groupBy({
     by: ['rating'],

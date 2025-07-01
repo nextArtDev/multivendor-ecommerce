@@ -14,6 +14,7 @@ import StoreProducts from '../../../components/product/store-products'
 import ProductReviews from '../../../components/reviews/product-reviews'
 import { Rating } from '@/components/shared/rating'
 import { redirect } from '@/navigation'
+import { getProductFilteredReviews } from '../../../lib/queries/review'
 
 export default async function ProductPage({
   params,
@@ -23,6 +24,10 @@ export default async function ProductPage({
   searchParams: Promise<{
     variant: string
     sizeId: string
+    sort: string
+    hasImages: string
+    page: string
+    rating: string
   }>
 }) {
   const productSlug = (await params).productSlug
@@ -92,6 +97,27 @@ export default async function ProductPage({
     isUserFollowingStore: false,
   }
 
+  // Review fetching
+  const sorter =
+    ((await searchParams).sort as 'latest' | 'oldest' | 'highest') || undefined
+  const hasImages = (await searchParams).hasImages === 'true'
+  const page = Number((await searchParams).page) || 1
+  const FilterRating = Number((await searchParams).rating) || undefined
+  const pageSize = 4 // Ensure this matches your client component's default
+
+  const filters = {
+    rating: FilterRating,
+    hasImages: hasImages,
+  }
+  const sort = sorter ? { orderBy: sorter } : undefined
+
+  const filteredReviewsData = await getProductFilteredReviews(
+    data.id,
+    filters,
+    sort,
+    Number(page),
+    pageSize
+  )
   return (
     <div>
       <Header />
@@ -112,8 +138,13 @@ export default async function ProductPage({
             subCategoryId={data.subCategoryId}
           />
           <Separator className="mt-6" />
-          {!!data._count.reviews && (
+          {!!data._count.reviews && !!filteredReviewsData && (
             <ProductReviews
+              hasImages={hasImages}
+              page={page}
+              FilterRating={FilterRating}
+              pageSize={pageSize}
+              data={filteredReviewsData}
               product={data}
               rating={data.rating}
               variant={data.variants}

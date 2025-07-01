@@ -5,24 +5,32 @@ import { ReactNode, useState } from 'react'
 
 export default function QueryProviders({ children }: { children: ReactNode }) {
   // Use useState instead of useRef for better SSR handling
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            // Prevent automatic refetching on window focus during development
-            refetchOnWindowFocus: false,
-            // Retry failed requests
-            retry: 3,
-            // Consider data stale after 5 minutes
-            // staleTime: 60 * 1000,
-            // Keep data in cache for 10 minutes
-            gcTime: 10 * 60 * 1000,
-          },
+  function makeQueryClient() {
+    return new QueryClient({
+      defaultOptions: {
+        queries: {
+          // With SSR, we usually want to set some default staleTime
+          // above 0 to avoid refetching on first mount.
+          staleTime: 60 * 1000, // 1 minute
         },
-      })
-  )
+      },
+    })
+  }
 
+  let browserQueryClient: QueryClient | undefined = undefined
+
+  function getQueryClient() {
+    if (typeof window === 'undefined') {
+      // Server: Always make a new query client
+      return makeQueryClient()
+    } else {
+      // Browser: Make a new query client if we don't already have one
+      // This is to make sure we don't accidentally share query clients across requests
+      if (!browserQueryClient) browserQueryClient = makeQueryClient()
+      return browserQueryClient
+    }
+  }
+  const queryClient = getQueryClient()
   return (
     <QueryClientProvider client={queryClient}>
       {children}
