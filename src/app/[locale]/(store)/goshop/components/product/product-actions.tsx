@@ -128,7 +128,7 @@ export default function ProductPageActions({
   })
 
   useEffect(() => {
-    if (shippingDetailData) {
+    if (shippingDetailData && !isLoading) {
       setShippingDetails(shippingDetailData)
       handleChange('shippingMethod', shippingDetailData.shippingFeeMethod)
       handleChange('deliveryTimeMax', shippingDetailData.deliveryTimeMax)

@@ -1,6 +1,6 @@
-import { cookies } from 'next/headers'
 import Header, { Country } from '../../components/header/header'
 import CartContainer from '../../components/cart/container'
+import { cookies } from 'next/headers'
 
 export default async function CartPage() {
   // Get cookies from the store
@@ -19,6 +19,7 @@ export default async function CartPage() {
   if (userCountryCookie) {
     userCountry = JSON.parse(userCountryCookie.value) as Country
   }
+  // console.log({ userCountry })
   return (
     <>
       <Header />

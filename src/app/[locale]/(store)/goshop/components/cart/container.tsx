@@ -69,17 +69,15 @@ export default function CartContainer({
           <div className="text-black min-h-[calc(100vh-65px)] px-2">
             <div className="max-w-[1200px] mx-auto py-4 flex flex-col gap-y-4 lg:flex-row">
               <div className="min-w-0 flex-1">
-                {/* Cart header */}
                 <CartHeader
                   cartItems={cartItems}
                   selectedItems={selectedItems}
                   setSelectedItems={setSelectedItems}
                 />
                 <div className="my-2">
-                  <CountryNote country={userCountry.name} />
+                  <CountryNote country={userCountry?.name} />
                 </div>
                 <div className="h-auto overflow-x-hidden overflow-auto mt-2">
-                  {/* Cart items */}
                   {cartItems.map((product) => (
                     <CartProduct
                       key={`${product.productSlug}-${product.variantSlug}`}

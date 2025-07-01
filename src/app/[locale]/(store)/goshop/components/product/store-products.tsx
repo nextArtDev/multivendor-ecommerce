@@ -17,28 +17,28 @@ interface Props {
 }
 
 const StoreProducts: FC<Props> = ({ storeUrl, count, storeName }) => {
-  // const [products, setProducts] = useState<ProductType[]>([])
-  // const [loading, setLoading] = useState(true)
-  // useEffect(() => {
-  //   getStoreProducts()
-  // }, [])
-  const { data, isLoading } = useQuery({
-    queryKey: ['get-product'],
-    queryFn: () => getProducts({ store: storeUrl }, '', 1, count),
-  })
+  const [products, setProducts] = useState<ProductType[]>([])
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    getStoreProducts()
+  }, [])
 
-  // const getStoreProducts = async () => {
-  //   try {
-  //     setLoading(true)
+  // const { data, isLoading } = useQuery({
+  //   queryKey: ['get-product'],
+  //   queryFn: () => getProducts({ store: storeUrl }, '', 1, count),
+  // })
 
-  //     const res = await getProducts({ store: storeUrl }, '', 1, count)
-  //     setProducts(res.products)
-  //     setLoading(false)
-  //   } catch (error) {
+  const getStoreProducts = async () => {
+    try {
+      setLoading(true)
 
-  //     setLoading(false)
-  //   }
-  // }
+      const res = await getProducts({ store: storeUrl }, '', 1, count)
+      setProducts(res.products)
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+    }
+  }
   return (
     <div className="pt-6" id="reviews">
       {/* Title */}
@@ -50,10 +50,10 @@ const StoreProducts: FC<Props> = ({ storeUrl, count, storeName }) => {
       </div>
       {/* Products */}
       <div className="mt-8 min-[620px]:mt-0">
-        {isLoading ? (
+        {loading ? (
           <ProductPageStoreProductsSkeletonLoader />
         ) : (
-          <ProductList products={data?.products} />
+          <ProductList products={products} />
         )}
       </div>
     </div>
