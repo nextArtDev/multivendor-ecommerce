@@ -421,7 +421,9 @@ export const getRelatedProducts = async (
   // Return the related products (up to 6)
   return productsWithFilteredVariants.slice(0, 6)
 }
-
+export type RelatedProductType = Prisma.PromiseReturnType<
+  typeof getRelatedProducts
+>
 export const getStoreFollowingInfo = async (storeId: string) => {
   const user = await currentUser()
   let isUserFollowingStore = false

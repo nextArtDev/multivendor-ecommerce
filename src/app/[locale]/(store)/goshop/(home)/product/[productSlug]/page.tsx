@@ -15,6 +15,9 @@ import ProductReviews from '../../../components/reviews/product-reviews'
 import { Rating } from '@/components/shared/rating'
 import { redirect } from '@/navigation'
 import { getProductFilteredReviews } from '../../../lib/queries/review'
+import { getRelatedProducts } from '../../../lib/queries/product'
+import { Suspense } from 'react'
+import RelatedProductSkeleton from '../../../components/skeleton/related-products-skeleton'
 
 export default async function ProductPage({
   params,
@@ -97,7 +100,7 @@ export default async function ProductPage({
     isUserFollowingStore: false,
   }
 
-  // Review fetching
+  //--> Review fetching
   const sorter =
     ((await searchParams).sort as 'latest' | 'oldest' | 'highest') || undefined
   const hasImages = (await searchParams).hasImages === 'true'
@@ -118,6 +121,15 @@ export default async function ProductPage({
     Number(page),
     pageSize
   )
+  // --> End of   // Review fetching
+
+  // --> Fetching Related Products
+  const relatedProducts = await getRelatedProducts(
+    data.id,
+    data.categoryId,
+    data.subCategoryId
+  )
+  //End of Fetching related products
   return (
     <div>
       <Header />
@@ -132,11 +144,16 @@ export default async function ProductPage({
           userProvince={userProvince}
         >
           <Separator />
-          <RelatedProducts
-            productId={data.id}
-            categoryId={data.categoryId}
-            subCategoryId={data.subCategoryId}
-          />
+          {!!relatedProducts && (
+            <Suspense fallback={<RelatedProductSkeleton />}>
+              <RelatedProducts
+                products={relatedProducts}
+                productId={data.id}
+                categoryId={data.categoryId}
+                subCategoryId={data.subCategoryId}
+              />
+            </Suspense>
+          )}
           <Separator className="mt-6" />
           {!!data._count.reviews && !!filteredReviewsData && (
             <ProductReviews
