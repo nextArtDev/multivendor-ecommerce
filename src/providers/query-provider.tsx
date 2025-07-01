@@ -15,7 +15,7 @@ export default function QueryProviders({ children }: { children: ReactNode }) {
             // Retry failed requests
             retry: 3,
             // Consider data stale after 5 minutes
-            staleTime: 5 * 60 * 1000,
+            // staleTime: 60 * 1000,
             // Keep data in cache for 10 minutes
             gcTime: 10 * 60 * 1000,
           },
