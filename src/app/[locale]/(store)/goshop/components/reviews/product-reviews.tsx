@@ -223,7 +223,7 @@ const ProductReviews: FC<Props> = ({
           variantsInfo={variant}
           // setStatistics={setStatistics}
           // setReviews={setData}
-          reviews={data?.reviews}
+          reviews={data?.reviews ?? []}
           setAverageRating={setAverageRating}
         />
       </div>

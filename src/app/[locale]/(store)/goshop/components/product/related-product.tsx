@@ -67,14 +67,18 @@ export default function RelatedProducts({
   // }, [])
   return (
     <div className="pt-6" id="reviews">
-      {/* Title */}
-      <div className="h-12">
-        <h2 className="text-main-primary text-2xl font-bold">
-          You Might Also Like
-        </h2>
-      </div>
-      {/* Products */}
-      <ProductList products={products} />
+      {!!products ? (
+        <>
+          <div className="h-12">
+            <h2 className="text-main-primary text-2xl font-bold">
+              You Might Also Like
+            </h2>
+          </div>
+          <ProductList products={products} />
+        </>
+      ) : (
+        <></>
+      )}
       {/* {isLoading ? (
           <RelatedProductSkeleton />
         <div>

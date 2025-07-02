@@ -43,17 +43,17 @@ export default function ReviewDetails({
   productId,
   data,
   variantsInfo,
-  setReviews,
+  // setReviews,
   reviews,
-  setStatistics,
+  // setStatistics,
   setAverageRating,
 }: {
   productId: string
   data?: ReviewDetailsType
   variantsInfo: ProductVariantDataType[]
   reviews: ReviewWithImageType[]
-  setReviews: Dispatch<SetStateAction<ReviewWithImageType[]>>
-  setStatistics: Dispatch<SetStateAction<RatingStatisticsType>>
+  // setReviews: Dispatch<SetStateAction<ReviewWithImageType[]>>
+  // setStatistics: Dispatch<SetStateAction<RatingStatisticsType>>
   setAverageRating: Dispatch<SetStateAction<number>>
 }) {
   // State for selected Variant

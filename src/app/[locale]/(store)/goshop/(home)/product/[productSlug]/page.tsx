@@ -144,16 +144,14 @@ export default async function ProductPage({
           userProvince={userProvince}
         >
           <Separator />
-          {!!relatedProducts && (
-            <Suspense fallback={<RelatedProductSkeleton />}>
-              <RelatedProducts
-                products={relatedProducts}
-                productId={data.id}
-                categoryId={data.categoryId}
-                subCategoryId={data.subCategoryId}
-              />
-            </Suspense>
-          )}
+          <Suspense fallback={<RelatedProductSkeleton />}>
+            <RelatedProducts
+              products={relatedProducts}
+              productId={data.id}
+              categoryId={data.categoryId}
+              subCategoryId={data.subCategoryId}
+            />
+          </Suspense>
           <Separator className="mt-6" />
           {!!data._count.reviews && !!filteredReviewsData && (
             <ProductReviews

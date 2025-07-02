@@ -15,13 +15,13 @@ const Pagination: FC<Props> = ({ totalPages }) => {
 
   const handlePrevious = () => {
     if (!page) setPage(null)
-    else if (+page >= 1) {
+    else if (+page > 1) {
       setPage(String(Number(page) - 1))
     }
   }
 
   const handleNext = () => {
-    console.log('totalPages', totalPages)
+    // console.log('totalPages', totalPages)
     if (!page) {
       setPage('2')
     } else if (+page < totalPages) {
@@ -33,11 +33,12 @@ const Pagination: FC<Props> = ({ totalPages }) => {
       <div className="w-full flex items-center justify-end gap-x-4 border-t border-muted">
         <Button
           onClick={() => handlePrevious()}
-          className="flex items-center pt-3 text-gray-600 hover:text-orange-background cursor-pointer"
+          className="flex items-center pt-3  "
         >
           <MoveLeft className="w-3" />
           <p className="text-sm ml-3 font-medium leading-none">Previous</p>
         </Button>
+
         <div className="flex flex-wrap">
           {Array.from({ length: totalPages }).map((_, i) => (
             <span
@@ -50,13 +51,13 @@ const Pagination: FC<Props> = ({ totalPages }) => {
               )}
               // onClick={() => setPage(String(Number(page) + 1))}
             >
-              {page && +page + 1}
+              {page && +page}
             </span>
           ))}
         </div>
         <Button
           onClick={() => handleNext()}
-          className="flex items-center pt-3 text-gray-600 hover:text-orange-background cursor-pointer"
+          className="flex items-center pt-3  "
         >
           <p className="text-sm font-medium leading-none mr-3">Next</p>
           <MoveRight className="w-3" />
