@@ -144,28 +144,27 @@ export default async function ProductPage({
           userProvince={userProvince}
         >
           <Separator />
-          <Suspense fallback={<RelatedProductSkeleton />}>
-            <RelatedProducts
-              products={relatedProducts}
-              productId={data.id}
-              categoryId={data.categoryId}
-              subCategoryId={data.subCategoryId}
-            />
-          </Suspense>
+          {/* <Suspense fallback={<RelatedProductSkeleton />}> */}
+          <RelatedProducts
+            products={relatedProducts}
+            // productId={data.id}
+            // categoryId={data.categoryId}
+            // subCategoryId={data.subCategoryId}
+          />
+          {/* </Suspense> */}
           <Separator className="mt-6" />
-          {!!data._count.reviews && !!filteredReviewsData && (
-            <ProductReviews
-              hasImages={hasImages}
-              page={page}
-              FilterRating={FilterRating}
-              pageSize={pageSize}
-              data={filteredReviewsData}
-              product={data}
-              rating={data.rating}
-              variant={data.variants}
-              numReviews={data._count.reviews}
-            />
-          )}
+
+          <ProductReviews
+            hasImages={hasImages}
+            page={page}
+            FilterRating={FilterRating}
+            pageSize={pageSize}
+            data={filteredReviewsData}
+            product={data}
+            rating={data.rating}
+            variant={data.variants}
+            numReviews={data._count.reviews}
+          />
 
           <Separator className="mt-6" />
 

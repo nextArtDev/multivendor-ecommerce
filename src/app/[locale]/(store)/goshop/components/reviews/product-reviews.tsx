@@ -135,9 +135,10 @@ const ProductReviews: FC<Props> = ({
 
   return (
     <div className="pt-6" id="reviews">
-      {!data ? (
+      {/* {!data ? (
         <ProductPageReviewsSkeletonLoader numReviews={numReviews} />
-      ) : (
+      ) : ( */}
+      {!!product._count.reviews && !!data && (
         <div>
           {/* Title */}
           <div className="h-12">
@@ -217,6 +218,7 @@ const ProductReviews: FC<Props> = ({
           </>
         </div>
       )}
+      {/* )} */}
       <div className="mt-10">
         <ReviewDetails
           productId={product.id}

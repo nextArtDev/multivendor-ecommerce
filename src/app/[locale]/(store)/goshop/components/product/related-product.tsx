@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useTransition } from 'react'
 
 // import { getRelatedProducts } from '@/queries/product-optimized'
 // import { DotLoader } from 'react-spinners'
@@ -16,15 +16,16 @@ import { useQuery } from '@tanstack/react-query'
 
 export default function RelatedProducts({
   products,
-  productId,
-  categoryId,
-  subCategoryId,
-}: {
+}: // productId,
+// categoryId,
+// subCategoryId,
+{
   products: RelatedProductType
-  productId: string
-  categoryId: string
-  subCategoryId: string
+  // productId: string
+  // categoryId: string
+  // subCategoryId: string
 }) {
+  const [isPending, startTransition] = useTransition()
   // console.log(productId, categoryId, subCategoryId)
   // const {
   //   data: products,
@@ -74,7 +75,11 @@ export default function RelatedProducts({
               You Might Also Like
             </h2>
           </div>
-          <ProductList products={products} />
+          {isPending ? (
+            <RelatedProductSkeleton />
+          ) : (
+            <ProductList products={products} />
+          )}
         </>
       ) : (
         <></>

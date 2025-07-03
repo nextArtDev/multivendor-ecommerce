@@ -50,7 +50,7 @@ export default function RelatedProductSkeleton() {
           className="w-48 sm:w-[200px] rounded-md"
         />
       </ForkedContentLoader>
-      <ForkedContentLoader
+      {/* <ForkedContentLoader
         height={190}
         width={200}
         // backgroundColor="#f5f5f5"
@@ -93,7 +93,7 @@ export default function RelatedProductSkeleton() {
           width={200}
           className="w-48 sm:w-[200px] rounded-md"
         />
-      </ForkedContentLoader>
+      </ForkedContentLoader> */}
     </div>
   )
 }
