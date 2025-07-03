@@ -29,7 +29,7 @@ export async function createOfferTag(
   })
 
   if (!result.success) {
-    console.log(result.error.flatten().fieldErrors)
+    console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }
@@ -116,7 +116,7 @@ export async function editOfferTag(
   })
 
   if (!result.success) {
-    // console.log(result.error.flatten().fieldErrors)
+    // console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }

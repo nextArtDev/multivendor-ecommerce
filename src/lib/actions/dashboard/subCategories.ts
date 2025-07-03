@@ -42,7 +42,7 @@ export async function createSubCategory(
   })
 
   if (!result.success) {
-    console.log(result.error.flatten().fieldErrors)
+    console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }
@@ -172,7 +172,7 @@ export async function editSubCategory(
   // console.log(formData.getAll('images'))
 
   if (!result.success) {
-    // console.log(result.error.flatten().fieldErrors)
+    // console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }

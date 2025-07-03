@@ -36,7 +36,7 @@ export async function createCoupon(
   })
   // console.log(result.data)
   if (!result.success) {
-    console.log(result.error.flatten().fieldErrors)
+    console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }

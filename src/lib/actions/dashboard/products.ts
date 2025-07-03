@@ -107,7 +107,7 @@ export async function createProduct(
   })
 
   if (!result.success) {
-    console.log(result.error.flatten().fieldErrors)
+    console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }
@@ -344,7 +344,7 @@ export async function createNewProduct(
   })
 
   if (!result.success) {
-    console.log(result.error.flatten().fieldErrors)
+    console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }
@@ -588,7 +588,7 @@ export async function editProduct(
   // console.log(formData.getAll('freeShippingCountriesIds'))
 
   if (!result.success) {
-    console.log(result.error.flatten().fieldErrors)
+    console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }
@@ -1175,7 +1175,7 @@ export async function editVariant(
     variantImage: formData.getAll('variantImage'),
   })
   if (!result.success) {
-    console.log(result.error.flatten().fieldErrors)
+    console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }
@@ -1587,7 +1587,7 @@ export async function createNewVariant(
   })
 
   if (!result.success) {
-    console.log(result.error.flatten().fieldErrors)
+    console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }

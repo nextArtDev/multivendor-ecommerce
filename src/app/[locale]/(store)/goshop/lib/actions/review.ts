@@ -60,7 +60,7 @@ export async function createReview(
   })
 
   if (!result.success) {
-    console.log(result.error.flatten().fieldErrors)
+    console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }
@@ -185,12 +185,12 @@ export async function editReview(
     images: formData.getAll('images'),
   })
 
-  console.log(result)
-  console.log({ reviewId })
+  // console.log(result)
+  // console.log({ reviewId })
   // console.log(formData.getAll('images'))
 
   if (!result.success) {
-    console.log(result.error.flatten().fieldErrors)
+    console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }
