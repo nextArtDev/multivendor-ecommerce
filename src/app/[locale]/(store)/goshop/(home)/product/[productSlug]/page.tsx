@@ -18,6 +18,8 @@ import { getProductFilteredReviews } from '../../../lib/queries/review'
 import { getRelatedProducts } from '../../../lib/queries/product'
 import { Suspense } from 'react'
 import RelatedProductSkeleton from '../../../components/skeleton/related-products-skeleton'
+import { prisma } from '@/lib/prisma'
+import { currentUser } from '@/lib/auth'
 
 export default async function ProductPage({
   params,
@@ -130,6 +132,24 @@ export default async function ProductPage({
     data.subCategoryId
   )
   //End of Fetching related products
+
+  // IsBefore Rated fetching
+  const user = await currentUser()
+  const beforeReview = await prisma.review.findFirst({
+    where: {
+      productId: data.id,
+      userId: user?.id,
+    },
+    include: {
+      images: {
+        select: {
+          url: true,
+        },
+      },
+    },
+  })
+  // console.log({ beforeReview })
+  // End of IsBefore Rated fetching
   return (
     <div>
       <Header />
@@ -155,6 +175,7 @@ export default async function ProductPage({
           <Separator className="mt-6" />
 
           <ProductReviews
+            beforeReview={beforeReview}
             hasImages={hasImages}
             page={page}
             FilterRating={FilterRating}

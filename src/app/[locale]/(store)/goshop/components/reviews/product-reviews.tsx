@@ -28,9 +28,10 @@ import RatingStatisticsCard from './rating-statistics'
 import ReviewCard from './review-card'
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Pen } from 'lucide-react'
 import Pagination from '../pagination'
 import ReviewDetails from './review-details'
+import { Review } from '@prisma/client'
 
 const defaultData = {
   ratingStatistics: [
@@ -53,6 +54,15 @@ interface Props {
   page: number
   pageSize: number
   FilterRating?: number
+  beforeReview?:
+    | (Review & {
+        images:
+          | {
+              url: string
+            }[]
+          | null
+      })
+    | null
 }
 
 const ProductReviews: FC<Props> = ({
@@ -65,6 +75,7 @@ const ProductReviews: FC<Props> = ({
   page,
   pageSize,
   FilterRating,
+  beforeReview,
 }) => {
   // const [loading, setLoading] = useState<boolean>(true)
   // const [filterLoading, setFilterLoading] = useState<boolean>(true)
@@ -72,6 +83,7 @@ const ProductReviews: FC<Props> = ({
   // const [statistics, setStatistics] =
   //   useState<RatingStatisticsType>(defaultData)
   const [averageRating, setAverageRating] = useState<number>(rating)
+  const [showForm, setShowForm] = useState<boolean>(!beforeReview)
   // const searchParams = useSearchParams()
   // // Filtering
   // // const filtered_data = {
@@ -219,15 +231,26 @@ const ProductReviews: FC<Props> = ({
         </div>
       )}
       {/* )} */}
-      <div className="mt-10">
-        <ReviewDetails
-          productId={product.id}
-          variantsInfo={variant}
-          // setStatistics={setStatistics}
-          // setReviews={setData}
-          reviews={data?.reviews ?? []}
-          setAverageRating={setAverageRating}
-        />
+      <div className="mt-10 w-full  ">
+        {showForm ? (
+          <ReviewDetails
+            initialData={beforeReview}
+            productId={product.id}
+            variantsInfo={variant}
+            // setStatistics={setStatistics}
+            // setReviews={setData}
+            reviews={data?.reviews ?? []}
+            setAverageRating={setAverageRating}
+          />
+        ) : (
+          <article className="mx-auto w-1/2 h-12 rounded-sm flex items-center justify-center gap-4 bg-muted px-2">
+            <p>Edit Your Review</p>
+            <Pen
+              onClick={() => setShowForm((prev) => !prev)}
+              className="text-red-500 w-4 cursor-pointer"
+            />
+          </article>
+        )}
       </div>
     </div>
   )

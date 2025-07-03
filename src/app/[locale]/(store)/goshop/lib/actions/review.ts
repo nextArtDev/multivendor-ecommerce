@@ -165,14 +165,19 @@ interface EditReviewFormState {
     _form?: string[]
   }
 }
-export async function editStore(
+export async function editReview(
   formData: FormData,
   reviewId: string,
   path: string
 ): Promise<EditReviewFormState> {
+  const headerResponse = await headers()
+  const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
+
   const result = AddReviewSchema.safeParse({
     review: formData.get('review'),
-    rating: formData.get('rating'),
+    variantName: formData.get('variantName'),
+    variantImage: formData.get('variantImage'),
+    rating: Number(formData.get('rating')),
     variant: formData.get('variant'),
     color: formData.get('color'),
     size: formData.get('size'),
@@ -180,7 +185,8 @@ export async function editStore(
     images: formData.getAll('images'),
   })
 
-  // console.log(result)
+  console.log(result)
+  console.log({ reviewId })
   // console.log(formData.getAll('images'))
 
   if (!result.success) {
@@ -212,37 +218,20 @@ export async function editStore(
       where: {
         id: reviewId,
         userId: user.id,
-        variant: result.data.variantName,
+        // variant: result.data.variantName,
+      },
+      include: {
+        images: true,
       },
     })
     // console.log({ isExisting })
-    if (isExisting) {
+    if (!isExisting) {
       return {
         errors: {
-          _form: ['شما قبلا نظر خود راجع به این محصول را ثبت کرده‌اید!'],
+          _form: ['دیدگاه شما حذف شده است!'],
         },
       }
     }
-    const isNameExisting = await prisma.store.findFirst({
-      where: {
-        AND: [
-          {
-            OR: [
-              { name: result.data.name },
-              { name_fa: result.data?.name_fa },
-              { email: result.data.email },
-              { phone: result.data.phone },
-              { url: result.data.url },
-            ],
-          },
-          {
-            NOT: {
-              id: storeId,
-            },
-          },
-        ],
-      },
-    })
 
     // console.log(isExisting)
     // console.log(billboard)
@@ -262,24 +251,26 @@ export async function editStore(
         }
       }
       // console.log({imageIds})
-      await prisma.store.update({
+      await prisma.review.update({
         where: {
-          id: storeId,
+          id: reviewId,
+          userId: user.id,
         },
         data: {
-          cover: {
-            disconnect: isExisting.cover?.map((image: { id: string }) => ({
+          images: {
+            disconnect: isExisting.images?.map((image: { id: string }) => ({
               id: image.id,
             })),
           },
         },
       })
-      await prisma.store.update({
+      await prisma.review.update({
         where: {
-          id: storeId,
+          id: reviewId,
+          userId: user.id,
         },
         data: {
-          cover: {
+          images: {
             connect: imageIds.map((id) => ({
               id: id,
             })),
@@ -288,20 +279,20 @@ export async function editStore(
       })
     }
 
-    await prisma.store.update({
+    await prisma.review.update({
       where: {
-        id: storeId,
+        id: reviewId,
+        userId: user.id,
       },
       data: {
-        name: result.data.name,
-        userId: session.user.id,
-        name_fa: result.data?.name_fa,
-        description: result.data.description,
-        description_fa: result.data?.description_fa,
-        url: result.data.url,
-        featured,
-        phone: result.data.phone,
-        email: result.data.email,
+        userId: user.id,
+        variant: result.data.variantName,
+
+        review: result.data.review,
+        rating: +result.data.rating,
+        color: result.data.color,
+        size: result.data.size,
+        quantity: result.data.quantity,
       },
     })
   } catch (err: unknown) {
@@ -320,7 +311,7 @@ export async function editStore(
     }
   }
   revalidatePath(path)
-  redirect(`/dashboard/seller/stores/${result.data.url}/settings`)
+  redirect(`/${locale}/${path}`)
 }
 
 //////////////////////

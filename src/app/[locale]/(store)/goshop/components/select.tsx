@@ -9,7 +9,14 @@ interface Props {
   placeholder?: string
   subPlaceholder?: string
   onChange: (value: string) => void
-  options: { name: string; value: string; image?: Image; colors?: string }[]
+  options: {
+    name: string
+    value: string
+    image?: {
+      url: string
+    }
+    colors?: string
+  }[]
 }
 
 const Select: FC<Props> = ({

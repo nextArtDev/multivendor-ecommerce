@@ -30,7 +30,11 @@ import {
   RatingStatisticsType,
   ReviewWithImageType,
 } from '../../lib/queries/review'
-import { createReview, ReviewDetailsType } from '../../lib/actions/review'
+import {
+  createReview,
+  editReview,
+  ReviewDetailsType,
+} from '../../lib/actions/review'
 import { AddReviewSchema } from '../../lib/schemas/review'
 import { Rating } from '@/components/shared/rating'
 import { Input } from '@/components/ui/input'
@@ -38,6 +42,7 @@ import { toast } from 'sonner'
 import InputFileUpload from '@/components/shared/InputFileUpload'
 import Select from '../select'
 import { usePathname } from '@/navigation'
+import { Review } from '@prisma/client'
 
 export default function ReviewDetails({
   productId,
@@ -47,6 +52,7 @@ export default function ReviewDetails({
   reviews,
   // setStatistics,
   setAverageRating,
+  initialData,
 }: {
   productId: string
   data?: ReviewDetailsType
@@ -55,6 +61,15 @@ export default function ReviewDetails({
   // setReviews: Dispatch<SetStateAction<ReviewWithImageType[]>>
   // setStatistics: Dispatch<SetStateAction<RatingStatisticsType>>
   setAverageRating: Dispatch<SetStateAction<number>>
+  initialData?:
+    | (Review & {
+        images:
+          | {
+              url: string
+            }[]
+          | null
+      })
+    | null
 }) {
   // State for selected Variant
   const [activeVariant, setActiveVariant] = useState<ProductVariantDataType>(
@@ -78,14 +93,14 @@ export default function ReviewDetails({
       // variantImage: activeVariant?.variantImage,
       //   ? activeVariant.variantImage.map((image) => ({ url: image.url }))
       //   : [],
-      rating: data?.rating || 0,
-      size: data?.size || '',
-      review: data?.review || '',
-      quantity: data?.quantity || undefined,
-      images: data?.images
-        ? data.images.map((image) => ({ url: image.url }))
+      rating: initialData?.rating || 0,
+      size: initialData?.size || '',
+      review: initialData?.review || '',
+      quantity: initialData?.quantity || undefined,
+      images: initialData?.images
+        ? initialData.images.map((image) => ({ url: image.url }))
         : [],
-      color: data?.color,
+      color: initialData?.color,
     },
   })
 
@@ -116,137 +131,115 @@ export default function ReviewDetails({
     // console.log({ values })
 
     try {
-      // if (data) {
-      //   // startTransition(async () => {
-      //   //   try {
-      //   //     const res = await createReview(
-      //   //       formData,
-      //   //       data.id as string,
-      //   //       path
-      //   //     )
-      //   //     if (res?.errors?.name) {
-      //   //       form.setError('name', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.name?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?.name_fa) {
-      //   //       form.setError('name_fa', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.name_fa?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?.description) {
-      //   //       form.setError('description', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.description?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?.description_fa) {
-      //   //       form.setError('description_fa', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.description_fa?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?.email) {
-      //   //       form.setError('email', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.email?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?.phone) {
-      //   //       form.setError('phone', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.phone?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?.url) {
-      //   //       form.setError('url', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.url?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?.status) {
-      //   //       form.setError('status', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.status?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?.featured) {
-      //   //       form.setError('featured', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.featured?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?.cover) {
-      //   //       form.setError('cover', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.cover?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?.logo) {
-      //   //       form.setError('logo', {
-      //   //         type: 'custom',
-      //   //         message: res?.errors.logo?.join(' و '),
-      //   //       })
-      //   //     } else if (res?.errors?._form) {
-      //   //       toast.error(res?.errors._form?.join(' و '))
-      //   //     }
-      //   //   } catch (error) {
-      //   //     // This will catch the NEXT_REDIRECT error, which is expected
-      //   //     // when the redirect happens
-      //   //     if (
-      //   //       !(
-      //   //         error instanceof Error &&
-      //   //         error.message.includes('NEXT_REDIRECT')
-      //   //       )
-      //   //     ) {
-      //   //       toast.error('مشکلی پیش آمده.')
-      //   //     }
-      //   //   }
-      //   // })
-      // } else {
-      startTransition(async () => {
-        try {
-          const res = await createReview(formData, productId, path)
-          if (res?.errors?.variantImage) {
-            form.setError('variantImage', {
-              type: 'custom',
-              message: res?.errors.variantImage?.join(' و '),
-            })
-          } else if (res?.errors?.quantity) {
-            form.setError('quantity', {
-              type: 'custom',
-              message: res?.errors.quantity?.join(' و '),
-            })
-          } else if (res?.errors?.rating) {
-            form.setError('rating', {
-              type: 'custom',
-              message: res?.errors.rating?.join(' و '),
-            })
-          } else if (res?.errors?.review) {
-            form.setError('review', {
-              type: 'custom',
-              message: res?.errors.review?.join(' و '),
-            })
-          } else if (res?.errors?.size) {
-            form.setError('size', {
-              type: 'custom',
-              message: res?.errors.size?.join(' و '),
-            })
-          } else if (res?.errors?.color) {
-            form.setError('color', {
-              type: 'custom',
-              message: res?.errors.color?.join(' و '),
-            })
-          } else if (res?.errors?.images) {
-            form.setError('images', {
-              type: 'custom',
-              message: res?.errors.images?.join(' و '),
-            })
-          } else if (res?.errors?._form) {
-            toast.error(res?.errors._form?.join(' و '))
+      if (initialData) {
+        startTransition(async () => {
+          try {
+            const res = await editReview(formData, reviews[0].id, path)
+            if (res?.errors?.variantImage) {
+              form.setError('variantImage', {
+                type: 'custom',
+                message: res?.errors.variantImage?.join(' و '),
+              })
+            } else if (res?.errors?.quantity) {
+              form.setError('quantity', {
+                type: 'custom',
+                message: res?.errors.quantity?.join(' و '),
+              })
+            } else if (res?.errors?.rating) {
+              form.setError('rating', {
+                type: 'custom',
+                message: res?.errors.rating?.join(' و '),
+              })
+            } else if (res?.errors?.review) {
+              form.setError('review', {
+                type: 'custom',
+                message: res?.errors.review?.join(' و '),
+              })
+            } else if (res?.errors?.size) {
+              form.setError('size', {
+                type: 'custom',
+                message: res?.errors.size?.join(' و '),
+              })
+            } else if (res?.errors?.color) {
+              form.setError('color', {
+                type: 'custom',
+                message: res?.errors.color?.join(' و '),
+              })
+            } else if (res?.errors?.images) {
+              form.setError('images', {
+                type: 'custom',
+                message: res?.errors.images?.join(' و '),
+              })
+            } else if (res?.errors?._form) {
+              toast.error(res?.errors._form?.join(' و '))
+            }
+          } catch (error) {
+            // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
+            if (
+              !(
+                error instanceof Error &&
+                error.message.includes('NEXT_REDIRECT')
+              )
+            ) {
+              toast.error('مشکلی پیش آمده.')
+            }
           }
-        } catch (error) {
-          // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
-          if (
-            !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
-          ) {
-            toast.error('مشکلی پیش آمده.')
+        })
+      } else {
+        startTransition(async () => {
+          try {
+            const res = await createReview(formData, productId, path)
+            if (res?.errors?.variantImage) {
+              form.setError('variantImage', {
+                type: 'custom',
+                message: res?.errors.variantImage?.join(' و '),
+              })
+            } else if (res?.errors?.quantity) {
+              form.setError('quantity', {
+                type: 'custom',
+                message: res?.errors.quantity?.join(' و '),
+              })
+            } else if (res?.errors?.rating) {
+              form.setError('rating', {
+                type: 'custom',
+                message: res?.errors.rating?.join(' و '),
+              })
+            } else if (res?.errors?.review) {
+              form.setError('review', {
+                type: 'custom',
+                message: res?.errors.review?.join(' و '),
+              })
+            } else if (res?.errors?.size) {
+              form.setError('size', {
+                type: 'custom',
+                message: res?.errors.size?.join(' و '),
+              })
+            } else if (res?.errors?.color) {
+              form.setError('color', {
+                type: 'custom',
+                message: res?.errors.color?.join(' و '),
+              })
+            } else if (res?.errors?.images) {
+              form.setError('images', {
+                type: 'custom',
+                message: res?.errors.images?.join(' و '),
+              })
+            } else if (res?.errors?._form) {
+              toast.error(res?.errors._form?.join(' و '))
+            }
+          } catch (error) {
+            // This will catch the NEXT_REDIRECT error, which is expected when the redirect happens
+            if (
+              !(
+                error instanceof Error &&
+                error.message.includes('NEXT_REDIRECT')
+              )
+            ) {
+              toast.error('مشکلی پیش آمده.')
+            }
           }
-        }
-      })
-      // }
+        })
+      }
     } catch {
       toast.error('مشکلی پیش آمده، لطفا دوباره امتحان کنید!')
     }
