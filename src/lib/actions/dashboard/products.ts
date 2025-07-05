@@ -19,6 +19,7 @@ import { prisma } from '../../prisma'
 import { deleteFileFromS3, uploadFileToS3 } from '../s3Upload'
 import {
   NewProductFormSchema,
+  NewServerProductFormSchema,
   ProductEditFormSchema,
   ProductFormSchema,
   VariantFormSchema,
@@ -312,7 +313,7 @@ export async function createNewProduct(
   const headerResponse = await headers()
   const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
 
-  const result = NewProductFormSchema.safeParse({
+  const result = NewServerProductFormSchema.safeParse({
     name: formData.get('name'),
     description: formData.get('description'),
 
@@ -340,16 +341,18 @@ export async function createNewProduct(
       formData.get('freeShippingForAllCountries')
     ),
     freeShippingCountriesIds: formData.getAll('freeShippingCountriesIds'),
+    freeShippingCityIds: formData.getAll('freeShippingCityIds'),
     images: formData.getAll('images'),
   })
 
+  // console.log(formData.getAll('freeShippingCityIds'))
   if (!result.success) {
     console.error(result.error.flatten().fieldErrors)
     return {
       errors: result.error.flatten().fieldErrors,
     }
   }
-  // console.log(result.data)
+  console.log(result.data)
   const session = await auth()
   if (
     !session ||
@@ -435,17 +438,32 @@ export async function createNewProduct(
         freeShippingForAllCountries: result.data.freeShippingForAllCountries,
         freeShipping: result.data.freeShippingForAllCountries
           ? undefined
-          : result.data.freeShippingCountriesIds &&
-            result.data.freeShippingCountriesIds.length > 0
+          : (result.data.freeShippingCountriesIds &&
+              result.data.freeShippingCountriesIds.length > 0) ||
+            (result.data.freeShippingCityIds &&
+              result.data.freeShippingCityIds.length > 0)
           ? {
               create: {
-                eligibaleCountries: {
-                  create: result.data.freeShippingCountriesIds.map(
-                    (country) => ({
-                      country: { connect: { id: country.value } },
-                    })
-                  ),
-                },
+                eligibaleCountries:
+                  result.data.freeShippingCountriesIds &&
+                  result.data.freeShippingCountriesIds.length > 0
+                    ? {
+                        create: result.data.freeShippingCountriesIds.map(
+                          (country) => ({
+                            country: { connect: { id: country } },
+                          })
+                        ),
+                      }
+                    : undefined,
+                eligibleCities:
+                  result.data.freeShippingCityIds &&
+                  result.data.freeShippingCityIds.length > 0
+                    ? {
+                        create: result.data.freeShippingCityIds.map((city) => ({
+                          city: { connect: { id: +city } },
+                        })),
+                      }
+                    : undefined,
               },
             }
           : undefined,
@@ -546,7 +564,7 @@ export async function editProduct(
 ): Promise<CreateNewProductFormState> {
   const headerResponse = await headers()
   const locale = headerResponse.get('X-NEXT-INTL-LOCALE')
-  const result = NewProductFormSchema.safeParse({
+  const result = NewServerProductFormSchema.safeParse({
     name: formData.get('name'),
     description: formData.get('description'),
     variantName: formData.get('variantName'),
@@ -574,6 +592,7 @@ export async function editProduct(
       .getAll('questions')
       .map((question) => JSON.parse(question.toString())),
     // freeShippingCountriesIds: formData.getAll('freeShippingCountriesIds'),
+    freeShippingCityIds: formData.getAll('freeShippingCityIds'),
     // colors: formData
     //   .getAll('colors')
     //   .map((size) => JSON.parse(size.toString())),
@@ -720,15 +739,32 @@ export async function editProduct(
         freeShippingForAllCountries: result.data.freeShippingForAllCountries,
         freeShipping: result.data.freeShippingForAllCountries
           ? undefined
-          : result.data.freeShippingCountriesIds &&
-            result.data.freeShippingCountriesIds.length > 0
+          : (result.data.freeShippingCountriesIds &&
+              result.data.freeShippingCountriesIds.length > 0) ||
+            (result.data.freeShippingCityIds &&
+              result.data.freeShippingCityIds.length > 0)
           ? {
               create: {
-                eligibaleCountries: {
-                  create: result.data.freeShippingCountriesIds.map((id) => ({
-                    country: { connect: { id: id.value as string } },
-                  })),
-                },
+                eligibaleCountries:
+                  result.data.freeShippingCountriesIds &&
+                  result.data.freeShippingCountriesIds.length > 0
+                    ? {
+                        create: result.data.freeShippingCountriesIds.map(
+                          (country) => ({
+                            country: { connect: { id: country } },
+                          })
+                        ),
+                      }
+                    : undefined,
+                eligibleCities:
+                  result.data.freeShippingCityIds &&
+                  result.data.freeShippingCityIds.length > 0
+                    ? {
+                        create: result.data.freeShippingCityIds.map((city) => ({
+                          city: { connect: { id: +city } },
+                        })),
+                      }
+                    : undefined,
               },
             }
           : undefined,

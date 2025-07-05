@@ -216,7 +216,7 @@ const ProductForm: FC<ProductFormProps> = ({
     queryFn: () => getCityByProvinceId(provinceNameForShopping),
     enabled: !!provinceNameForShopping,
   })
-  // console.log({ citiesForFreeShipping })
+  console.log({ citiesForFreeShipping })
   const errors = form.formState.errors
   console.log({ errors })
   useEffect(() => {
@@ -312,6 +312,14 @@ const ProductForm: FC<ProductFormProps> = ({
         formData.append(
           'freeShippingCountriesIds',
           values.freeShippingCountriesIds[i].value
+        )
+      }
+    }
+    if (values.freeShippingCityIds && values.freeShippingCityIds.length > 0) {
+      for (let i = 0; i < values.freeShippingCityIds.length; i++) {
+        formData.append(
+          'freeShippingCityIds',
+          values.freeShippingCityIds[i].value
         )
       }
     }
@@ -501,7 +509,7 @@ const ProductForm: FC<ProductFormProps> = ({
     label: c.name,
     value: c.id,
   }))
-  const cityOptions: Option[] = citiesForFreeShipping?.map((c) => ({
+  const cityOptions = citiesForFreeShipping?.map((c) => ({
     label: c.name,
     value: c.id,
   }))
@@ -517,15 +525,15 @@ const ProductForm: FC<ProductFormProps> = ({
     form.setValue('freeShippingCityIds', updatedValues)
   }
 
-  useEffect(() => {
-    form.resetField('freeShippingCityIds')
-    // form.setValue('questions', questions)
-  }, [provinceNameForShopping])
+  // useEffect(() => {
+  //   form.resetField('freeShippingCityIds')
+  //   // form.setValue('questions', questions)
+  // }, [provinceNameForShopping])
   // useEffect(() => {
   //   form.setValue('product_specs', productSpecs)
   //   form.setValue('questions', questions)
   // }, [form, productSpecs, questions])
-
+  console.log(form.watch('freeShippingCityIds'))
   return (
     <AlertDialog>
       <Card className="w-full">
@@ -990,22 +998,31 @@ const ProductForm: FC<ProductFormProps> = ({
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <MultipleSelector
-                              disabled={
-                                isPendingCitiesForFreeShipping &&
-                                !provinceNameForShopping
-                              }
-                              {...field}
-                              // value={field?.value}
-                              // onChange={field.onChange}
-                              defaultOptions={cityOptions}
-                              placeholder="Select City"
-                              emptyIndicator={
-                                <p className="text-center text-lg leading-10  ">
-                                  no results found.
-                                </p>
-                              }
-                            />
+                            {citiesForFreeShipping && (
+                              <MultipleSelector
+                                // disabled={
+                                //   isPendingCitiesForFreeShipping &&
+                                //   !provinceNameForShopping
+                                // }
+                                {...field}
+                                // value={field?.value}
+                                // onChange={field.onChange}
+                                defaultOptions={citiesForFreeShipping.map(
+                                  (city) => {
+                                    return {
+                                      label: city.name,
+                                      value: city.id.toString(),
+                                    }
+                                  }
+                                )}
+                                placeholder="Select City"
+                                emptyIndicator={
+                                  <p className="text-center text-lg leading-10  ">
+                                    no results found.
+                                  </p>
+                                }
+                              />
+                            )}
                           </FormControl>
                         </FormItem>
                       )}
