@@ -29,6 +29,11 @@ export default async function SellerNewProductPage({
       name: 'asc',
     },
   })
+  const provinces = await prisma.province.findMany({
+    orderBy: {
+      name: 'asc',
+    },
+  })
 
   return (
     <div className="w-full">
@@ -37,6 +42,7 @@ export default async function SellerNewProductPage({
         storeUrl={storeUrl}
         offerTags={offerTags}
         countries={countries}
+        provinces={provinces}
       />
     </div>
   )

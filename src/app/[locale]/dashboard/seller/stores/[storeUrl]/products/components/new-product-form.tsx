@@ -48,6 +48,7 @@ import {
   Image,
   OfferTag,
   Product,
+  Province,
   Question,
   ShippingFeeMethod,
   Spec,
@@ -64,6 +65,7 @@ import InputFieldset from '@/components/dashboard/input-fieldset'
 import ClickToAddInputs from '@/components/dashboard/click-to-add'
 import RichTextEditor from '@/components/dashboard/text-editor/react-text-editor'
 import ClickToAddInputsRHF from '@/components/dashboard/click-to-add'
+import { getCityByProvinceId } from '@/lib/actions/province'
 
 const shippingFeeMethods = [
   {
@@ -102,6 +104,7 @@ interface ProductFormProps {
   storeUrl: string
   offerTags: OfferTag[]
   countries: Country[]
+  provinces?: Province[]
   // subCategories?: SubCategory[]
 }
 
@@ -111,6 +114,7 @@ const ProductForm: FC<ProductFormProps> = ({
   offerTags,
   storeUrl,
   countries,
+  provinces,
   // subCategories,
 }) => {
   // console.log(data)
@@ -118,6 +122,7 @@ const ProductForm: FC<ProductFormProps> = ({
   const path = usePathname()
 
   const [isPending, startTransition] = useTransition()
+  const [provinceNameForShopping, setProvinceNameForShopping] = useState('')
 
   // const [productSpecs, setProductSpecs] = useState<
   //   { name: string; value: string }[]
@@ -203,7 +208,15 @@ const ProductForm: FC<ProductFormProps> = ({
     queryKey: ['subCateByCat', form.watch().categoryId],
     queryFn: () => getSubCategoryByCategoryId(form.watch().categoryId),
   })
-
+  const {
+    data: citiesForFreeShipping,
+    isPending: isPendingCitiesForFreeShipping,
+  } = useQuery({
+    queryKey: ['province-for-shipping', provinceNameForShopping],
+    queryFn: () => getCityByProvinceId(provinceNameForShopping),
+    enabled: !!provinceNameForShopping,
+  })
+  // console.log({ citiesForFreeShipping })
   const errors = form.formState.errors
   console.log({ errors })
   useEffect(() => {
@@ -488,13 +501,26 @@ const ProductForm: FC<ProductFormProps> = ({
     label: c.name,
     value: c.id,
   }))
+  const cityOptions: Option[] = citiesForFreeShipping?.map((c) => ({
+    label: c.name,
+    value: c.id,
+  }))
 
   const handleDeleteCountryFreeShipping = (index: number) => {
     const currentValues = form.getValues().freeShippingCountriesIds
     const updatedValues = currentValues.filter((_, i) => i !== index)
     form.setValue('freeShippingCountriesIds', updatedValues)
   }
+  const handleDeleteCityFreeShipping = (index: number) => {
+    const currentValues = form.getValues().freeShippingCityIds
+    const updatedValues = currentValues.filter((_, i) => i !== index)
+    form.setValue('freeShippingCityIds', updatedValues)
+  }
 
+  useEffect(() => {
+    form.resetField('freeShippingCityIds')
+    // form.setValue('questions', questions)
+  }, [provinceNameForShopping])
   // useEffect(() => {
   //   form.setValue('product_specs', productSpecs)
   //   form.setValue('questions', questions)
@@ -892,7 +918,7 @@ const ProductForm: FC<ProductFormProps> = ({
                                 // value={field?.value}
                                 // onChange={field.onChange}
                                 defaultOptions={countryOptions}
-                                placeholder="Select frameworks you like..."
+                                placeholder="Select country you like..."
                                 emptyIndicator={
                                   <p className="text-center text-lg leading-10  ">
                                     no results found.
@@ -935,6 +961,85 @@ const ProductForm: FC<ProductFormProps> = ({
                       </div>
                     </div>
                   )}
+                </div>
+                <div className=" flex gap-2">
+                  <Select
+                    onValueChange={(v) => setProvinceNameForShopping(v)}
+                    defaultValue={provinceNameForShopping}
+                    value={provinceNameForShopping}
+                  >
+                    <SelectTrigger className="w-[280px]">
+                      <SelectValue placeholder="Select a Province" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {provinces?.map((province) => (
+                        <SelectItem
+                          key={province.id}
+                          value={province.id.toString()}
+                        >
+                          {province.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="freeShippingCityIds"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <MultipleSelector
+                              disabled={
+                                isPendingCitiesForFreeShipping &&
+                                !provinceNameForShopping
+                              }
+                              {...field}
+                              // value={field?.value}
+                              // onChange={field.onChange}
+                              defaultOptions={cityOptions}
+                              placeholder="Select City"
+                              emptyIndicator={
+                                <p className="text-center text-lg leading-10  ">
+                                  no results found.
+                                </p>
+                              }
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <p className="mt-4 text-sm  pb-3 flex">
+                      <Dot className="-me-1" />
+                      List of cities you offer free shipping for this product
+                      :&nbsp;
+                      {form.getValues().freeShippingCityIds &&
+                        form.getValues().freeShippingCityIds.length === 0 &&
+                        'None'}
+                    </p>
+
+                    <div className="flex flex-wrap gap-1">
+                      {form
+                        .getValues()
+                        .freeShippingCityIds?.map((country, index) => (
+                          <div
+                            key={country.label}
+                            className="text-xs inline-flex items-center px-3 py-1 rounded-md gap-x-2"
+                          >
+                            <span>{country.label}</span>
+                            <span
+                              className="cursor-pointer hover:text-red-500"
+                              onClick={() =>
+                                handleDeleteCityFreeShipping(index)
+                              }
+                            >
+                              x
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               </InputFieldset>
 

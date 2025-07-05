@@ -521,6 +521,7 @@ export const ProductFormSchema = z.object({
       'Each country must have a valid name and ID.'
     )
     .default([]), // use it when an array is optional
+  // use it when an array is optional
   // .object({
   //   id: z.string().optional(),
   //   label: z.string(),
@@ -830,6 +831,21 @@ export const NewProductFormSchema = z.object({
     //   'Each country must have a valid name and ID.'
     // )
     .default([]), // use it when an array is optional
+  freeShippingCityIds: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        label: z.string(),
+        value: z.string(),
+        disable: z.boolean().optional(),
+      })
+    )
+    .optional()
+    .refine(
+      (ids) => ids?.every((item) => item.label && item.value),
+      'Each country must have a valid name and ID.'
+    )
+    .default([]),
   // .object({
   //   id: z.string().optional(),
   //   label: z.string(),
