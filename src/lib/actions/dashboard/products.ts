@@ -721,6 +721,42 @@ export async function editProduct(
       })
     }
 
+    const freeShippingDetails = () => {
+      if (
+        (result.data.freeShippingCountriesIds &&
+          result.data.freeShippingCountriesIds.length > 0) ||
+        (result.data.freeShippingCityIds &&
+          result.data.freeShippingCityIds.length > 0)
+      ) {
+        return {
+          create: {
+            eligibaleCountries:
+              result.data.freeShippingCountriesIds &&
+              result.data.freeShippingCountriesIds.length > 0
+                ? {
+                    create: result.data.freeShippingCountriesIds.map(
+                      (country) => ({
+                        country: { connect: { id: country } },
+                      })
+                    ),
+                  }
+                : undefined,
+            eligibleCities:
+              result.data.freeShippingCityIds &&
+              result.data.freeShippingCityIds.length > 0
+                ? {
+                    create: result.data.freeShippingCityIds.map((city) => ({
+                      city: { connect: { id: +city } },
+                    })),
+                  }
+                : undefined,
+          },
+        }
+      } else if (result.data.freeShippingForAllCountries) {
+        return undefined
+      }
+    }
+
     await prisma.product.update({
       where: {
         id: productId,
@@ -737,37 +773,38 @@ export async function editProduct(
         shippingFeeMethod: result.data.shippingFeeMethod,
         // freeShipping:result.data.freeShippingCountriesIds?true:false,
         freeShippingForAllCountries: result.data.freeShippingForAllCountries,
-        freeShipping: result.data.freeShippingForAllCountries
-          ? undefined
-          : (result.data.freeShippingCountriesIds &&
-              result.data.freeShippingCountriesIds.length > 0) ||
-            (result.data.freeShippingCityIds &&
-              result.data.freeShippingCityIds.length > 0)
-          ? {
-              create: {
-                eligibaleCountries:
-                  result.data.freeShippingCountriesIds &&
-                  result.data.freeShippingCountriesIds.length > 0
-                    ? {
-                        create: result.data.freeShippingCountriesIds.map(
-                          (country) => ({
-                            country: { connect: { id: country } },
-                          })
-                        ),
-                      }
-                    : undefined,
-                eligibleCities:
-                  result.data.freeShippingCityIds &&
-                  result.data.freeShippingCityIds.length > 0
-                    ? {
-                        create: result.data.freeShippingCityIds.map((city) => ({
-                          city: { connect: { id: +city } },
-                        })),
-                      }
-                    : undefined,
-              },
-            }
-          : undefined,
+        // freeShipping: result.data.freeShippingForAllCountries
+        //   ? undefined
+        //   : (result.data.freeShippingCountriesIds &&
+        //       result.data.freeShippingCountriesIds.length > 0) ||
+        //     (result.data.freeShippingCityIds &&
+        //       result.data.freeShippingCityIds.length > 0)
+        //   ? {
+        //       create: {
+        //         eligibaleCountries:
+        //           result.data.freeShippingCountriesIds &&
+        //           result.data.freeShippingCountriesIds.length > 0
+        //             ? {
+        //                 create: result.data.freeShippingCountriesIds.map(
+        //                   (country) => ({
+        //                     country: { connect: { id: country } },
+        //                   })
+        //                 ),
+        //               }
+        //             : undefined,
+        //         eligibleCities:
+        //           result.data.freeShippingCityIds &&
+        //           result.data.freeShippingCityIds.length > 0
+        //             ? {
+        //                 create: result.data.freeShippingCityIds.map((city) => ({
+        //                   city: { connect: { id: +city } },
+        //                 })),
+        //               }
+        //             : undefined,
+        //       },
+        //     }
+        //   : undefined,
+        freeShipping: freeShippingDetails(),
       },
     })
 

@@ -266,7 +266,7 @@ export const getProducts = async (
       (variant) => ({
         url: `/goshop/product/${product.slug}?variant=${variant.slug}`,
         image: variant.variantImage
-          ? variant.variantImage[0]
+          ? variant?.variantImage?.[0]
           : product.images?.[0],
       })
     )
@@ -399,7 +399,7 @@ export const getRelatedProducts = async (
       (variant) => ({
         url: `/goshop/product/${product.slug}?variant=${variant.slug}`,
         image: variant.variantImage
-          ? variant.variantImage[0]
+          ? variant?.variantImage?.[0]
           : product.images[0],
       })
     )

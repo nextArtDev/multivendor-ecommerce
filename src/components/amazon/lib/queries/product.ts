@@ -85,7 +85,7 @@ export const retrieveProductDetailsOptimized = async (productSlug: string) => {
 
 export type FreeShippingWithCountriesAndCitiesType = FreeShipping & {
   eligibaleCountries: FreeShippingCountry[]
-  eligibleCities: FreeShippingCity[]
+  // eligibleCities: FreeShippingCity[]
   // freeShippingCity: FreeShippingCity[]
 }
 

@@ -269,7 +269,7 @@ const ProductPageContainer: FC<Props> = ({
             //     ? variant.variantImage
             //     : productData.images
             // }
-            activeImage={activeImage || variant.variantImage[0]}
+            activeImage={activeImage || variant?.variantImage?.[0] || ''}
             setActiveImage={setActiveImage}
           />
         </div>
@@ -306,7 +306,7 @@ const ProductPageContainer: FC<Props> = ({
               userProvince={userProvince}
               weight={variant.weight}
               freeShippingForAllCountries={
-                productData.freeShippingForAllCountries
+                productData.freeShippingForAllCountries || {}
               }
               productToBeAddedToCart={productToBeAddedToCart}
               isProductValid={isProductValid}

@@ -35,7 +35,7 @@ const VariantSwitcher: FC<Props> = ({
               // onMouseEnter={() => setVariant(variants[index])}
             >
               <NextImage
-                src={img.image.url}
+                src={img?.image?.url || ''}
                 alt=""
                 width={100}
                 height={100}

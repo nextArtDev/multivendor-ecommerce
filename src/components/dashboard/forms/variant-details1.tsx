@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import JoditEditor from 'jodit-react'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
 
@@ -402,7 +402,14 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
       }
     })
   }
-
+  const addMainVariantColor = (newColorValue: string) => {
+    const exists = colorFields.some((cf) => cf.color === newColorValue)
+    if (!exists && newColorValue && newColorValue.trim() !== '') {
+      appendColor({ color: newColorValue })
+    } else if (exists) {
+      toast.info(`Color ${newColorValue} already exists.`)
+    }
+  }
   return (
     <AlertDialog>
       <Card className="w-full">
@@ -421,7 +428,7 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
               className="space-y-4"
             >
               <div className="flex flex-col gap-y-6 xl:flex-row">
-                <ImageInput
+                {/* <ImageInput
                   name="variantImage" // RHF name for the image field itself
                   label="Variant Image"
                   // If ImageInput needs to interact with the `colors` FieldArray:
@@ -429,6 +436,19 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                   // appendColor={appendColor}
                   // removeColor={removeColor}
                   // setValue={form.setValue} // To set color associations if any
+                /> */}
+                <ImageInput
+                  name="variantImage"
+                  label="Variant Images"
+                  initialDataImages={data?.variantImage}
+                  mainVariantColors={
+                    colorFields as unknown as FieldArrayWithId<
+                      any,
+                      'colors',
+                      'id'
+                    >[]
+                  }
+                  addMainVariantColor={addMainVariantColor}
                 />
 
                 <div className="w-full flex flex-col gap-y-3 xl:pl-5">
