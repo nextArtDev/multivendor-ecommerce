@@ -721,39 +721,31 @@ export async function editProduct(
       })
     }
 
-    const freeShippingDetails = () => {
-      if (
-        (result.data.freeShippingCountriesIds &&
-          result.data.freeShippingCountriesIds.length > 0) ||
-        (result.data.freeShippingCityIds &&
-          result.data.freeShippingCityIds.length > 0)
-      ) {
-        return {
-          create: {
-            eligibaleCountries:
-              result.data.freeShippingCountriesIds &&
-              result.data.freeShippingCountriesIds.length > 0
-                ? {
-                    create: result.data.freeShippingCountriesIds.map(
-                      (country) => ({
-                        country: { connect: { id: country } },
-                      })
-                    ),
-                  }
-                : undefined,
-            eligibleCities:
-              result.data.freeShippingCityIds &&
-              result.data.freeShippingCityIds.length > 0
-                ? {
-                    create: result.data.freeShippingCityIds.map((city) => ({
-                      city: { connect: { id: +city } },
-                    })),
-                  }
-                : undefined,
-          },
-        }
-      } else if (result.data.freeShippingForAllCountries) {
-        return undefined
+    let eligibaleCountriesDetails
+    let eligibleCitiesDetails
+
+    if (
+      result.data.freeShippingCountriesIds &&
+      result.data.freeShippingCountriesIds.length > 0
+    ) {
+      eligibaleCountriesDetails = {
+        eligibaleCountries: {
+          create: result.data.freeShippingCountriesIds.map((country) => ({
+            country: { connect: { id: country } },
+          })),
+        },
+      }
+    }
+    if (
+      result.data.freeShippingCityIds &&
+      result.data.freeShippingCityIds.length > 0
+    ) {
+      eligibleCitiesDetails = {
+        eligibleCities: {
+          create: result.data.freeShippingCityIds.map((city) => ({
+            city: { connect: { id: +city } },
+          })),
+        },
       }
     }
 
@@ -804,10 +796,87 @@ export async function editProduct(
         //       },
         //     }
         //   : undefined,
-        freeShipping: freeShippingDetails(),
+        // freeShipping: {
+        //   create: {
+        //     // eligibaleCountries: result.data.freeShippingForAllCountries
+        //     //   ? undefined
+        //     //   : result.data.freeShippingCountriesIds &&
+        //     //     result.data.freeShippingCountriesIds.length > 0
+        //     //   ? {
+        //     //       create: result.data.freeShippingCountriesIds.map(
+        //     //         (country) => ({
+        //     //           country: { connect: { id: country } },
+        //     //         })
+        //     //       ),
+        //     //     }
+        //     //   : undefined,
+        //     // eligibleCities:
+        //     //   result.data.freeShippingCityIds &&
+        //     //   result.data.freeShippingCityIds.length > 0
+        //     //     ? {
+        //     //         create: result.data.freeShippingCityIds.map((city) => ({
+        //     //           city: { connect: { id: +city } },
+        //     //         })),
+        //     //       }
+        //     //     : undefined,
+        //     eligibleCities: {
+        //       create: result.data.freeShippingCityIds.map((city) => ({
+        //         city: { connect: { id: +city } },
+        //       })),
+        //     },
+        //   },
+        // },
       },
     })
-
+    // await prisma.freeShipping.create({
+    //   data: {
+    //     productId,
+    //     eligibleCities: {
+    //       create: result.data.freeShippingCityIds.map((cityId) => ({
+    //         id: +cityId,
+    //       })),
+    //     },
+    //   },
+    // })
+    // let newEligibleCities
+    // if (result.data.freeShippingCityIds) {
+    //   newEligibleCities = result.data.freeShippingCityIds.map((id) => ({
+    //     productId: productId,
+    //     eligibleCities: {
+    //       create: result.data.freeShippingCityIds.map((city) => ({
+    //         city: { connect: { id: +city } },
+    //       })),
+    //     },
+    //   }))
+    // }
+    // if (newEligibleCities) {
+    //   await prisma.spec.createMany({
+    //     data: newEligibleCities,
+    //   })
+    // }
+    console.log(
+      result.data.freeShippingCityIds.map((cityId) => ({
+        cityId: +cityId,
+      }))
+    )
+    const freeShipping = await prisma.freeShipping.create({
+      data: {
+        productId: productId,
+        eligibleCities: {
+          create: result.data.freeShippingCityIds.map((cityId) => ({
+            cityId: +cityId,
+          })),
+        },
+      },
+      include: {
+        eligibleCities: {
+          include: {
+            city: true,
+          },
+        },
+      },
+    })
+    console.log({ freeShipping })
     let newSpecs
     if (result.data.product_specs) {
       newSpecs = result.data.product_specs.map((spec) => ({
