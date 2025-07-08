@@ -26,3 +26,18 @@ export const getTimeUntil = (
 
   return { days: totalDays, hours: totalHours }
 }
+
+export function arraysEqual(
+  arr1: (string | number)[] | null | undefined,
+  arr2: (string | number)[] | null | undefined
+): boolean {
+  // Handle null/undefined cases
+  if (arr1 == null && arr2 == null) return true
+  if (arr1 == null || arr2 == null) return false
+
+  // Handle length mismatch (including empty vs non-empty)
+  if (arr1.length !== arr2.length) return false
+
+  // Compare elements (using == for type coercion if needed)
+  return arr1.every((value, index) => value == arr2[index])
+}

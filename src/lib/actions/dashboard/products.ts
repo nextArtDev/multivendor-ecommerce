@@ -26,6 +26,7 @@ import {
 } from '@/lib/schemas/dashboard'
 import { headers } from 'next/headers'
 import { generateUniqueSlug } from '@/lib/slug-util'
+import { arraysEqual } from '@/lib/utils'
 
 interface CreateProductFormState {
   success?: string
@@ -768,7 +769,7 @@ export async function editProduct(
     //   }
     // }
 
-    const createdProduct = await prisma.product.update({
+    const updatedProduct = await prisma.product.update({
       where: {
         id: productId,
       },
@@ -873,13 +874,9 @@ export async function editProduct(
     //     data: newEligibleCities,
     //   })
     // }
-    console.log(createdProduct)
-    console.log(
-      result.data.freeShippingCityIds.map((cityId) => ({
-        cityId: +cityId,
-      }))
-    )
-    const existingFreeShippingCities = await prisma.freeShipping.findMany({
+    // console.log(updatedProduct)
+    // console.log(result.data.freeShippingCityIds)
+    const existingFreeShippingCities = await prisma.freeShipping.findFirst({
       where: {
         productId,
       },
@@ -887,32 +884,79 @@ export async function editProduct(
         eligibleCities: true,
       },
     })
-    const existingCityIds = existingFreeShippingCities.map((city) => city.id)
-
+    const existingCityIds = existingFreeShippingCities?.eligibleCities.map(
+      (city) => city.cityId
+    )
+    // console.log(
+    //   'ev',
+    //   !arraysEqual(existingCityIds, result.data.freeShippingCityIds)
+    // )
+    // console.log(
+    //   'id',
+    //   existingFreeShippingCities?.eligibleCities.map(
+    //     (city: { id: string }) => ({
+    //       id: city.id,
+    //     })
+    //   )
+    // )
     if (
-      !existingCityIds.every(
-        (value, index) => value === result.data.freeShippingCityIds[index]
-      )
+      // !existingCityIds?.every(
+      //   (value, index) => value == +result.data.freeShippingCityIds[index]
+      // )
+      !arraysEqual(existingCityIds, result.data.freeShippingCityIds)
     ) {
-    }
-    const freeShipping = await prisma.freeShipping.create({
-      data: {
-        productId: createdProduct.id,
-        eligibleCities: {
-          create: result.data.freeShippingCityIds.map((cityId) => ({
-            cityId: +cityId,
-          })),
+      await prisma.freeShipping.update({
+        where: {
+          id: existingFreeShippingCities?.id,
+          productId,
         },
-      },
-      include: {
-        eligibleCities: {
-          include: {
-            city: true,
+        data: {
+          eligibleCities: {
+            deleteMany: existingFreeShippingCities?.eligibleCities.map(
+              (city: { id: string }) => ({
+                id: city.id,
+              })
+            ),
           },
         },
-      },
-    })
-    console.log({ freeShipping })
+      })
+      await prisma.freeShipping.delete({
+        where: {
+          id: existingFreeShippingCities?.id,
+          productId,
+        },
+      })
+      // console.log({ olderFreeShippings })
+      // console.log(
+      //   result.data.freeShippingCityIds.map((cityId) => ({
+      //     cityId: +cityId,
+      //   }))
+      // )
+      // console.log('productId', productId)
+      // await prisma.freeShippingCity.deleteMany({
+      //   where: {
+      //     freeShippingId: existingFreeShippingCities?.id,
+      //   },
+      // })
+      const freeShipping = await prisma.freeShipping.create({
+        data: {
+          productId,
+          eligibleCities: {
+            create: result.data.freeShippingCityIds.map((cityId) => ({
+              cityId: +cityId,
+            })),
+          },
+        },
+        // include: {
+        //   eligibleCities: {
+        //     include: {
+        //       city: true,
+        //     },
+        //   },
+        // },
+      })
+      console.log({ freeShipping })
+    }
     let newSpecs
     if (result.data.product_specs) {
       newSpecs = result.data.product_specs.map((spec) => ({
