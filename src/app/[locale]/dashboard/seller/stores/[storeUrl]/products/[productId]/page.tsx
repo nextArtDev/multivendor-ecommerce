@@ -29,7 +29,11 @@ export default async function SellerNewProductPage({
       name: 'asc',
     },
   })
-
+  const provinces = await prisma.province.findMany({
+    orderBy: {
+      name: 'asc',
+    },
+  })
   // Convert null fields to undefined for compatibility with ProductWithVariantType
   const productWithUndefined = {
     ...product,
@@ -47,6 +51,7 @@ export default async function SellerNewProductPage({
         offerTags={offerTags}
         countries={countries}
         data={product}
+        provinces={provinces}
       />
     </div>
   )

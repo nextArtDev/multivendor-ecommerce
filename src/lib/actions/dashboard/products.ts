@@ -436,39 +436,58 @@ export async function createNewProduct(
         shippingFeeMethod: result.data.shippingFeeMethod,
         // freeShipping:result.data.freeShippingCountriesIds?true:false,
         freeShippingForAllCountries: result.data.freeShippingForAllCountries,
-        freeShipping: result.data.freeShippingForAllCountries
-          ? undefined
-          : (result.data.freeShippingCountriesIds &&
-              result.data.freeShippingCountriesIds.length > 0) ||
-            (result.data.freeShippingCityIds &&
-              result.data.freeShippingCityIds.length > 0)
-          ? {
-              create: {
-                eligibaleCountries:
-                  result.data.freeShippingCountriesIds &&
-                  result.data.freeShippingCountriesIds.length > 0
-                    ? {
-                        create: result.data.freeShippingCountriesIds.map(
-                          (country) => ({
-                            country: { connect: { id: country } },
-                          })
-                        ),
-                      }
-                    : undefined,
-                eligibleCities:
-                  result.data.freeShippingCityIds &&
-                  result.data.freeShippingCityIds.length > 0
-                    ? {
-                        create: result.data.freeShippingCityIds.map((city) => ({
-                          city: { connect: { id: +city } },
-                        })),
-                      }
-                    : undefined,
-              },
-            }
-          : undefined,
+        //   freeShipping: result.data.freeShippingForAllCountries
+        //     ? undefined
+        //     : (result.data.freeShippingCountriesIds &&
+        //         result.data.freeShippingCountriesIds.length > 0) ||
+        //       (result.data.freeShippingCityIds &&
+        //         result.data.freeShippingCityIds.length > 0)
+        //     ? {
+        //         create: {
+        //           eligibaleCountries:
+        //             result.data.freeShippingCountriesIds &&
+        //             result.data.freeShippingCountriesIds.length > 0
+        //               ? {
+        //                   create: result.data.freeShippingCountriesIds.map(
+        //                     (country) => ({
+        //                       country: { connect: { id: country } },
+        //                     })
+        //                   ),
+        //                 }
+        //               : undefined,
+        //           eligibleCities:
+        //             result.data.freeShippingCityIds &&
+        //             result.data.freeShippingCityIds.length > 0
+        //               ? {
+        //                   create: result.data.freeShippingCityIds.map((city) => ({
+        //                     city: { connect: { id: +city } },
+        //                   })),
+        //                 }
+        //               : undefined,
+        //         },
+        //       }
+        //     : undefined,
       },
     })
+
+    const freeShipping = await prisma.freeShipping.create({
+      data: {
+        productId: product.id,
+        eligibleCities: {
+          create: result.data.freeShippingCityIds.map((cityId) => ({
+            cityId: +cityId,
+          })),
+        },
+      },
+      include: {
+        eligibleCities: {
+          include: {
+            city: true,
+          },
+        },
+      },
+    })
+    // console.log({ freeShipping })
     await prisma.product.update({
       where: {
         id: product.id,
@@ -721,35 +740,35 @@ export async function editProduct(
       })
     }
 
-    let eligibaleCountriesDetails
-    let eligibleCitiesDetails
+    // let eligibaleCountriesDetails
+    // let eligibleCitiesDetails
 
-    if (
-      result.data.freeShippingCountriesIds &&
-      result.data.freeShippingCountriesIds.length > 0
-    ) {
-      eligibaleCountriesDetails = {
-        eligibaleCountries: {
-          create: result.data.freeShippingCountriesIds.map((country) => ({
-            country: { connect: { id: country } },
-          })),
-        },
-      }
-    }
-    if (
-      result.data.freeShippingCityIds &&
-      result.data.freeShippingCityIds.length > 0
-    ) {
-      eligibleCitiesDetails = {
-        eligibleCities: {
-          create: result.data.freeShippingCityIds.map((city) => ({
-            city: { connect: { id: +city } },
-          })),
-        },
-      }
-    }
+    // if (
+    //   result.data.freeShippingCountriesIds &&
+    //   result.data.freeShippingCountriesIds.length > 0
+    // ) {
+    //   eligibaleCountriesDetails = {
+    //     eligibaleCountries: {
+    //       create: result.data.freeShippingCountriesIds.map((country) => ({
+    //         country: { connect: { id: country } },
+    //       })),
+    //     },
+    //   }
+    // }
+    // if (
+    //   result.data.freeShippingCityIds &&
+    //   result.data.freeShippingCityIds.length > 0
+    // ) {
+    //   eligibleCitiesDetails = {
+    //     eligibleCities: {
+    //       create: result.data.freeShippingCityIds.map((city) => ({
+    //         city: { connect: { id: +city } },
+    //       })),
+    //     },
+    //   }
+    // }
 
-    await prisma.product.update({
+    const createdProduct = await prisma.product.update({
       where: {
         id: productId,
       },
@@ -854,14 +873,31 @@ export async function editProduct(
     //     data: newEligibleCities,
     //   })
     // }
+    console.log(createdProduct)
     console.log(
       result.data.freeShippingCityIds.map((cityId) => ({
         cityId: +cityId,
       }))
     )
+    const existingFreeShippingCities = await prisma.freeShipping.findMany({
+      where: {
+        productId,
+      },
+      include: {
+        eligibleCities: true,
+      },
+    })
+    const existingCityIds = existingFreeShippingCities.map((city) => city.id)
+
+    if (
+      !existingCityIds.every(
+        (value, index) => value === result.data.freeShippingCityIds[index]
+      )
+    ) {
+    }
     const freeShipping = await prisma.freeShipping.create({
       data: {
-        productId: productId,
+        productId: createdProduct.id,
         eligibleCities: {
           create: result.data.freeShippingCityIds.map((cityId) => ({
             cityId: +cityId,
