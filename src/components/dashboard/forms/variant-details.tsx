@@ -224,48 +224,48 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
       }
     })
 
-    // startTransition(async () => {
-    //   try {
-    //     const action = variantId ? editVariant : createNewVariant
-    //     const response = variantId
-    //       ? // @ts-ignore
-    //         await action(formData, variantId, productId, path)
-    //       : // @ts-ignore
-    //         await action(formData, productId, path)
+    startTransition(async () => {
+      try {
+        const action = variantId ? editVariant : createNewVariant
+        const response = variantId
+          ? // @ts-ignore
+            await action(formData, variantId, productId, path)
+          : // @ts-ignore
+            await action(formData, productId, path)
 
-    //     if (response?.errors) {
-    //       if (response.errors._form) {
-    //         toast.error(response.errors._form.join(' و '))
-    //       }
-    //       ;(
-    //         Object.keys(response.errors) as Array<keyof typeof response.errors>
-    //       ).forEach((key) => {
-    //         if (key !== '_form' && response.errors![key]) {
-    //           // For array fields, RHF might need errors like 'colors.root' or 'colors[0].color'
-    //           // Adjust if your server action provides indexed errors for arrays.
-    //           form.setError(key as any, {
-    //             type: 'custom',
-    //             message: response.errors![key]?.join(' و '),
-    //           })
-    //         }
-    //       })
-    //     } else if (response?.success || !response?.errors) {
-    //       // Success is implicit if no errors and redirect happens, or if success message is present
-    //       toast.success(
-    //         response?.success ||
-    //           (variantId ? 'Variant updated!' : 'Variant created!')
-    //       )
-    //       // Redirect is handled by server action
-    //     }
-    //   } catch (error) {
-    //     if (
-    //       !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
-    //     ) {
-    //       toast.error('An unexpected error occurred.')
-    //       console.error(error)
-    //     }
-    //   }
-    // })
+        if (response?.errors) {
+          if (response.errors._form) {
+            toast.error(response.errors._form.join(' و '))
+          }
+          ;(
+            Object.keys(response.errors) as Array<keyof typeof response.errors>
+          ).forEach((key) => {
+            if (key !== '_form' && response.errors![key]) {
+              // For array fields, RHF might need errors like 'colors.root' or 'colors[0].color'
+              // Adjust if your server action provides indexed errors for arrays.
+              form.setError(key as any, {
+                type: 'custom',
+                message: response.errors![key]?.join(' و '),
+              })
+            }
+          })
+        } else if (response?.success || !response?.errors) {
+          // Success is implicit if no errors and redirect happens, or if success message is present
+          toast.success(
+            response?.success ||
+              (variantId ? 'Variant updated!' : 'Variant created!')
+          )
+          // Redirect is handled by server action
+        }
+      } catch (error) {
+        if (
+          !(error instanceof Error && error.message.includes('NEXT_REDIRECT'))
+        ) {
+          toast.error('An unexpected error occurred.')
+          console.error(error)
+        }
+      }
+    })
   }
 
   const addMainVariantColor = (newColorValue: string) => {

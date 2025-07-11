@@ -1,5 +1,6 @@
-// components/image-input.tsx (adjust path)
+// components/image-input.tsx
 'use client'
+
 import {
   FormControl,
   FormField,
@@ -7,17 +8,14 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import React, { useEffect, useCallback } from 'react'
-import { useFormContext, FieldArrayWithId, Path } from 'react-hook-form'
-import ImagesPreviewGrid from './images-preview-grid' // Adjust path
-import { FileUploader, FileInput } from '../ui/file-upload' // Adjust path
 import { Image as PrismaImageType } from '@prisma/client'
+import React, { useEffect, useState } from 'react'
+import { FieldArrayWithId, Path, useFormContext } from 'react-hook-form'
+import { FileInput, FileUploader } from '../ui/file-upload' // Adjust path
+import ImagesPreviewGrid from './images-preview-grid' // Adjust path
 
-// Assuming your main form Zod schema is available (e.g., VariantFormSchema)
-// import { VariantFormSchema } from '@/lib/schemas/dashboard';
-// import { z } from 'zod';
-// type YourMainFormSchemaType = z.infer<typeof VariantFormSchema>;
-type YourMainFormSchemaType = any // Replace with actual inferred type
+// Define a more specific type for your form values if possible
+type YourMainFormSchemaType = any // Replace with your actual Zod schema inferred type
 
 const dropZoneConfig = {
   maxFiles: 5,
@@ -26,16 +24,10 @@ const dropZoneConfig = {
   accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'] },
 }
 
-export interface ImageFileWithValue {
-  id?: string // For existing images
-  url: string
-  file?: File
-}
-
 interface ImageInputProps {
   name: string
   label: string
-  initialDataImages?: Partial<PrismaImageType>[] | null
+  initialDataImages?: Partial<PrismaImageType>[] | null // Kept for edit mode, but won't be mixed with new files
   mainVariantColors: FieldArrayWithId<YourMainFormSchemaType, 'colors', 'id'>[]
   addMainVariantColor: (colorValue: string) => void
 }
@@ -43,107 +35,45 @@ interface ImageInputProps {
 export function ImageInput({
   name,
   label,
-  // initialDataImages, // Handled by RHF defaultValues and reset
   mainVariantColors,
   addMainVariantColor,
 }: ImageInputProps) {
-  const { control, getValues, setValue } =
-    useFormContext<YourMainFormSchemaType>()
-
-  const processFilesForRHF = useCallback(
-    (newFiles: File[]): ImageFileWithValue[] => {
-      return newFiles.map((file) => ({
-        url: URL.createObjectURL(file),
-        file: file,
-      }))
-    },
-    []
-  )
-
-  // Cleanup object URLs when component unmounts or files change
-  useEffect(() => {
-    const currentRHFImages =
-      (getValues(
-        name as Path<YourMainFormSchemaType>
-      ) as ImageFileWithValue[]) || []
-    return () => {
-      currentRHFImages.forEach((img) => {
-        if (img.url && img.url.startsWith('blob:') && img.file) {
-          // Only revoke if it's a new file's blob URL
-          URL.revokeObjectURL(img.url)
-        }
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getValues(name as Path<YourMainFormSchemaType>), name]) // Watch the RHF value for changes
+  const { control } = useFormContext<YourMainFormSchemaType>()
 
   return (
     <div className="w-full">
-      {' '}
-      {/* Ensure ImageInput takes space */}
       <FormField
         control={control}
         name={name as Path<YourMainFormSchemaType>}
         render={({ field }) => {
-          const currentImages: ImageFileWithValue[] = Array.isArray(field.value)
-            ? field.value
-            : []
+          // 'field.value' is now expected to be File[]
+          const files: File[] = Array.isArray(field.value) ? field.value : []
 
           return (
             <FormItem>
               <FormLabel>{label}</FormLabel>
               <FormControl>
                 <FileUploader
-                  value={
-                    currentImages
-                      .map((img) => img.file)
-                      .filter(Boolean) as File[]
-                  } // FileUploader might expect File[]
-                  onValueChange={(acceptedFiles: File[] | null) => {
-                    if (acceptedFiles && acceptedFiles.length > 0) {
-                      const newImageObjects = processFilesForRHF(acceptedFiles)
-                      // Append new files to existing, or replace, depending on FileUploader behavior
-                      // This example assumes FileUploader provides all current files, or only new ones.
-                      // If it provides only new ones:
-                      field.onChange([
-                        ...currentImages.filter((img) => !img.file),
-                        ...newImageObjects,
-                      ])
-                      // If it provides ALL files currently in its internal state:
-                      // field.onChange(processFilesForRHF(acceptedFiles));
-                    } else if (
-                      acceptedFiles === null ||
-                      acceptedFiles.length === 0
-                    ) {
-                      // Handle clearing. If FileUploader sends null or empty array for clear.
-                      // Need to decide if we clear all or only new ones.
-                      // This clears all:
-                      field.onChange([])
-                    }
-                  }}
+                  value={files}
+                  onValueChange={field.onChange} // Directly pass the RHF onChange handler
                   dropzoneOptions={dropZoneConfig}
-                  className="relative bg-background rounded-lg p-2 border border-dashed"
+                  className="relative rounded-lg border border-dashed bg-background p-2"
                 >
-                  {currentImages.length > 0 ? (
-                    <ImagesPreviewGrid
-                      images={currentImages}
-                      onRemove={(urlToRemove: string) => {
-                        const updatedImages = currentImages.filter(
-                          (img) => img.url !== urlToRemove
+                  {files.length > 0 ? (
+                    <ImagesPreviewGridForFiles
+                      files={files}
+                      onRemove={(fileToRemove) => {
+                        const updatedFiles = files.filter(
+                          (file) => file !== fileToRemove
                         )
-                        field.onChange(updatedImages)
-                        if (urlToRemove.startsWith('blob:')) {
-                          URL.revokeObjectURL(urlToRemove)
-                        }
+                        field.onChange(updatedFiles)
                       }}
                       mainVariantColors={mainVariantColors}
                       addMainVariantColor={addMainVariantColor}
                     />
                   ) : (
                     <FileInput className="outline-none">
-                      {' '}
-                      {/* Removed redundant outline */}
-                      <div className="flex items-center justify-center flex-col py-10 text-center">
+                      <div className="flex flex-col items-center justify-center py-10 text-center">
                         <FileSvgDraw />
                       </div>
                     </FileInput>
@@ -159,10 +89,58 @@ export function ImageInput({
   )
 }
 
+// A new internal component to handle preview URL creation and cleanup
+function ImagesPreviewGridForFiles({
+  files,
+  onRemove,
+  mainVariantColors,
+  addMainVariantColor,
+}: {
+  files: File[]
+  onRemove: (file: File) => void
+  mainVariantColors: FieldArrayWithId<any, 'colors', 'id'>[]
+  addMainVariantColor: (color: string) => void
+}) {
+  const [previewUrls, setPreviewUrls] = useState<string[]>([])
+
+  useEffect(() => {
+    // Create new blob URLs when files change
+    const newUrls = files.map((file) => URL.createObjectURL(file))
+    setPreviewUrls(newUrls)
+
+    // Cleanup function to revoke URLs when the component unmounts or files change
+    return () => {
+      newUrls.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [files])
+
+  return (
+    <ImagesPreviewGrid
+      // Map files to the format that ImagesPreviewGrid expects
+      images={files.map((file, index) => ({
+        // Use the generated preview URL for display
+        url: previewUrls[index] || '',
+        // Pass the original file to the onRemove handler
+        originalFile: file,
+      }))}
+      onRemove={(url: string) => {
+        // Find the file corresponding to the preview URL and remove it
+        const index = previewUrls.indexOf(url)
+        if (index !== -1) {
+          onRemove(files[index])
+        }
+      }}
+      mainVariantColors={mainVariantColors}
+      addMainVariantColor={addMainVariantColor}
+    />
+  )
+}
+
+// The SVG component remains unchanged
 const FileSvgDraw = () => (
   <>
     <svg
-      className="w-10 h-10 mb-4 text-gray-500 dark:text-gray-400"
+      className="mb-4 h-10 w-10 text-gray-500 dark:text-gray-400"
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -180,7 +158,7 @@ const FileSvgDraw = () => (
       <span className="font-semibold">Click to upload</span> or drag and drop
     </p>
     <p className="text-xs text-gray-500 dark:text-gray-400">
-      PNG, JPG, GIF, WEBP up to 4MB each (max 5 files)
+      PNG, JPG, GIF, WEBP up to 4MB each
     </p>
   </>
 )
