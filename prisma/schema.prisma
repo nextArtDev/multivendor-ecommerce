@@ -163,6 +163,7 @@ model Store {
   cartItems     CartItem[]     @relation("CartItemToStore")
   orderGroups   OrderGroup[]   @relation("OrderGroupToStore")
   coupons       Coupon[]       @relation("CouponToStore")
+  TopBar        TopBar[]       @relation("TopBarToStore")
 
   @@index([userId])
 }
@@ -814,4 +815,23 @@ model City {
   shippingAddresses ShippingAddress[] @relation("CityToShippingAddress")
 
   @@index([provinceId])
+}
+
+model TopBar {
+  id String @id @default(uuid())
+
+  title String
+  color String
+
+  buttonTitle String?
+  buttonColor String?
+  buttonLink  String?
+
+  storeId String
+  store   Store  @relation("TopBarToStore", fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
 }
