@@ -304,7 +304,11 @@ const VariantDetails: FC<VariantDetailsProps> = ({ data, productId }) => {
                 <ImageInput
                   name="variantImage"
                   label="Variant Images"
-                  initialDataImages={data?.variantImage}
+                  initialDataImages={data?.variantImage?.map((img) => ({
+                    url: img.url,
+                    file: undefined,
+                    id: img.id,
+                  }))}
                   mainVariantColors={
                     colorFields as unknown as FieldArrayWithId<
                       any,

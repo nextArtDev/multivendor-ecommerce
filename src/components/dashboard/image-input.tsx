@@ -37,6 +37,7 @@ export function ImageInput({
   label,
   mainVariantColors,
   addMainVariantColor,
+  initialDataImages,
 }: ImageInputProps) {
   const { control } = useFormContext<YourMainFormSchemaType>()
 
@@ -60,17 +61,35 @@ export function ImageInput({
                   className="relative rounded-lg border border-dashed bg-background p-2"
                 >
                   {files.length > 0 ? (
-                    <ImagesPreviewGridForFiles
-                      files={files}
-                      onRemove={(fileToRemove) => {
-                        const updatedFiles = files.filter(
-                          (file) => file !== fileToRemove
-                        )
-                        field.onChange(updatedFiles)
-                      }}
-                      mainVariantColors={mainVariantColors}
-                      addMainVariantColor={addMainVariantColor}
-                    />
+                    !!initialDataImages ? (
+                      <ImagesPreviewGrid
+                        images={initialDataImages}
+                        onRemove={(urlToRemove: string) => {
+                          // Assuming initialDataImages have a 'url' property
+                          const updatedImages = initialDataImages.filter(
+                            (img) => img.url !== urlToRemove
+                          )
+                          field.onChange(updatedImages)
+                          if (urlToRemove.startsWith('blob:')) {
+                            URL.revokeObjectURL(urlToRemove)
+                          }
+                        }}
+                        mainVariantColors={mainVariantColors}
+                        addMainVariantColor={addMainVariantColor}
+                      />
+                    ) : (
+                      <ImagesPreviewGridForFiles
+                        files={files}
+                        onRemove={(fileToRemove) => {
+                          const updatedFiles = files.filter(
+                            (file) => file !== fileToRemove
+                          )
+                          field.onChange(updatedFiles)
+                        }}
+                        mainVariantColors={mainVariantColors}
+                        addMainVariantColor={addMainVariantColor}
+                      />
+                    )
                   ) : (
                     <FileInput className="outline-none">
                       <div className="flex flex-col items-center justify-center py-10 text-center">
