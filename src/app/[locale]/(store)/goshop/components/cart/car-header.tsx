@@ -53,14 +53,14 @@ const CartHeader: FC<Props> = ({
   }
 
   return (
-    <div className="bg-white py-4">
+    <div className="bg-muted-foreground py-4 rounded-md">
       <div>
-        <div className="px-6 g-white">
-          <div className="flex items-center text-[#222] font-bold text-2xl">
+        <div className="px-6  ">
+          <div className="flex items-center   font-bold text-2xl">
             <h1>Cart ({cartLength})</h1>
           </div>
         </div>
-        <div className="flex justify-between bg-white pt-4 px-6">
+        <div className="flex justify-between  pt-4 px-6">
           <div className="flex items-center justify-start w-full">
             <label
               className="p-0 text-gray-900 text-sm leading-6 list-none inline-flex items-center m-0 mr-2 cursor-pointer align-middle"
@@ -69,16 +69,16 @@ const CartHeader: FC<Props> = ({
               <span className="leading-8 inline-flex p-0.5 cursor-pointer">
                 <span
                   className={cn(
-                    'leading-8 w-5 h-5 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:border-orange-background',
+                    'leading-8 w-5 h-5 rounded-full bg-primary border border-gray-300 flex items-center justify-center hover:border-secondary',
                     {
-                      'border-orange-background':
+                      'border-secondary':
                         cartLength > 0 && selectedLength === cartLength,
                     }
                   )}
                 >
                   {cartLength > 0 && selectedLength === cartLength && (
-                    <span className="bg-orange-background  w-5 h-5 rounded-full flex items-center justify-center">
-                      <Check className="w-3.5 text-white mt-0.5" />
+                    <span className="bg-secondary  w-5 h-5 rounded-full flex items-center justify-center">
+                      <Check className="w-3.5 text-primary mt-0.5" />
                     </span>
                   )}
                 </span>

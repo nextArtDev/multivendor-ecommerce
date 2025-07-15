@@ -74,10 +74,10 @@ export default function CartContainer({
                   selectedItems={selectedItems}
                   setSelectedItems={setSelectedItems}
                 />
-                <div className="my-2">
+                <div className="my-2 ">
                   <CountryNote country={userCountry?.name} />
                 </div>
-                <div className="h-auto overflow-x-hidden overflow-auto mt-2">
+                <div className="h-auto rounded-md overflow-x-hidden overflow-auto mt-2">
                   {cartItems.map((product) => (
                     <CartProduct
                       key={`${product.productSlug}-${product.variantSlug}`}
@@ -91,13 +91,13 @@ export default function CartContainer({
                 </div>
               </div>
               {/* Cart side */}
-              <div className="sticky top-4 lg:ml-5 w-full lg:w-[380px] max-h-max">
+              <div className="sticky top-4 lg:ml-5 w-full lg:w-[380px] max-h-max  ">
                 {/* Cart summary */}
                 <CartSummary
                   cartItems={cartItems}
                   shippingFees={totalShipping}
                 />
-                <div className="mt-2 p-4  px-6">
+                <div className="mt-2 p-4 bg-muted-foreground rounded-md px-6">
                   <FastDelivery />
                 </div>
                 <div className="mt-2 p-4  px-6">

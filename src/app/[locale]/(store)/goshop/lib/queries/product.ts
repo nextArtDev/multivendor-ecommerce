@@ -279,7 +279,7 @@ export const getProducts = async (
       rating: product.rating,
       sales: product.sales,
       numReviews: product.numReviews,
-      images: product.images,
+      images: product?.images,
       variants,
       variantImages,
     }

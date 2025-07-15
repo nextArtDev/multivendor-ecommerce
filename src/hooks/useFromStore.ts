@@ -15,5 +15,5 @@ export default function useFromStore<T, F>(
 
   return state
 }
-
+// It's to get latest definitely updated values of the _cart_, for other cases we just use useCartStore: const addToCart= useCartStore((state)=>state.addToCart)
 // how we call it: const cart = useFromStore(useCartStore,(state)=>state.cart)

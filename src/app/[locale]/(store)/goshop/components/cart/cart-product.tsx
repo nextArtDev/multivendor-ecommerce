@@ -179,9 +179,12 @@ const CartProduct: FC<Props> = ({
 
   return (
     <div
-      className={cn('bg-white px-6 border-t bordet-t-[#ebebeb] select-none', {
-        'bg-red-100': stock === 0,
-      })}
+      className={cn(
+        'bg-muted-foreground  px-6 border-t border-t-[#ebebeb] select-none',
+        {
+          'bg-red-300': stock === 0,
+        }
+      )}
     >
       <div className="py-4">
         <div className="relative flex self-start">
@@ -195,15 +198,15 @@ const CartProduct: FC<Props> = ({
                 <span className="leading-8 inline-flex p-0.5 cursor-pointer ">
                   <span
                     className={cn(
-                      'leading-8 w-5 h-5 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:border-orange-background',
+                      'leading-8 w-5 h-5 rounded-full bg-primary border border-gray-300 flex items-center justify-center hover:border-secondary',
                       {
-                        'border-orange-background': selected,
+                        'border-secondary': selected,
                       }
                     )}
                   >
                     {selected && (
-                      <span className="bg-orange-background  w-5 h-5 rounded-full flex items-center justify-center">
-                        <Check className="w-3.5 text-white mt-0.5" />
+                      <span className="bg-secondary  w-5 h-5 rounded-full flex items-center justify-center">
+                        <Check className="w-3.5 text-primary mt-0.5" />
                       </span>
                     )}
                   </span>

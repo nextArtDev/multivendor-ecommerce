@@ -42,7 +42,7 @@ const CartSummary: FC<Props> = ({ cartItems, shippingFees }) => {
     }
   }
   return (
-    <div className="relative py-4 px-6 bg-white">
+    <div className="relative py-4 px-6 bg-primary rounded-md">
       <h1 className="text-gray-900 text-2xl font-bold mb-4">Summary</h1>
       <div className="mt-4 font-medium flex items-center text-[#222] text-sm pb-1 border-b">
         <h2 className="overflow-hidden whitespace-nowrap text-ellipsis break-normal">
@@ -93,7 +93,7 @@ const CartSummary: FC<Props> = ({ cartItems, shippingFees }) => {
         </h3>
       </div>
       <div className="my-2 5">
-        <Button onClick={() => handleSaveCart()}>
+        <Button variant={'secondary'} onClick={() => handleSaveCart()}>
           {loading ? (
             <PulseLoader size={5} color="#fff" />
           ) : (
