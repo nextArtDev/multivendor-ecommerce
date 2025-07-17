@@ -1,7 +1,7 @@
 'use client'
 
-import { Country, ShippingAddress } from '@prisma/client'
-import { FC, useEffect, useState } from 'react'
+import { Country, Province, ShippingAddress } from '@prisma/client'
+import { FC, Suspense, useEffect, useState } from 'react'
 import UserShippingAddresses from '../shipping/shipping-addresses/shipping-addresses'
 import CountryNote from '../country-note'
 import CheckoutProductCard from './checkout-product'
@@ -12,8 +12,9 @@ import { updateCheckoutProductstWithLatest } from '../../lib/queries/user'
 interface Props {
   cart: CartWithCartItemsType
   countries: Country[]
+  provinces: Province[]
   addresses: UserShippingAddressType[]
-  userCountry: Country
+  userCountry: Partial<Country>
 }
 
 const CheckoutContainer: FC<Props> = ({
@@ -21,6 +22,7 @@ const CheckoutContainer: FC<Props> = ({
   countries,
   addresses,
   userCountry,
+  provinces,
 }) => {
   // console.log({ countries })
   const [cartData, setCartData] = useState<CartWithCartItemsType>(cart)
@@ -49,14 +51,16 @@ const CheckoutContainer: FC<Props> = ({
     }
   }, [activeCountry])
   return (
-    <div className="text-black w-full flex flex-col gap-y-2 lg:flex-row">
+    <div className=" w-full flex flex-col gap-y-2 lg:flex-row">
       <div className="space-y-2 lg:flex-1">
         <UserShippingAddresses
           addresses={addresses}
           countries={countries}
+          provinces={provinces}
           selectedAddress={selectedAddress}
           setSelectedAddress={setSelectedAddress}
         />
+
         <CountryNote
           country={activeCountry ? activeCountry.name : userCountry.name}
         />

@@ -4,7 +4,7 @@
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 
 // Prisma model
-import { Country } from '@prisma/client'
+import { Country, Province } from '@prisma/client'
 
 // Form handling utilities
 import * as z from 'zod'
@@ -52,19 +52,21 @@ import {
 interface AddressDetailsProps {
   data?: UserShippingAddressType
   countries: Country[]
+  provinces: Province[]
   setShow: Dispatch<SetStateAction<boolean>>
 }
 
 const AddressDetails: FC<AddressDetailsProps> = ({
   data,
   countries,
+  provinces,
   setShow,
 }) => {
   const router = useRouter() // Hook for routing
-  const provinces = useQuery({
-    queryKey: ['provinces'],
-    queryFn: getAllProvinces,
-  })
+  // const provinces = useQuery({
+  //   queryKey: ['provinces'],
+  //   queryFn: getAllProvinces,
+  // })
 
   // // State for country selector
   // const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -323,8 +325,8 @@ const AddressDetails: FC<AddressDetailsProps> = ({
                   </FormItem>
                 )} 
               /> */}
-              <ProvinceCity provinces={provinces.data || []} />
             </div>
+            {/* {provinces && <ProvinceCity provinces={provinces} />} */}
             <FormField
               disabled={isLoading}
               control={form.control}

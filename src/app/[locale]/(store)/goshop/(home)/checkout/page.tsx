@@ -7,6 +7,8 @@ import { getUserShippingAddresses } from '../../lib/queries/user'
 
 import Header, { Country } from '../../components/header/header'
 import CheckoutContainer from '../../components/chekout/container'
+import { getAllProvinces } from '../../lib/queries/address'
+import { Suspense } from 'react'
 
 export default async function CheckoutPage() {
   const user = await currentUser()
@@ -40,6 +42,7 @@ export default async function CheckoutPage() {
   // Get cookies from the store
   const cookieStore = await cookies()
   const userCountryCookie = cookieStore.get('userCountry')
+  const provinces = await getAllProvinces()
 
   // Set default country if cookie is missing
   let userCountry: Country = {
@@ -57,15 +60,18 @@ export default async function CheckoutPage() {
   return (
     <>
       <Header />
-      <div className="bg-[#f4f4f4] min-h-[calc(100vh-65px)]">
+      <div className="  min-h-[calc(100vh-65px)]">
         <div className="max-w-container mx-auto py-4 px-2 ">
-          <CheckoutContainer
-            cart={cart}
-            countries={countries}
-            addresses={addresses}
-            // addresses={[]}
-            userCountry={userCountry}
-          />
+          {!!cart && !!provinces ? (
+            <CheckoutContainer
+              cart={cart}
+              countries={countries}
+              addresses={addresses}
+              // addresses={[]}
+              provinces={provinces}
+              userCountry={userCountry}
+            />
+          ) : null}
         </div>
       </div>
     </>

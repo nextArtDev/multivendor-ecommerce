@@ -2,7 +2,7 @@ import { Info } from 'lucide-react'
 
 export default function CountryNote({ country }: { country: string }) {
   return (
-    <div className="w-full rounded-md p-3 bg-green-100  flex items-center">
+    <div className="w-full   p-3 bg-muted-foreground rounded-md flex items-center">
       <div className="w-8 h-8 border rounded-full border-green-200 flex flex-shrink-0 items-center justify-center">
         <Info className="stroke-green-300" />
       </div>

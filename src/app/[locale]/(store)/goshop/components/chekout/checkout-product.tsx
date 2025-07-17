@@ -12,7 +12,7 @@ export default function CheckoutProductCard({
 }) {
   const { productSlug, variantSlug, sizeId, shippingFee } = product
   return (
-    <div className="bg-white px-6 border-t border-t-[#ebebeb] select-none">
+    <div className="bg-muted rounded-md px-6 border-t border-t-[#ebebeb] select-none">
       <div className="py-4">
         <div className="relative flex self-start">
           {/* Image */}
@@ -44,7 +44,7 @@ export default function CheckoutProductCard({
             </div>
             {/* Style - Size */}
             <div className="my-1">
-              <button className="text-main-primary relative h-[24px] bg-gray-100 whitespace-normal px-2.5 py-0 max-w-full text-xs leading-4 rounded-xl font-bold cursor-pointer  outline-0">
+              <button className="  relative h-[24px] bg-primary text-secondary whitespace-normal px-2.5 py-0 max-w-full text-xs leading-4 rounded-xl font-bold cursor-pointer  outline-0">
                 <span className="flex items-center justify-between flex-wrap">
                   <div className="text-left inline-block overflow-hidden text-ellipsis whitespace-nowrap max-w-[95%]">
                     {product.size}

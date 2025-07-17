@@ -46,6 +46,7 @@ const CartProduct: FC<Props> = ({
     variantId,
     productSlug,
     variantSlug,
+    variantImage,
     name,
     variantName,
     sizeId,
@@ -224,7 +225,10 @@ const CartProduct: FC<Props> = ({
             >
               <div className="m-0 mr-4 ml-2 w-28 h-28 bg-gray-200 relative rounded-lg">
                 <Image
-                  src={images.map((image) => image.url)[0]}
+                  src={
+                    images.map((image) => image.url)[0] ||
+                    variantImage.map((img) => img.url)[0]
+                  }
                   alt={name}
                   height={200}
                   width={200}
